@@ -1,4 +1,7 @@
-import { Text, View } from "react-native";
+import { Text, View, ViewStyle, Dimensions } from "react-native";
+import Logo from "../assets/svg/Logo.svg";
+
+const { width, height } = Dimensions.get("screen");
 
 import {
   useFonts,
@@ -21,6 +24,7 @@ import {
   SofiaSans_800ExtraBold_Italic,
   SofiaSans_900Black_Italic,
 } from "@expo-google-fonts/sofia-sans";
+import { colors } from "@/theme/colors";
 
 export default function RootLayout() {
   let [fontsLoaded] = useFonts({
@@ -49,27 +53,24 @@ export default function RootLayout() {
   }
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text
-        style={{
-          fontFamily: "SofiaSans_800ExtraBold",
-          fontSize: 28,
-        }}
-      >
-        All recipe you needed
-      </Text>
-      <Text
-        style={{
-          fontFamily: "SofiaSans_400Regular",
-
-          fontSize: 18,
-          color: "#97A2B0",
-          fontStyle: "normal",
-          fontWeight: 200,
-        }}
-      >
-        All recipe you need
-      </Text>
+    <View style={$containerStyle}>
+      <View style={$baseContainerStyle}></View>
     </View>
   );
 }
+
+const $containerStyle: ViewStyle = {
+  flex: 1,
+  backgroundColor: "#70B9BE",
+  justifyContent: "flex-end",
+  alignItems: "center",
+};
+
+const $baseContainerStyle: ViewStyle = {
+  flexShrink: 0,
+  height: height / 3.5,
+  width: width,
+  backgroundColor: colors.greyscale100,
+  borderTopLeftRadius: 16,
+  borderTopRightRadius: 16,
+};
