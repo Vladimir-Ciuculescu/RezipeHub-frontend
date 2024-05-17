@@ -1,37 +1,75 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { Text, View } from "react-native";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import {
+  useFonts,
+  SofiaSans_100Thin,
+  SofiaSans_200ExtraLight,
+  SofiaSans_300Light,
+  SofiaSans_400Regular,
+  SofiaSans_500Medium,
+  SofiaSans_600SemiBold,
+  SofiaSans_700Bold,
+  SofiaSans_800ExtraBold,
+  SofiaSans_900Black,
+  SofiaSans_100Thin_Italic,
+  SofiaSans_200ExtraLight_Italic,
+  SofiaSans_300Light_Italic,
+  SofiaSans_400Regular_Italic,
+  SofiaSans_500Medium_Italic,
+  SofiaSans_600SemiBold_Italic,
+  SofiaSans_700Bold_Italic,
+  SofiaSans_800ExtraBold_Italic,
+  SofiaSans_900Black_Italic,
+} from "@expo-google-fonts/sofia-sans";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+  let [fontsLoaded] = useFonts({
+    SofiaSans_100Thin,
+    SofiaSans_200ExtraLight,
+    SofiaSans_300Light,
+    SofiaSans_400Regular,
+    SofiaSans_500Medium,
+    SofiaSans_600SemiBold,
+    SofiaSans_700Bold,
+    SofiaSans_800ExtraBold,
+    SofiaSans_900Black,
+    SofiaSans_100Thin_Italic,
+    SofiaSans_200ExtraLight_Italic,
+    SofiaSans_300Light_Italic,
+    SofiaSans_400Regular_Italic,
+    SofiaSans_500Medium_Italic,
+    SofiaSans_600SemiBold_Italic,
+    SofiaSans_700Bold_Italic,
+    SofiaSans_800ExtraBold_Italic,
+    SofiaSans_900Black_Italic,
   });
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
+  if (!fontsLoaded) {
     return null;
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Text
+        style={{
+          fontFamily: "SofiaSans_800ExtraBold",
+          fontSize: 28,
+        }}
+      >
+        All recipe you needed
+      </Text>
+      <Text
+        style={{
+          fontFamily: "SofiaSans_400Regular",
+
+          fontSize: 18,
+          color: "#97A2B0",
+          fontStyle: "normal",
+          fontWeight: 200,
+        }}
+      >
+        All recipe you need
+      </Text>
+    </View>
   );
 }
