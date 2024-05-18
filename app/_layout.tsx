@@ -5,6 +5,9 @@ const { width, height } = Dimensions.get('screen');
 import { colors } from '@/theme/colors';
 import { useFonts } from '@expo-google-fonts/sofia-sans';
 import { fonts, fontsToLoad } from '@/theme/typography';
+import { PageControl } from 'react-native-ui-lib';
+import Onboardling_1 from '../assets/svg/Onboarding_1.svg';
+import { Stack } from 'expo-router';
 
 export default function RootLayout() {
 	let [fontsLoaded] = useFonts(fontsToLoad);
@@ -14,31 +17,19 @@ export default function RootLayout() {
 	}
 
 	return (
-		<View style={$containerStyle}>
-			<View style={$baseContainerStyle}>
-				<Text
-					selectable
-					disabled
-					style={{ fontFamily: fonts.sofia100, fontSize: 30 }}>
-					adw
-				</Text>
-			</View>
-		</View>
+		<Stack>
+			<Stack.Screen
+				options={{ headerShown: false, contentStyle: { backgroundColor: '#FFF' } }}
+				name="index"
+			/>
+			<Stack.Screen name="login" />
+		</Stack>
 	);
 }
 
 const $containerStyle: ViewStyle = {
 	flex: 1,
-	backgroundColor: '#70B9BE',
-	justifyContent: 'flex-end',
-	alignItems: 'center',
-};
-
-const $baseContainerStyle: ViewStyle = {
-	flexShrink: 0,
-	height: height / 3.5,
-	width: width,
 	backgroundColor: colors.greyscale100,
-	borderTopLeftRadius: 16,
-	borderTopRightRadius: 16,
+	justifyContent: 'center',
+	alignItems: 'center',
 };
