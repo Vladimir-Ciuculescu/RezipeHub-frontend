@@ -1,11 +1,12 @@
 import { Onboarding_1, Onboarding_2, Onboarding_3 } from '@/assets/svg';
+import RNButton from '@/components/shared/RNButton';
 import { colors } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
 import { $sizeStyles } from '@/theme/typography';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useRef, useState } from 'react';
-import { Animated, Dimensions, FlatList, StyleSheet } from 'react-native';
+import { Animated, Dimensions, FlatList, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Text, View } from 'react-native-ui-lib';
 
@@ -113,8 +114,6 @@ export default function Onboarding() {
     );
   };
 
-  const isLastStep = currentIndex === 2 ? 'Get started' : 'Next';
-
   return (
     <SafeAreaView
       edges={['left', 'right', 'top']}
@@ -152,9 +151,10 @@ export default function Onboarding() {
           onViewableItemsChanged={onChangeViewableItem}
           viewabilityConfig={viewConfigRef.current}
         />
-        <Button
+
+        <RNButton
+          label={currentIndex === 2 ? 'Get started' : 'Next'}
           onPress={goNext}
-          label={isLastStep}
           labelStyle={styles.$saveBtnLabel}
           style={styles.$saveBtn}
         />
@@ -184,15 +184,10 @@ const styles = StyleSheet.create({
 
   $saveBtn: {
     marginHorizontal: spacing.spacing32,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderRadius: 16,
-    backgroundColor: '#042628',
   },
 
   $saveBtnLabel: {
-    color: '#ffffff',
-    fontFamily: 'sofia800',
+    color: colors.neutral100,
   },
 
   $stepContainer: {
@@ -206,13 +201,13 @@ const styles = StyleSheet.create({
   },
 
   $stepTitle: {
-    color: '#030319',
+    color: colors.slate900,
     fontFamily: 'sofia800',
     textAlign: 'center',
   },
 
   $stepDescription: {
-    color: '#97A2B0',
+    color: colors.greyscale300,
     fontFamily: 'sofia400',
     textAlign: 'center',
   },
