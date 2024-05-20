@@ -1,12 +1,5 @@
-import { Text, View, ViewStyle, Dimensions, StyleSheet } from 'react-native';
-
-const { width, height } = Dimensions.get('screen');
-
-import { colors } from '@/theme/colors';
 import { useFonts } from '@expo-google-fonts/sofia-sans';
-import { fonts, fontsToLoad } from '@/theme/typography';
-import { PageControl } from 'react-native-ui-lib';
-import Onboardling_1 from '../assets/svg/Onboarding_1.svg';
+import { fontsToLoad } from '@/theme/typography';
 import { Stack } from 'expo-router';
 
 export default function RootLayout() {
@@ -26,10 +19,3 @@ export default function RootLayout() {
 		</Stack>
 	);
 }
-
-const $containerStyle: ViewStyle = {
-	flex: 1,
-	backgroundColor: colors.greyscale100,
-	justifyContent: 'center',
-	alignItems: 'center',
-};
