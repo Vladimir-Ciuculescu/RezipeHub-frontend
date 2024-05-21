@@ -1,12 +1,13 @@
 import { Onboarding_1, Onboarding_2, Onboarding_3 } from '@/assets/svg';
 import RNButton from '@/components/shared/RNButton';
+import { ONBOARDED, storage } from '@/storage';
 import { colors } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
 import { $sizeStyles } from '@/theme/typography';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useRef, useState } from 'react';
-import { Animated, Dimensions, FlatList, StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import { Animated, Dimensions, FlatList, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Text, View } from 'react-native-ui-lib';
 
@@ -91,12 +92,17 @@ export default function Onboarding() {
 
   const goNext = async () => {
     if (currentIndex === 2) {
-      router.navigate('/login');
+      goToLogin();
     } else {
       flatListRef.current?.scrollToIndex({
         index: currentIndex + 1,
       });
     }
+  };
+
+  const goToLogin = () => {
+    storage.set(ONBOARDED, true);
+    router.navigate('/login');
   };
 
   const onScroll = () => {
@@ -130,7 +136,7 @@ export default function Onboarding() {
         >
           <Button
             link
-            onPress={goNext}
+            onPress={goToLogin}
             label="Skip"
             labelStyle={[styles.$skipBtnLabel, $sizeStyles.xl]}
           />
