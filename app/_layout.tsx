@@ -19,7 +19,7 @@ const Layout = () => {
       const user = storage.getBoolean(ONBOARDED);
 
       if (user) {
-        router.replace('login');
+        router.replace('home');
       }
     }
   }, [navigatorReady]);
@@ -35,6 +35,11 @@ const Layout = () => {
         options={{ headerShown: false }}
         name="index"
       />
+      <Stack.Screen
+        name="home"
+        options={{ headerShown: false }}
+      />
+
       <Stack.Screen name="login" />
     </Stack>
   );

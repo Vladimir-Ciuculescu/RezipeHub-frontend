@@ -92,7 +92,7 @@ export default function Onboarding() {
 
   const goNext = async () => {
     if (currentIndex === 2) {
-      goToLogin();
+      goToHome();
     } else {
       flatListRef.current?.scrollToIndex({
         index: currentIndex + 1,
@@ -100,9 +100,9 @@ export default function Onboarding() {
     }
   };
 
-  const goToLogin = () => {
+  const goToHome = () => {
     storage.set(ONBOARDED, true);
-    router.navigate('/login');
+    router.navigate('/home');
   };
 
   const onScroll = () => {
@@ -136,7 +136,7 @@ export default function Onboarding() {
         >
           <Button
             link
-            onPress={goToLogin}
+            onPress={goToHome}
             label="Skip"
             labelStyle={[styles.$skipBtnLabel, $sizeStyles.xl]}
           />

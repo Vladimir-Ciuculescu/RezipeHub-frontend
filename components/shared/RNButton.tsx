@@ -17,8 +17,8 @@ export default function RNButton(props: RNButtonProps) {
       {...rest}
       link={link || false}
       label={label}
-      labelStyle={[styles.$baselabelStyle, labelStyle]}
-      style={[styles.$baseViewStyle, style]}
+      labelStyle={[styles.$baselabelStyle, link ? styles.$linkLabelStyle : {}, labelStyle]}
+      style={[styles.$baseViewStyle, !link ? styles.$containedViewStyle : {}, style]}
     />
   );
 }
@@ -28,6 +28,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderRadius: 16,
+    // backgroundColor: colors.brandPrimary,
+  },
+
+  $containedViewStyle: {
     backgroundColor: colors.brandPrimary,
   },
 
@@ -35,5 +39,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'sofia800',
     fontStyle: 'normal',
+  },
+
+  $linkLabelStyle: {
+    color: colors.neutral100,
   },
 });
