@@ -27,10 +27,7 @@ const Layout = () => {
   if (!fontsLoaded) return null;
 
   return (
-    <Stack
-      initialRouteName="register"
-      screenOptions={{ contentStyle: styles.$stackContainerStyle }}
-    >
+    <Stack screenOptions={{ contentStyle: styles.$stackContainerStyle }}>
       <Stack.Screen
         options={{ headerShown: false }}
         name="index"
@@ -41,6 +38,7 @@ const Layout = () => {
       />
 
       <Stack.Screen name="login" />
+      <Stack.Screen name="register" />
     </Stack>
   );
 };

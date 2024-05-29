@@ -6,10 +6,16 @@ export const colors = {
 
   greyscale50: '#FFFFFF',
   greyscale100: '#F1F5F5',
+  greyscale150: '#E6EBF2',
   greyscale200: '#CBD4DE',
   greyscale300: '#97A2B0',
   greyscale400: '#48525F',
   greyscale500: '#0A2533',
+
+  red400: '#f87171',
+  red500: '#ef4444',
+  red600: '#dc2626',
+  red700: '#b91c1c',
 
   neutral100: '#FFFFFF',
 

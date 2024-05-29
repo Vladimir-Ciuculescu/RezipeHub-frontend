@@ -1,4 +1,4 @@
-import { Onboarding_1, Onboarding_2, Onboarding_3 } from '@/assets/svg';
+import { Onboarding_1, Onboarding_2, Onboarding_3 } from '@/assets/illustrations';
 import RNButton from '@/components/shared/RNButton';
 import { ONBOARDED, storage } from '@/storage';
 import { colors } from '@/theme/colors';

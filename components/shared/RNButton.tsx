@@ -1,24 +1,45 @@
 import { colors } from '@/theme/colors';
-import { StyleProp, StyleSheet, TextStyle, TouchableOpacityProps, ViewStyle } from 'react-native';
-import { Button } from 'react-native-ui-lib';
+import {
+  ActivityIndicator,
+  StyleProp,
+  StyleSheet,
+  TextStyle,
+  TouchableOpacityProps,
+  ViewStyle,
+} from 'react-native';
+import { Button, ButtonProps } from 'react-native-ui-lib';
 
 interface RNButtonProps extends TouchableOpacityProps {
   link?: boolean;
   label: string;
   labelStyle?: StyleProp<TextStyle>;
   style?: StyleProp<ViewStyle>;
+  loading?: boolean;
 }
 
 export default function RNButton(props: RNButtonProps) {
-  const { link, label, labelStyle, style, ...rest } = props;
+  const { link, label, labelStyle, style, loading, ...rest } = props;
+
+  const buttonProps: ButtonProps = { ...rest };
+
+  if (loading) {
+    buttonProps.iconSource = () => <ActivityIndicator />;
+  } else {
+    buttonProps.label = label;
+  }
 
   return (
     <Button
-      {...rest}
+      {...buttonProps}
+      disabled={loading}
       link={link || false}
-      label={label}
       labelStyle={[styles.$baselabelStyle, link ? styles.$linkLabelStyle : {}, labelStyle]}
-      style={[styles.$baseViewStyle, !link ? styles.$containedViewStyle : {}, style]}
+      style={[
+        styles.$baseViewStyle,
+        !link && styles.$containedViewStyle,
+        loading && styles.$loading,
+        style,
+      ]}
     />
   );
 }
@@ -28,11 +49,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderRadius: 16,
-    // backgroundColor: colors.brandPrimary,
+    height: 50,
   },
 
   $containedViewStyle: {
     backgroundColor: colors.brandPrimary,
+  },
+
+  $loading: {
+    opacity: 0.7,
   },
 
   $baselabelStyle: {

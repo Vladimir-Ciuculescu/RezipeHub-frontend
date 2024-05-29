@@ -1,9 +1,9 @@
-import { Home_food } from '@/assets/svg';
+import { Home_food } from '@/assets/illustrations';
 import RNButton from '@/components/shared/RNButton';
 import { colors } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
 import { $sizeStyles } from '@/theme/typography';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet } from 'react-native';
 import { Text, View } from 'react-native-ui-lib';
