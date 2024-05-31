@@ -1,21 +1,24 @@
 import { Text, View } from 'react-native-ui-lib';
-import { Pressable, StyleSheet } from 'react-native';
+import { Alert, Pressable, StyleSheet } from 'react-native';
 import RNIcon from '@/components/shared/RNIcon';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { spacing } from '@/theme/spacing';
 import { StatusBar } from 'expo-status-bar';
-import { useNavigation } from 'expo-router';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { router, useNavigation } from 'expo-router';
+import { useLayoutEffect, useState } from 'react';
 import { $sizeStyles } from '@/theme/typography';
 import RnInput from '@/components/shared/RNInput';
 import RNButton from '@/components/shared/RNButton';
 import { Feather } from '@expo/vector-icons';
-import { Formik } from 'formik';
+import { Formik, FormikErrors, FormikHelpers } from 'formik';
 import { registerSchema } from '@/yup/register.schema';
+import authService from '@/api/services/auth.service';
 
 export default function Register() {
   const navigation = useNavigation();
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [repeatPasswordVisible, setRepeatPasswordVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -41,6 +44,56 @@ export default function Register() {
     lastName: '',
     email: '',
     password: '',
+    repeatPassword: '',
+  };
+
+  const handleSubmit = async (values: any, { setErrors }: FormikHelpers<any>) => {
+    // fetch('https://rickandmortyapi.com/api/character')
+    //   .then((response) => console.log(response))
+    //   .then((data) => {})
+    //   .catch((error) => {
+    //     console.error('Error fetching data: ', error);
+    //   });
+    // console.log(111);
+    setIsLoading(true);
+    try {
+      const data = await authService.registerUser(values);
+      console.log(111, data);
+      showRegisterConfirmation();
+    } catch (error) {
+      setErrors(error as FormikErrors<any>);
+    }
+
+    setIsLoading(false);
+  };
+
+  const showRegisterConfirmation = () => {
+    // Alert.alert(
+    //   'Account Created',
+    //   'Your account has been successfully created!',
+    //   [{ text: 'OK', onPress: goToOtpVerification }],
+    //   { cancelable: false },
+    // );
+    Alert.alert(
+      'Alert Title',
+      'My Alert Msg',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => Alert.alert('Cancel Pressed'),
+          style: 'cancel',
+        },
+      ],
+      {
+        cancelable: true,
+        onDismiss: () =>
+          Alert.alert('This alert was dismissed by tapping outside of the alert dialog.'),
+      },
+    );
+  };
+
+  const goToOtpVerification = () => {
+    router.navigate('otp_verification');
   };
 
   return (
@@ -48,12 +101,13 @@ export default function Register() {
       extraScrollHeight={40}
       enableAutomaticScroll
       contentContainerStyle={styles.$containerStyle}
+      showsVerticalScrollIndicator={false}
     >
       <StatusBar style="dark" />
 
       <Formik
         initialValues={initialValues}
-        onSubmit={(values) => console.log(values)}
+        onSubmit={handleSubmit}
         validationSchema={registerSchema}
       >
         {({ values, touched, errors, handleSubmit, handleChange, handleBlur }) => (
@@ -129,7 +183,29 @@ export default function Register() {
                 </Pressable>
               }
             />
+            <RnInput
+              onChangeText={handleChange('repeatPassword')}
+              onBlur={handleBlur('repeatPassword')}
+              value={values.repeatPassword}
+              touched={touched.repeatPassword}
+              error={errors.repeatPassword}
+              secureTextEntry={!repeatPasswordVisible}
+              label="Repeat Password"
+              placeholder="Re-type password"
+              wrapperStyle={{ width: '100%' }}
+              leftIcon={<RNIcon name="lock" />}
+              rightIcon={
+                <Pressable onPress={() => setRepeatPasswordVisible(!repeatPasswordVisible)}>
+                  <Feather
+                    name={passwordVisible ? 'eye' : 'eye-off'}
+                    size={20}
+                    color="black"
+                  />
+                </Pressable>
+              }
+            />
             <RNButton
+              loading={isLoading}
               onPress={() => handleSubmit()}
               label="Register"
               style={{ width: '100%' }}
@@ -144,7 +220,9 @@ export default function Register() {
 const styles = StyleSheet.create({
   $containerStyle: {
     alignItems: 'center',
-    flex: 1,
+    paddingBottom: 100,
+    //flex: 1,
+    flexGrow: 1,
     gap: spacing.spacing24,
     paddingHorizontal: spacing.spacing24,
     paddingTop: spacing.spacing24,

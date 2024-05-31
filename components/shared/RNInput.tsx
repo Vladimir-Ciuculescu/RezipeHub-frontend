@@ -34,8 +34,6 @@ export default function RnInput(props: RNInputProps) {
 
     const [isFocused, setIsFocused] = useState(false);
 
-    console.log(touched, error, label);
-
     return (
       <View
         flex={flex}

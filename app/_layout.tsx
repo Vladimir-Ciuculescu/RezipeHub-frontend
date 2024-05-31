@@ -1,3 +1,6 @@
+if (__DEV__) {
+  require('../ReactotronConfig');
+}
 import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { Stack, useRootNavigationState, useRouter } from 'expo-router';
@@ -39,6 +42,7 @@ const Layout = () => {
 
       <Stack.Screen name="login" />
       <Stack.Screen name="register" />
+      <Stack.Screen name="otp_verification" />
     </Stack>
   );
 };
