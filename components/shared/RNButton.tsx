@@ -67,6 +67,6 @@ const styles = StyleSheet.create({
   },
 
   $linkLabelStyle: {
-    color: colors.neutral100,
+    color: colors.brandPrimary,
   },
 });

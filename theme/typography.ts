@@ -67,11 +67,11 @@ export const fonts = {
 
 export const $sizeStyles = {
   xs: { fontSize: 12, lineHeight: 18 } satisfies TextStyle,
-  s: { fontSize: 14, lineHeight: 20, fontFamily: 'sofia400' } satisfies TextStyle,
+  s: { fontSize: 14, lineHeight: 20 } satisfies TextStyle,
   n: { fontSize: 16, lineHeight: 22 } satisfies TextStyle,
   l: { fontSize: 18, lineHeight: 26 } satisfies TextStyle,
-  xl: { fontSize: 20, lineHeight: 30 } satisfies TextStyle,
+  xl: { fontSize: 20, lineHeight: 30, fontFamily: 'sofia800' } satisfies TextStyle,
   h3: { fontSize: 24, lineHeight: 32, fontFamily: 'sofia800' } satisfies TextStyle,
-  h2: { fontSize: 28, lineHeight: 36 } satisfies TextStyle,
-  h1: { fontSize: 32, lineHeight: 42 } satisfies TextStyle,
+  h2: { fontSize: 28, lineHeight: 36, fontFamily: 'sofia800' } satisfies TextStyle,
+  h1: { fontSize: 32, lineHeight: 42, fontFamily: 'sofia800' } satisfies TextStyle,
 };

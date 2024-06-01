@@ -22,14 +22,12 @@ export default function Register() {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitleAlign: 'center',
       headerLeft: () => (
         <Pressable onPress={goBack}>
           <RNIcon name="arrowLeft" />
         </Pressable>
       ),
-      headerBackVisible: false,
-      headerShadowVisible: false,
+
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Create account</Text>,
     });
   }, [navigation]);
@@ -48,17 +46,9 @@ export default function Register() {
   };
 
   const handleSubmit = async (values: any, { setErrors }: FormikHelpers<any>) => {
-    // fetch('https://rickandmortyapi.com/api/character')
-    //   .then((response) => console.log(response))
-    //   .then((data) => {})
-    //   .catch((error) => {
-    //     console.error('Error fetching data: ', error);
-    //   });
-    // console.log(111);
     setIsLoading(true);
     try {
       const data = await authService.registerUser(values);
-      console.log(111, data);
       showRegisterConfirmation();
     } catch (error) {
       setErrors(error as FormikErrors<any>);
@@ -68,27 +58,11 @@ export default function Register() {
   };
 
   const showRegisterConfirmation = () => {
-    // Alert.alert(
-    //   'Account Created',
-    //   'Your account has been successfully created!',
-    //   [{ text: 'OK', onPress: goToOtpVerification }],
-    //   { cancelable: false },
-    // );
     Alert.alert(
-      'Alert Title',
-      'My Alert Msg',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => Alert.alert('Cancel Pressed'),
-          style: 'cancel',
-        },
-      ],
-      {
-        cancelable: true,
-        onDismiss: () =>
-          Alert.alert('This alert was dismissed by tapping outside of the alert dialog.'),
-      },
+      'Account Created',
+      'Your account has been successfully created!',
+      [{ text: 'OK', onPress: goToOtpVerification }],
+      { cancelable: false },
     );
   };
 
@@ -197,7 +171,7 @@ export default function Register() {
               rightIcon={
                 <Pressable onPress={() => setRepeatPasswordVisible(!repeatPasswordVisible)}>
                   <Feather
-                    name={passwordVisible ? 'eye' : 'eye-off'}
+                    name={repeatPasswordVisible ? 'eye' : 'eye-off'}
                     size={20}
                     color="black"
                   />

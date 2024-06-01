@@ -1,157 +1,174 @@
-// import RNIcon from '@/components/shared/RNIcon';
-// import RnInput from '@/components/shared/RNInput';
-// import { spacing } from '@/theme/spacing';
-// import { $sizeStyles } from '@/theme/typography';
-// import { useNavigation } from 'expo-router';
-// import { StatusBar } from 'expo-status-bar';
-// import React, { useLayoutEffect } from 'react';
-// import { Pressable, StyleSheet } from 'react-native';
-// import { Text, TextField, View } from 'react-native-ui-lib';
+import RNButton from '@/components/shared/RNButton';
+import RNIcon from '@/components/shared/RNIcon';
+import { colors } from '@/theme/colors';
+import { spacing } from '@/theme/spacing';
+import { $sizeStyles } from '@/theme/typography';
+import { useNavigation } from 'expo-router';
+import React, { useState, useRef, memo, useLayoutEffect } from 'react';
+import { TouchableOpacity, StyleSheet, Pressable, FlatList } from 'react-native';
+import { TextField, TextFieldRef, Text, View } from 'react-native-ui-lib';
 
-// export default function OtpVerification() {
-//   const navigation = useNavigation();
+interface OtpInputProps {
+  index: number;
+  char: string;
+  onInputChange: (index: number, value: string) => void;
+  onFocusInput: (index: number) => void;
+  refCallback: (ref: any) => any;
+}
 
-//   const goBack = () => {
-//     navigation.goBack();
-//   };
+const OtpInput = memo((props: OtpInputProps) => {
+  const { index, char, onInputChange, onFocusInput, refCallback } = props;
 
-//   useLayoutEffect(() => {
-//     navigation.setOptions({
-//       headerTitleAlign: 'center',
-//       headerLeft: () => (
-//         <Pressable onPress={goBack}>
-//           <RNIcon name="arrowLeft" />
-//         </Pressable>
-//       ),
-//       headerBackVisible: false,
-//       headerShadowVisible: false,
-//       headerTitle: () => <Text style={[$sizeStyles.h3]}>Enter OTP Code</Text>,
-//     });
-//   }, [navigation]);
+  const [focused, setFocused] = useState(false);
 
-//   return (
-//     <View
-//       style={{
-//         flex: 1,
-//         paddingHorizontal: spacing.spacing24,
-//         paddingTop: spacing.spacing24,
-//       }}
-//     >
-//       <StatusBar style="dark" />
-//       <View style={{ backgroundColor: 'red' }}>
-//         <Text style={styles.$title}>
-//           We Already have sent you verification e-mail to john****@gmail.com, please check it
-//         </Text>
-//         <TextField showSoftInputOnFocus={false} />
-//       </View>
-//     </View>
-//   );
-// }
+  const handleFocus = (index: number) => {
+    setFocused(true);
+    onFocusInput(index);
+  };
 
-// const styles = StyleSheet.create({
-//   $title: {
-//     ...$sizeStyles.n,
-//   },
-// });
+  const handleBlur = () => {
+    setFocused(false);
+  };
 
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+  return (
+    <TextField
+      ref={refCallback}
+      value={char}
+      style={[{ textAlign: 'center' }, $sizeStyles.h1]}
+      cursorColor={colors.brandPrimary}
+      containerStyle={[
+        {
+          width: 64,
+          height: 64,
+          borderRadius: 16,
+          justifyContent: 'center',
+          backgroundColor: colors.greyscale150,
+          borderWidth: 2,
+          borderStyle: 'solid',
+        },
+        focused ? { borderColor: colors.brandPrimary } : { borderColor: 'transparent' },
+      ]}
+      maxLength={1}
+      keyboardType="numeric"
+      onChangeText={(value) => onInputChange(index, value)}
+      onFocus={() => handleFocus(index)}
+      onBlur={handleBlur}
+      showSoftInputOnFocus={false}
+    />
+  );
+});
 
-const OTPVerification = () => {
+export default function OtpVerification() {
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <Pressable onPress={goBack}>
+          <RNIcon name="arrowLeft" />
+        </Pressable>
+      ),
+
+      headerTitle: () => <Text style={[$sizeStyles.h3]}>Enter OTP Code</Text>,
+    });
+  }, [navigation]);
+
+  const goBack = () => {
+    navigation.goBack();
+  };
+
   const [otp, setOtp] = useState(['', '', '', '']);
+  const inputs = useRef<(TextFieldRef | null)[]>([]);
 
-  const handleInputChange = (index, value) => {
+  const handleInputChange = (index: number, value: string) => {
     if (/^[0-9]$/.test(value)) {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
+      if (index < 3) {
+        inputs.current[index + 1]!.focus();
+      }
     }
   };
 
-  const handleDialPress = (value) => {
+  const handleFocus = (index: number) => {
+    const newOtp = [...otp];
+    newOtp[index] = '';
+    setOtp(newOtp);
+  };
+
+  const handleBackButtonPress = () => {
+    const firstEmptyIndex = otp.findIndex((char) => char === '');
+    if (firstEmptyIndex === -1 || firstEmptyIndex === 0) {
+      const newOtp = [...otp];
+      newOtp[3] = '';
+      setOtp(newOtp);
+      inputs.current[3]!.focus();
+    } else {
+      const newOtp = [...otp];
+      newOtp[firstEmptyIndex - 1] = '';
+      setOtp(newOtp);
+      inputs.current[firstEmptyIndex - 1]!.focus();
+    }
+  };
+
+  const handleDialPress = (value: string) => {
     const firstEmptyIndex = otp.findIndex((char) => char === '');
     if (firstEmptyIndex !== -1) {
       handleInputChange(firstEmptyIndex, value);
     }
   };
 
+  const DIAL_PAD = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'];
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Enter OTP</Text>
-      <View style={styles.otpContainer}>
-        {otp.map((char, index) => (
-          <TextInput
-            key={index}
-            value={char}
-            style={styles.otpInput}
-            maxLength={1}
-            keyboardType="numeric"
-            onChangeText={(value) => handleInputChange(index, value)}
-            showSoftInputOnFocus={false}
-            // onFocus={(e) => e.target.blur()} // Disable keyboard on focus
+    <View style={[{ flex: 1, paddingTop: spacing.spacing24, alignItems: 'center' }]}>
+      <View style={{ gap: spacing.spacing64 }}>
+        <Text style={[$sizeStyles.n]}>
+          We Already have sent you verification e-mail to john****@gmail.com, please check it
+        </Text>
+        <View
+          row
+          style={{ justifyContent: 'space-between' }}
+        >
+          {otp.map((char, index) => (
+            <OtpInput
+              key={index}
+              index={index}
+              char={char}
+              onInputChange={handleInputChange}
+              onFocusInput={handleFocus}
+              refCallback={(ref) => (inputs.current[index] = ref)}
+            />
+          ))}
+        </View>
+        <View style={{ gap: spacing.spacing16 }}>
+          <RNButton label="Confirm" />
+          <RNButton
+            label="Resend"
+            link
           />
-        ))}
-      </View>
-      <View style={styles.dialPad}>
-        {['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].map((num) => (
-          <TouchableOpacity
-            key={num}
-            style={styles.dialButton}
-            onPress={() => handleDialPress(num)}
-          >
-            <Text style={styles.dialButtonText}>{num}</Text>
-          </TouchableOpacity>
-        ))}
+          <FlatList
+            scrollEnabled={false}
+            data={DIAL_PAD}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => (item === 'del' ? handleBackButtonPress() : handleDialPress(item))}
+                style={{ flex: 1, height: 80, justifyContent: 'center', alignItems: 'center' }}
+              >
+                {item === 'del' ? (
+                  <RNIcon name="delete" />
+                ) : (
+                  <Text style={[$sizeStyles.h2]}> {item}</Text>
+                )}
+              </TouchableOpacity>
+            )}
+            numColumns={3}
+          />
+        </View>
       </View>
     </View>
   );
-};
+}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  otpContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 40,
-  },
-  otpInput: {
-    width: 50,
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    textAlign: 'center',
-    fontSize: 20,
-  },
-  dialPad: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
-  dialButton: {
-    width: 60,
-    height: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 30,
-    backgroundColor: '#fff',
-  },
-  dialButtonText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-});
-
-export default OTPVerification;
+const styles = StyleSheet.create({});

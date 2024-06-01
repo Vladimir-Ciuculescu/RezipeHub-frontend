@@ -35,6 +35,7 @@ export default function Home() {
             label="Login"
           />
           <RNButton
+            labelStyle={styles.$registerTextStyle}
             onPress={goToRegister}
             label="Create new account"
             link
@@ -70,7 +71,5 @@ const styles = StyleSheet.create({
 
   $registerTextStyle: {
     color: colors.neutral100,
-    fontFamily: 'sofia800',
-    textAlign: 'center',
   },
 });

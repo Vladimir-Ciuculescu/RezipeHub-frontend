@@ -40,9 +40,30 @@ const Layout = () => {
         options={{ headerShown: false }}
       />
 
-      <Stack.Screen name="login" />
-      <Stack.Screen name="register" />
-      <Stack.Screen name="otp_verification" />
+      <Stack.Screen
+        name="login"
+        options={{
+          // headerBackVisible: false,
+          headerShadowVisible: false,
+          headerTitleAlign: 'center',
+        }}
+      />
+      <Stack.Screen
+        name="register"
+        options={{
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerTitleAlign: 'center',
+        }}
+      />
+      <Stack.Screen
+        name="otp_verification"
+        options={{
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerTitleAlign: 'center',
+        }}
+      />
     </Stack>
   );
 };
