@@ -12,7 +12,7 @@ import RNButton from '@/components/shared/RNButton';
 import { Feather } from '@expo/vector-icons';
 import { Formik, FormikErrors, FormikHelpers } from 'formik';
 import { registerSchema } from '@/yup/register.schema';
-import authService from '@/api/services/auth.service';
+import AuthService from '@/api/services/auth.service';
 
 export default function Register() {
   const navigation = useNavigation();
@@ -48,8 +48,9 @@ export default function Register() {
   const handleSubmit = async (values: any, { setErrors }: FormikHelpers<any>) => {
     setIsLoading(true);
     try {
-      const data = await authService.registerUser(values);
-      showRegisterConfirmation();
+      const user = await AuthService.registerUser(values);
+
+      showRegisterConfirmation(user.id, user.email);
     } catch (error) {
       setErrors(error as FormikErrors<any>);
     }
@@ -57,17 +58,17 @@ export default function Register() {
     setIsLoading(false);
   };
 
-  const showRegisterConfirmation = () => {
+  const showRegisterConfirmation = (userId: number, email: string) => {
     Alert.alert(
       'Account Created',
       'Your account has been successfully created!',
-      [{ text: 'OK', onPress: goToOtpVerification }],
+      [{ text: 'OK', onPress: () => goToOtpVerification(userId, email) }],
       { cancelable: false },
     );
   };
 
-  const goToOtpVerification = () => {
-    router.navigate('otp_verification');
+  const goToOtpVerification = (userId: number, email: string) => {
+    router.push({ pathname: 'otp_verification', params: { userId, email } });
   };
 
   return (
@@ -127,6 +128,7 @@ export default function Register() {
             </View>
             <RnInput
               onChangeText={handleChange('email')}
+              autoCapitalize="none"
               onBlur={handleBlur('email')}
               value={values.email}
               touched={touched.email}
@@ -195,7 +197,6 @@ const styles = StyleSheet.create({
   $containerStyle: {
     alignItems: 'center',
     paddingBottom: 100,
-    //flex: 1,
     flexGrow: 1,
     gap: spacing.spacing24,
     paddingHorizontal: spacing.spacing24,

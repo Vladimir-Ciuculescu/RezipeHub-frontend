@@ -1,10 +1,11 @@
+import TokenService from '@/api/services/token.service';
 import RNButton from '@/components/shared/RNButton';
 import RNIcon from '@/components/shared/RNIcon';
 import { colors } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
 import { $sizeStyles } from '@/theme/typography';
-import { useNavigation } from 'expo-router';
-import React, { useState, useRef, memo, useLayoutEffect } from 'react';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
+import React, { useState, useRef, memo, useLayoutEffect, useEffect } from 'react';
 import { TouchableOpacity, StyleSheet, Pressable, FlatList } from 'react-native';
 import { TextField, TextFieldRef, Text, View } from 'react-native-ui-lib';
 
@@ -37,15 +38,7 @@ const OtpInput = memo((props: OtpInputProps) => {
       style={[{ textAlign: 'center' }, $sizeStyles.h1]}
       cursorColor={colors.brandPrimary}
       containerStyle={[
-        {
-          width: 64,
-          height: 64,
-          borderRadius: 16,
-          justifyContent: 'center',
-          backgroundColor: colors.greyscale150,
-          borderWidth: 2,
-          borderStyle: 'solid',
-        },
+        styles.$otpInput,
         focused ? { borderColor: colors.brandPrimary } : { borderColor: 'transparent' },
       ]}
       maxLength={1}
@@ -60,6 +53,8 @@ const OtpInput = memo((props: OtpInputProps) => {
 
 export default function OtpVerification() {
   const navigation = useNavigation();
+
+  const { userId, email } = useLocalSearchParams();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -85,7 +80,7 @@ export default function OtpVerification() {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
-      if (index < 3) {
+      if (index < otp.length - 1) {
         inputs.current[index + 1]!.focus();
       }
     }
@@ -101,9 +96,9 @@ export default function OtpVerification() {
     const firstEmptyIndex = otp.findIndex((char) => char === '');
     if (firstEmptyIndex === -1 || firstEmptyIndex === 0) {
       const newOtp = [...otp];
-      newOtp[3] = '';
+      newOtp[otp.length - 1] = '';
       setOtp(newOtp);
-      inputs.current[3]!.focus();
+      inputs.current[otp.length - 1]!.focus();
     } else {
       const newOtp = [...otp];
       newOtp[firstEmptyIndex - 1] = '';
@@ -117,6 +112,15 @@ export default function OtpVerification() {
     if (firstEmptyIndex !== -1) {
       handleInputChange(firstEmptyIndex, value);
     }
+  };
+
+  const resendOtp = async () => {
+    //@ts-ignore
+    const id = parseInt(userId);
+
+    const payload = { userId: id, email: email as string };
+
+    await TokenService.resendToken(payload);
   };
 
   const DIAL_PAD = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'];
@@ -145,6 +149,7 @@ export default function OtpVerification() {
         <View style={{ gap: spacing.spacing16 }}>
           <RNButton label="Confirm" />
           <RNButton
+            onPress={resendOtp}
             label="Resend"
             link
           />
@@ -171,4 +176,14 @@ export default function OtpVerification() {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  $otpInput: {
+    width: 64,
+    height: 64,
+    borderRadius: 16,
+    justifyContent: 'center',
+    backgroundColor: colors.greyscale150,
+    borderWidth: 2,
+    borderStyle: 'solid',
+  },
+});

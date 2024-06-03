@@ -1,14 +1,16 @@
+import { User } from '@/types/user.types';
 import axiosInstance from '..';
 import { handleError } from '../handleError';
 
-const authService = {
-  registerUser: async (payload: any) => {
+const AuthService = {
+  registerUser: async (payload: any): Promise<User> => {
     try {
-      await axiosInstance.post('/auth/register', payload);
+      const { data } = await axiosInstance.post('/auth/register', payload);
+      return data;
     } catch (error) {
       throw handleError(error);
     }
   },
 };
 
-export default authService;
+export default AuthService;
