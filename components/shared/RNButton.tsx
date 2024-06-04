@@ -31,13 +31,13 @@ export default function RNButton(props: RNButtonProps) {
   return (
     <Button
       {...buttonProps}
-      disabled={loading}
+      disabled={buttonProps.disabled || loading}
       link={link || false}
       labelStyle={[styles.$baselabelStyle, link ? styles.$linkLabelStyle : {}, labelStyle]}
       style={[
         styles.$baseViewStyle,
         !link && styles.$containedViewStyle,
-        loading && styles.$loading,
+        (loading || buttonProps.disabled) && styles.$loading,
         style,
       ]}
     />

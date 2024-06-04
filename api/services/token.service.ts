@@ -1,13 +1,20 @@
 import axios from 'axios';
 import { handleError } from '../handleError';
 import axiosInstance from '..';
-import { ResendTokenRequest } from '@/types/token.types';
+import { ConfirmTokenRequest, ResendTokenRequest } from '@/types/token.types';
 
 const TokenService = {
   resendToken: async (payload: ResendTokenRequest) => {
-    await axiosInstance.post('/token/resend', { params: payload });
-
     try {
+      await axiosInstance.post('/token/resend', { params: payload });
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+
+  validateToken: async (payload: ConfirmTokenRequest) => {
+    try {
+      await axiosInstance.post('/token/confirm', payload);
     } catch (error) {
       throw handleError(error);
     }

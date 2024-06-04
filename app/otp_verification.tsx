@@ -4,9 +4,11 @@ import RNIcon from '@/components/shared/RNIcon';
 import { colors } from '@/theme/colors';
 import { spacing } from '@/theme/spacing';
 import { $sizeStyles } from '@/theme/typography';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
-import React, { useState, useRef, memo, useLayoutEffect, useEffect } from 'react';
-import { TouchableOpacity, StyleSheet, Pressable, FlatList } from 'react-native';
+import { hideEmail } from '@/utils/hideEmail';
+import { useLocalSearchParams, useNavigation, router } from 'expo-router';
+import React, { useState, useRef, memo, useLayoutEffect } from 'react';
+import { TouchableOpacity, StyleSheet, Pressable, FlatList, Alert, ScrollView } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { TextField, TextFieldRef, Text, View } from 'react-native-ui-lib';
 
 interface OtpInputProps {
@@ -15,6 +17,12 @@ interface OtpInputProps {
   onInputChange: (index: number, value: string) => void;
   onFocusInput: (index: number) => void;
   refCallback: (ref: any) => any;
+}
+
+interface SearchParams {
+  [key: string]: string;
+  userId: string;
+  email: string;
 }
 
 const OtpInput = memo((props: OtpInputProps) => {
@@ -53,8 +61,12 @@ const OtpInput = memo((props: OtpInputProps) => {
 
 export default function OtpVerification() {
   const navigation = useNavigation();
+  const { userId, email } = useLocalSearchParams<SearchParams>();
 
-  const { userId, email } = useLocalSearchParams();
+  const [loading, setLoading] = useState({ confirm: false, resend: false });
+  const [otp, setOtp] = useState(['', '', '', '']);
+
+  const inputs = useRef<(TextFieldRef | null)[]>([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -72,8 +84,9 @@ export default function OtpVerification() {
     navigation.goBack();
   };
 
-  const [otp, setOtp] = useState(['', '', '', '']);
-  const inputs = useRef<(TextFieldRef | null)[]>([]);
+  const handleLoading = (key: string, state: boolean) => {
+    setLoading((prevLoading) => ({ ...prevLoading, [key]: state }));
+  };
 
   const handleInputChange = (index: number, value: string) => {
     if (/^[0-9]$/.test(value)) {
@@ -114,22 +127,88 @@ export default function OtpVerification() {
     }
   };
 
+  const clearInputs = () => {
+    setOtp(['', '', '', '']);
+    inputs.current[0]?.focus();
+  };
+
+  const confirmOtp = async () => {
+    handleLoading('confirm', true);
+
+    try {
+      const token = otp.join('');
+      const payload = { userId: parseInt(userId!), token };
+      await TokenService.validateToken(payload);
+      showConfirmation();
+    } catch (error: any) {
+      showError(error.error);
+      clearInputs();
+    }
+
+    handleLoading('confirm', false);
+  };
+
   const resendOtp = async () => {
-    //@ts-ignore
-    const id = parseInt(userId);
+    handleLoading('resend', true);
+
+    const id = parseInt(userId!);
 
     const payload = { userId: id, email: email as string };
 
     await TokenService.resendToken(payload);
+
+    handleLoading('resend', false);
+
+    showResendConfirmation();
+  };
+
+  const showResendConfirmation = () => {
+    Alert.alert(
+      'OTP Resent',
+      'A new OTP has been sent to your email address. Please check your inbox.',
+      [{ text: 'OK' }],
+      { cancelable: false },
+    );
+  };
+
+  const showConfirmation = () => {
+    Alert.alert(
+      'Validation Successful',
+      'Your token has been successfully validated. Welcome!',
+      [{ text: 'OK', onPress: goToLogin }],
+      { cancelable: false },
+    );
+  };
+
+  const showError = (error: string) => {
+    Alert.alert('Invalid Token', error, [{ text: 'OK' }], { cancelable: false });
+  };
+
+  const goToLogin = () => {
+    router.replace('login');
   };
 
   const DIAL_PAD = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'];
 
+  const hiddenEmail = hideEmail(email as string);
+
+  const isConfirmBtnDisabled = otp.join('').length < otp.length;
+
   return (
-    <View style={[{ flex: 1, paddingTop: spacing.spacing24, alignItems: 'center' }]}>
+    <KeyboardAwareScrollView
+      contentContainerStyle={{
+        alignItems: 'center',
+        flexGrow: 1,
+        gap: spacing.spacing24,
+        paddingHorizontal: spacing.spacing24,
+        paddingTop: spacing.spacing24,
+        paddingBottom: 30,
+      }}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={{ gap: spacing.spacing64 }}>
         <Text style={[$sizeStyles.n]}>
-          We Already have sent you verification e-mail to john****@gmail.com, please check it
+          We Already have sent you verification e-mail to {hiddenEmail}, please check it
         </Text>
         <View
           row
@@ -146,13 +225,20 @@ export default function OtpVerification() {
             />
           ))}
         </View>
+
         <View style={{ gap: spacing.spacing16 }}>
-          <RNButton label="Confirm" />
           <RNButton
+            disabled={isConfirmBtnDisabled}
+            onPress={confirmOtp}
+            label="Confirm"
+          />
+          <RNButton
+            loading={loading.resend}
             onPress={resendOtp}
             label="Resend"
             link
           />
+
           <FlatList
             scrollEnabled={false}
             data={DIAL_PAD}
@@ -172,7 +258,7 @@ export default function OtpVerification() {
           />
         </View>
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 }
 
