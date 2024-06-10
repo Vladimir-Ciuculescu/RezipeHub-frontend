@@ -22,4 +22,8 @@ export const colors = {
   brandPrimary: '#042628',
 
   slate900: '#030319',
+
+  redGoogle: '#F06155',
+
+  blueFacebook: '#1E76D6',
 };

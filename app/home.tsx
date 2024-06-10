@@ -1,20 +1,20 @@
-import { Home_food } from '@/assets/illustrations';
-import RNButton from '@/components/shared/RNButton';
-import { colors } from '@/theme/colors';
-import { spacing } from '@/theme/spacing';
-import { $sizeStyles } from '@/theme/typography';
-import { router } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet } from 'react-native';
-import { Text, View } from 'react-native-ui-lib';
+import { Home_food } from "@/assets/illustrations";
+import RNButton from "@/components/shared/RNButton";
+import { colors } from "@/theme/colors";
+import { spacing } from "@/theme/spacing";
+import { $sizeStyles } from "@/theme/typography";
+import { router } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet } from "react-native";
+import { Text, View } from "react-native-ui-lib";
 
 export default function Home() {
   const goToLogin = () => {
-    router.navigate('login');
+    router.navigate("login");
   };
 
   const goToRegister = () => {
-    router.navigate('register');
+    router.navigate("register");
   };
 
   return (
@@ -49,8 +49,8 @@ export default function Home() {
 const styles = StyleSheet.create({
   $containerstyle: {
     backgroundColor: colors.accent200,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     gap: spacing.spacing64,
   },
 
@@ -61,8 +61,8 @@ const styles = StyleSheet.create({
 
   $headerStyle: {
     color: colors.neutral100,
-    fontFamily: 'sofia800',
-    textAlign: 'center',
+    fontFamily: "sofia800",
+    textAlign: "center",
   },
 
   $buttonsContainer: {

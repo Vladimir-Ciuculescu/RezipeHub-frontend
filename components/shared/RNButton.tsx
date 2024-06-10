@@ -1,6 +1,7 @@
 import { colors } from '@/theme/colors';
 import {
   ActivityIndicator,
+  ImageStyle,
   StyleProp,
   StyleSheet,
   TextStyle,
@@ -8,6 +9,9 @@ import {
   ViewStyle,
 } from 'react-native';
 import { Button, ButtonProps } from 'react-native-ui-lib';
+import RNIcon from './RNIcon';
+import { ImageSourceType } from 'react-native-ui-lib/src/components/image';
+import { spacing } from '@/theme/spacing';
 
 interface RNButtonProps extends TouchableOpacityProps {
   link?: boolean;
@@ -15,10 +19,14 @@ interface RNButtonProps extends TouchableOpacityProps {
   labelStyle?: StyleProp<TextStyle>;
   style?: StyleProp<ViewStyle>;
   loading?: boolean;
+  iconSource?:
+    | ImageSourceType
+    | ((iconStyle?: StyleProp<ImageStyle>[] | undefined) => JSX.Element)
+    | null;
 }
 
 export default function RNButton(props: RNButtonProps) {
-  const { link, label, labelStyle, style, loading, ...rest } = props;
+  const { link, label, labelStyle, style, loading, iconSource, ...rest } = props;
 
   const buttonProps: ButtonProps = { ...rest };
 
@@ -31,6 +39,7 @@ export default function RNButton(props: RNButtonProps) {
   return (
     <Button
       {...buttonProps}
+      iconSource={iconSource}
       disabled={buttonProps.disabled || loading}
       link={link || false}
       labelStyle={[styles.$baselabelStyle, link ? styles.$linkLabelStyle : {}, labelStyle]}
@@ -50,6 +59,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 16,
     height: 50,
+    gap: spacing.spacing16,
   },
 
   $containedViewStyle: {

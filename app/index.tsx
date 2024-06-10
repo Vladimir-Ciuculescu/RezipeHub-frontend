@@ -1,17 +1,17 @@
-import { Onboarding_1, Onboarding_2, Onboarding_3 } from '@/assets/illustrations';
-import RNButton from '@/components/shared/RNButton';
-import { ONBOARDED, storage } from '@/storage';
-import { colors } from '@/theme/colors';
-import { spacing } from '@/theme/spacing';
-import { $sizeStyles } from '@/theme/typography';
-import { router } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import React, { useCallback, useRef, useState } from 'react';
-import { Animated, Dimensions, FlatList, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, Text, View } from 'react-native-ui-lib';
+import { Onboarding_1, Onboarding_2, Onboarding_3 } from "@/assets/illustrations";
+import RNButton from "@/components/shared/RNButton";
+import { ONBOARDED, storage } from "@/storage";
+import { colors } from "@/theme/colors";
+import { spacing } from "@/theme/spacing";
+import { $sizeStyles } from "@/theme/typography";
+import { router, useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import React, { useCallback, useRef, useState } from "react";
+import { Animated, Dimensions, FlatList, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Button, Text, View } from "react-native-ui-lib";
 
-const { width, height } = Dimensions.get('screen');
+const { width, height } = Dimensions.get("screen");
 
 interface OnboardingStepProps {
   step: Step;
@@ -44,9 +44,9 @@ interface Step {
 const steps: Step[] = [
   {
     id: 1,
-    title: 'Create and Share Your Recipes',
+    title: "Create and Share Your Recipes",
     description:
-      'Add your recipes with ingredients, instructions, and nutrition info. Share them with the community',
+      "Add your recipes with ingredients, instructions, and nutrition info. Share them with the community",
     image: (
       <Onboarding_1
         height={height / 3}
@@ -56,9 +56,9 @@ const steps: Step[] = [
   },
   {
     id: 2,
-    title: 'Track Nutrition',
+    title: "Track Nutrition",
     description:
-      'Get nutritional details for every recipe. Easily keep track of your diet and health goals',
+      "Get nutritional details for every recipe. Easily keep track of your diet and health goals",
     image: (
       <Onboarding_2
         height={height / 3}
@@ -68,8 +68,8 @@ const steps: Step[] = [
   },
   {
     id: 3,
-    title: 'Discover New Recipes',
-    description: 'Find and save recipes from other users. Enjoy a variety of new dishes to try.',
+    title: "Discover New Recipes",
+    description: "Find and save recipes from other users. Enjoy a variety of new dishes to try.",
     image: (
       <Onboarding_3
         height={height / 3}
@@ -80,6 +80,8 @@ const steps: Step[] = [
 ];
 
 export default function Onboarding() {
+  const router = useRouter();
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollX = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef<FlatList<any>>(null);
@@ -102,7 +104,7 @@ export default function Onboarding() {
 
   const goToHome = () => {
     storage.set(ONBOARDED, true);
-    router.navigate('/home');
+    router.navigate("/home");
   };
 
   const onScroll = () => {
@@ -122,7 +124,7 @@ export default function Onboarding() {
 
   return (
     <SafeAreaView
-      edges={['left', 'right', 'top']}
+      edges={["left", "right", "top"]}
       style={styles.$safeContainerstyle}
     >
       <StatusBar style="dark" />
@@ -159,7 +161,7 @@ export default function Onboarding() {
         />
 
         <RNButton
-          label={currentIndex === 2 ? 'Get started' : 'Next'}
+          label={currentIndex === 2 ? "Get started" : "Next"}
           onPress={goNext}
           labelStyle={styles.$saveBtnLabel}
           style={styles.$saveBtn}
@@ -178,11 +180,11 @@ const styles = StyleSheet.create({
     paddingTop: spacing.spacing32,
   },
   $skipContainerStyle: {
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     paddingRight: spacing.spacing32,
   },
 
-  $skipBtnLabel: { color: colors.greyscale500, fontFamily: 'sofia800' },
+  $skipBtnLabel: { color: colors.greyscale500, fontFamily: "sofia800" },
 
   $listContainer: {
     height: height / 1.3,
@@ -197,24 +199,24 @@ const styles = StyleSheet.create({
   },
 
   $stepContainer: {
-    justifyContent: 'space-evenly',
+    justifyContent: "space-evenly",
     width,
   },
   $stepInfoContainer: {
     gap: spacing.spacing16,
-    width: '100%',
+    width: "100%",
     paddingHorizontal: spacing.spacing24,
   },
 
   $stepTitle: {
     color: colors.slate900,
-    fontFamily: 'sofia800',
-    textAlign: 'center',
+    fontFamily: "sofia800",
+    textAlign: "center",
   },
 
   $stepDescription: {
     color: colors.greyscale300,
-    fontFamily: 'sofia400',
-    textAlign: 'center',
+    fontFamily: "sofia400",
+    textAlign: "center",
   },
 });

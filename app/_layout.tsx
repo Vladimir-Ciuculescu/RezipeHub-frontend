@@ -1,16 +1,19 @@
 if (__DEV__) {
-  require('../ReactotronConfig');
+  require("../ReactotronConfig");
 }
-import React, { useEffect } from 'react';
-import { StyleSheet } from 'react-native';
-import { Stack, useRootNavigationState, useRouter } from 'expo-router';
-import { colors } from '@/theme/colors';
-import { useFonts } from 'expo-font';
-import { fontsToLoad } from '@/theme/typography';
-import { ONBOARDED, storage } from '@/storage';
 
-const Layout = () => {
+import React, { useEffect, useState } from "react";
+import { StyleSheet } from "react-native";
+import { useRootNavigationState, useRouter } from "expo-router";
+import { colors } from "@/theme/colors";
+import { useFonts } from "expo-font";
+import { fontsToLoad } from "@/theme/typography";
+import { ACCESS_TOKEN, ONBOARDED, storage } from "@/storage";
+import { Stack } from "expo-router/stack";
+
+export default function Layout() {
   const rootNavigationState = useRootNavigationState();
+  const [initialRouterName, setInitialRouteName] = useState<string>("");
   const navigatorReady = rootNavigationState?.key != null;
 
   const router = useRouter();
@@ -18,14 +21,27 @@ const Layout = () => {
   let [fontsLoaded] = useFonts(fontsToLoad);
 
   useEffect(() => {
-    if (navigatorReady) {
-      const user = storage.getBoolean(ONBOARDED);
+    const determineRoute = () => {
+      const onboarded = storage.getBoolean(ONBOARDED);
+      const user = storage.getString(ACCESS_TOKEN);
 
-      if (user) {
-        router.replace('home');
+      if (!onboarded) {
+        setInitialRouteName("index");
+      } else if (user) {
+        setInitialRouteName("(tabs)");
+      } else {
+        setInitialRouteName("home");
       }
+    };
+
+    determineRoute();
+  }, []);
+
+  useEffect(() => {
+    if (navigatorReady && initialRouterName) {
+      router.replace(initialRouterName);
     }
-  }, [navigatorReady]);
+  }, [navigatorReady, initialRouterName]);
 
   if (!fontsLoaded) return null;
 
@@ -43,9 +59,9 @@ const Layout = () => {
       <Stack.Screen
         name="login"
         options={{
-          // headerBackVisible: false,
+          headerBackVisible: false,
           headerShadowVisible: false,
-          headerTitleAlign: 'center',
+          headerTitleAlign: "center",
         }}
       />
       <Stack.Screen
@@ -53,7 +69,7 @@ const Layout = () => {
         options={{
           headerBackVisible: false,
           headerShadowVisible: false,
-          headerTitleAlign: 'center',
+          headerTitleAlign: "center",
         }}
       />
       <Stack.Screen
@@ -61,14 +77,12 @@ const Layout = () => {
         options={{
           headerBackVisible: false,
           headerShadowVisible: false,
-          headerTitleAlign: 'center',
+          headerTitleAlign: "center",
         }}
       />
     </Stack>
   );
-};
-
-export default Layout;
+}
 
 const styles = StyleSheet.create({
   $stackContainerStyle: { backgroundColor: colors.neutral100 },
