@@ -10,6 +10,30 @@ import { useFonts } from "expo-font";
 import { fontsToLoad } from "@/theme/typography";
 import { ACCESS_TOKEN, ONBOARDED, storage } from "@/storage";
 import { Stack } from "expo-router/stack";
+import * as SplashScreen from "expo-splash-screen";
+import { ClerkProvider } from "@clerk/clerk-expo";
+
+import * as SecureStore from "expo-secure-store";
+import { Text } from "react-native-ui-lib";
+
+const tokenCache = {
+  getToken(key: string) {
+    try {
+      return SecureStore.getItemAsync(key);
+    } catch (err) {
+      return null;
+    }
+  },
+  saveToken(key: string, value: string) {
+    try {
+      return SecureStore.setItemAsync(key, value);
+    } catch (err) {
+      return null;
+    }
+  },
+};
+
+const clerkKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 export default function Layout() {
   const rootNavigationState = useRootNavigationState();
@@ -46,41 +70,46 @@ export default function Layout() {
   if (!fontsLoaded) return null;
 
   return (
-    <Stack screenOptions={{ contentStyle: styles.$stackContainerStyle }}>
-      <Stack.Screen
-        options={{ headerShown: false }}
-        name="index"
-      />
-      <Stack.Screen
-        name="home"
-        options={{ headerShown: false }}
-      />
+    <ClerkProvider
+      publishableKey={clerkKey!}
+      // tokenCache={tokenCache as any}
+    >
+      <Stack screenOptions={{ contentStyle: styles.$stackContainerStyle }}>
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="index"
+        />
+        <Stack.Screen
+          name="home"
+          options={{ headerShown: false }}
+        />
 
-      <Stack.Screen
-        name="login"
-        options={{
-          headerBackVisible: false,
-          headerShadowVisible: false,
-          headerTitleAlign: "center",
-        }}
-      />
-      <Stack.Screen
-        name="register"
-        options={{
-          headerBackVisible: false,
-          headerShadowVisible: false,
-          headerTitleAlign: "center",
-        }}
-      />
-      <Stack.Screen
-        name="otp_verification"
-        options={{
-          headerBackVisible: false,
-          headerShadowVisible: false,
-          headerTitleAlign: "center",
-        }}
-      />
-    </Stack>
+        <Stack.Screen
+          name="login"
+          options={{
+            headerBackVisible: false,
+            headerShadowVisible: false,
+            headerTitleAlign: "center",
+          }}
+        />
+        <Stack.Screen
+          name="register"
+          options={{
+            headerBackVisible: false,
+            headerShadowVisible: false,
+            headerTitleAlign: "center",
+          }}
+        />
+        <Stack.Screen
+          name="otp_verification"
+          options={{
+            headerBackVisible: false,
+            headerShadowVisible: false,
+            headerTitleAlign: "center",
+          }}
+        />
+      </Stack>
+    </ClerkProvider>
   );
 }
 

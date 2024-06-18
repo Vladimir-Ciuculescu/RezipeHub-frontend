@@ -46,10 +46,13 @@ export default function Register() {
     repeatPassword: "",
   };
 
-  const handleRegister = async (values: RegisterUserRequest, { setErrors }: FormikHelpers<any>) => {
+  const handleRegister = async (
+    payload: RegisterUserRequest,
+    { setErrors }: FormikHelpers<any>,
+  ) => {
     setIsLoading(true);
     try {
-      const user = await AuthService.registerUser(values);
+      const user = await AuthService.registerUser(payload);
 
       showRegisterConfirmation(user.id, user.email);
     } catch (error) {

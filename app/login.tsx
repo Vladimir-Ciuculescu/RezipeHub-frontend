@@ -1,8 +1,8 @@
 import RNButton from "@/components/shared/RNButton";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Alert, Pressable, StyleSheet, View } from "react-native";
-import { Button, Text } from "react-native-ui-lib";
-import { Link, router, useNavigation, useRouter } from "expo-router";
+import { Text } from "react-native-ui-lib";
+import { useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import { $sizeStyles } from "@/theme/typography";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -15,10 +15,24 @@ import { Feather } from "@expo/vector-icons";
 import { colors } from "@/theme/colors";
 import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import AuthService from "@/api/services/auth.service";
-import { LoginUserRequest, User } from "@/types/user.types";
-import { ACCESS_TOKEN, IS_LOGGED_IN, REFRESH_TOKEN, USER, storage } from "@/storage";
+import { LoginUserRequest, SocialLoginUserRequest, User } from "@/types/user.types";
+import { ACCESS_TOKEN, storage } from "@/storage";
+import * as WebBrowser from "expo-web-browser";
+import { useWarmUpBrowser } from "@/hooks/useWarmUpBrowser";
+import { useAuth, useOAuth, useUser } from "@clerk/clerk-expo";
+
+WebBrowser.maybeCompleteAuthSession();
+
+enum Strategy {
+  Google = "oauth_google",
+  Facebook = "oauth_facebook",
+}
 
 export default function Login() {
+  useWarmUpBrowser();
+
+  const { signOut, isSignedIn, userId } = useAuth();
+
   const navigation = useNavigation();
 
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -41,6 +55,35 @@ export default function Login() {
     });
   }, [navigation]);
 
+  useEffect(() => {
+    if (isSignedIn) {
+    }
+  }, [isSignedIn]);
+
+  const { startOAuthFlow: googleFlow } = useOAuth({ strategy: "oauth_google" });
+  const { startOAuthFlow: facebookFlow } = useOAuth({ strategy: "oauth_facebook" });
+
+  const onSelectAuth = async (strategy: Strategy) => {
+    const selectedAuth = {
+      [Strategy.Google]: googleFlow,
+      [Strategy.Facebook]: facebookFlow,
+    }[strategy];
+
+    try {
+      const { createdSessionId, setActive } = await selectedAuth();
+
+      if (createdSessionId) {
+        await setActive!({ session: createdSessionId });
+      }
+    } catch (error) {
+      console.log("Oauth error:", error);
+    }
+  };
+
+  // const handleLogin = async () => {
+
+  // }
+
   const initialValues = {
     email: "",
     password: "",
@@ -54,10 +97,17 @@ export default function Login() {
     storage.set(ACCESS_TOKEN, accessToken);
   };
 
-  const handleLogin = async (values: LoginUserRequest) => {
+  const handleSocialLogin = async (payload: SocialLoginUserRequest) => {
+    try {
+    } catch (error: any) {
+      console.log(error.error);
+    }
+  };
+
+  const handleLogin = async (payload: LoginUserRequest) => {
     setIsLoading(true);
     try {
-      const data = await AuthService.loginUser(values);
+      const data = await AuthService.loginUser(payload);
       storeUser(data.access_token);
       goToApp();
     } catch (error: any) {
@@ -75,6 +125,10 @@ export default function Login() {
     }
 
     setIsLoading(false);
+  };
+
+  const logOut = () => {
+    signOut();
   };
 
   return (
@@ -138,6 +192,11 @@ export default function Login() {
                 label="Forgot password ?"
                 style={{ width: "100%" }}
               />
+              <RNButton
+                onPress={() => logOut()}
+                label="Logout"
+                style={{ width: "100%" }}
+              />
             </>
           )}
         </Formik>
@@ -145,6 +204,7 @@ export default function Login() {
       <View style={styles.$socialProvidersContainerStyle}>
         <Text style={styles.$labelStyle}>or continue with</Text>
         <RNButton
+          onPress={() => onSelectAuth(Strategy.Google)}
           iconSource={() => (
             <AntDesign
               name="google"
@@ -156,6 +216,7 @@ export default function Login() {
           style={{ width: "100%", backgroundColor: colors.redGoogle }}
         />
         <RNButton
+          onPress={() => onSelectAuth(Strategy.Facebook)}
           iconSource={() => (
             <FontAwesome5
               name="facebook"
@@ -163,7 +224,6 @@ export default function Login() {
               color={colors.neutral100}
             />
           )}
-          // onPress={() => handleSubmit()}
           label="Login with Facebook"
           style={{ width: "100%", backgroundColor: colors.blueFacebook }}
         />

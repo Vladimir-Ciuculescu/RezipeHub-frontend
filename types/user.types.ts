@@ -1,3 +1,5 @@
+import { SocialProvider } from "./enums";
+
 export interface User {
   id: number;
   email: string;
@@ -11,6 +13,12 @@ export interface RegisterUserRequest {
   password: string;
   firstName: string;
   lastName: string;
+}
+
+export interface SocialLoginUserRequest {
+  provider: SocialProvider;
+  providerUserId: string;
+  email: string;
 }
 
 export interface LoginUserRequest {
