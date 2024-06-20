@@ -1,4 +1,9 @@
-import { LoginUserRequest, RegisterUserRequest, User } from "@/types/user.types";
+import {
+  LoginUserRequest,
+  RegisterUserRequest,
+  SocialLoginUserRequest,
+  User,
+} from "@/types/user.types";
 import axiosInstance from "..";
 import { handleError } from "../handleError";
 
@@ -15,6 +20,15 @@ const AuthService = {
   loginUser: async (payload: LoginUserRequest) => {
     try {
       const { data } = await axiosInstance.post("/auth/login", payload);
+      return data;
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+
+  socialLoginUser: async (payload: SocialLoginUserRequest) => {
+    try {
+      const { data } = await axiosInstance.post("auth/social-login", payload);
       return data;
     } catch (error) {
       throw handleError(error);

@@ -7,6 +7,11 @@ export interface User {
   lastName: string;
 }
 
+export interface CurrentUser extends User {
+  iat: number;
+  exp: number;
+}
+
 export interface RegisterUserRequest {
   username: string;
   email: string;
@@ -19,6 +24,8 @@ export interface SocialLoginUserRequest {
   provider: SocialProvider;
   providerUserId: string;
   email: string;
+  firstName: string;
+  lastName: string;
 }
 
 export interface LoginUserRequest {

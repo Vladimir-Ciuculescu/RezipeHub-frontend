@@ -1,28 +1,36 @@
+import RNButton from "@/components/shared/RNButton";
+import useUserData from "@/hooks/useUserData";
 import { ACCESS_TOKEN, storage } from "@/storage";
-import { useAuth, useUser } from "@clerk/clerk-expo";
-import React, { useEffect } from "react";
-import { Image } from "react-native";
+import { useAuth } from "@clerk/clerk-expo";
+import { useRouter } from "expo-router";
 import { Text, View } from "react-native-ui-lib";
 
 export default function Tab() {
-  const user = useUser();
-  const { userId } = useAuth();
+  const router = useRouter();
 
-  useEffect(() => {}, [user.user]);
+  const user = useUserData();
+  const { signOut } = useAuth();
 
   const logOut = () => {
     storage.delete(ACCESS_TOKEN);
+    signOut();
+    router.dismissAll();
   };
 
   return (
     <View>
-      {user && user.user && (
-        <Image
-          source={{ uri: user!.user!.imageUrl }}
-          style={{ width: 40, height: 40 }}
-        />
+      {user && (
+        <>
+          <Text>{user.firstName}</Text>
+          <Text>{user.lastName}</Text>
+          <Text>{user.email}</Text>
+        </>
       )}
-      <Text onPress={logOut}>Tabbbb [Home|Settings]</Text>
+
+      <RNButton
+        label="Logout"
+        onPress={logOut}
+      />
     </View>
   );
 }

@@ -1,4 +1,4 @@
-import { colors } from '@/theme/colors';
+import { colors } from "@/theme/colors";
 import {
   ActivityIndicator,
   ImageStyle,
@@ -7,11 +7,11 @@ import {
   TextStyle,
   TouchableOpacityProps,
   ViewStyle,
-} from 'react-native';
-import { Button, ButtonProps } from 'react-native-ui-lib';
-import RNIcon from './RNIcon';
-import { ImageSourceType } from 'react-native-ui-lib/src/components/image';
-import { spacing } from '@/theme/spacing';
+} from "react-native";
+import { Button, ButtonProps } from "react-native-ui-lib";
+import RNIcon from "./RNIcon";
+import { ImageSourceType } from "react-native-ui-lib/src/components/image";
+import { spacing } from "@/theme/spacing";
 
 interface RNButtonProps extends TouchableOpacityProps {
   link?: boolean;
@@ -31,14 +31,15 @@ export default function RNButton(props: RNButtonProps) {
   const buttonProps: ButtonProps = { ...rest };
 
   if (loading) {
-    buttonProps.iconSource = () => <ActivityIndicator />;
+    buttonProps.iconSource = () => (
+      <ActivityIndicator color={link ? colors.brandPrimary : colors.greyscale50} />
+    );
   } else {
     buttonProps.label = label;
   }
 
   return (
     <Button
-      {...buttonProps}
       iconSource={iconSource}
       disabled={buttonProps.disabled || loading}
       link={link || false}
@@ -49,6 +50,7 @@ export default function RNButton(props: RNButtonProps) {
         (loading || buttonProps.disabled) && styles.$loading,
         style,
       ]}
+      {...buttonProps}
     />
   );
 }
@@ -72,8 +74,8 @@ const styles = StyleSheet.create({
 
   $baselabelStyle: {
     fontSize: 16,
-    fontFamily: 'sofia800',
-    fontStyle: 'normal',
+    fontFamily: "sofia800",
+    fontStyle: "normal",
   },
 
   $linkLabelStyle: {

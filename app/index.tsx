@@ -1,10 +1,10 @@
 import { Onboarding_1, Onboarding_2, Onboarding_3 } from "@/assets/illustrations";
 import RNButton from "@/components/shared/RNButton";
-import { ONBOARDED, storage } from "@/storage";
+import { ACCESS_TOKEN, ONBOARDED, storage } from "@/storage";
 import { colors } from "@/theme/colors";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
-import { router, useRouter } from "expo-router";
+import { Redirect, router, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useCallback, useRef, useState } from "react";
 import { Animated, Dimensions, FlatList, StyleSheet } from "react-native";
@@ -121,6 +121,17 @@ export default function Onboarding() {
       { useNativeDriver: false },
     );
   };
+
+  const onboarded = storage.getBoolean(ONBOARDED);
+  const user = storage.getString(ACCESS_TOKEN);
+
+  if (onboarded) {
+    if (user) {
+      return <Redirect href="(tabs)" />;
+    } else {
+      return <Redirect href="home" />;
+    }
+  }
 
   return (
     <SafeAreaView

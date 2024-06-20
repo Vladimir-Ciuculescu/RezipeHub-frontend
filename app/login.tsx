@@ -20,6 +20,7 @@ import { ACCESS_TOKEN, storage } from "@/storage";
 import * as WebBrowser from "expo-web-browser";
 import { useWarmUpBrowser } from "@/hooks/useWarmUpBrowser";
 import { useAuth, useOAuth, useUser } from "@clerk/clerk-expo";
+import { SocialProvider } from "@/types/enums";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -31,17 +32,18 @@ enum Strategy {
 export default function Login() {
   useWarmUpBrowser();
 
-  const { signOut, isSignedIn, userId } = useAuth();
+  const { signOut, isSignedIn, userId, isLoaded, sessionId } = useAuth();
 
+  const { user } = useUser();
   const navigation = useNavigation();
-
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [provider, setProvider] = useState<SocialProvider | null>(null);
   const router = useRouter();
 
-  const goToHome = () => {
-    router.navigate("home");
-  };
+  const { startOAuthFlow: googleFlow } = useOAuth({ strategy: "oauth_google" });
+  const { startOAuthFlow: facebookFlow } = useOAuth({ strategy: "oauth_facebook" });
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -56,12 +58,24 @@ export default function Login() {
   }, [navigation]);
 
   useEffect(() => {
-    if (isSignedIn) {
-    }
-  }, [isSignedIn]);
+    if (isSignedIn && loggedIn) {
+      console.log(userId, isLoaded, sessionId);
+      const { id, primaryEmailAddress, firstName, lastName } = user!;
+      const payload: SocialLoginUserRequest = {
+        provider: provider!,
+        providerUserId: id,
+        email: primaryEmailAddress!.emailAddress,
+        firstName: firstName!,
+        lastName: lastName!,
+      };
 
-  const { startOAuthFlow: googleFlow } = useOAuth({ strategy: "oauth_google" });
-  const { startOAuthFlow: facebookFlow } = useOAuth({ strategy: "oauth_facebook" });
+      handleSocialLogin(payload);
+    }
+  }, [isSignedIn, loggedIn]);
+
+  const goToHome = () => {
+    router.navigate("home");
+  };
 
   const onSelectAuth = async (strategy: Strategy) => {
     const selectedAuth = {
@@ -69,20 +83,25 @@ export default function Login() {
       [Strategy.Facebook]: facebookFlow,
     }[strategy];
 
+    if (strategy === Strategy.Facebook) {
+      setProvider(SocialProvider.FACEBOOK);
+    }
+
+    if (strategy === Strategy.Google) {
+      setProvider(SocialProvider.GOOGLE);
+    }
+
     try {
       const { createdSessionId, setActive } = await selectedAuth();
 
       if (createdSessionId) {
         await setActive!({ session: createdSessionId });
+        setLoggedIn(true);
       }
     } catch (error) {
       console.log("Oauth error:", error);
     }
   };
-
-  // const handleLogin = async () => {
-
-  // }
 
   const initialValues = {
     email: "",
@@ -99,8 +118,21 @@ export default function Login() {
 
   const handleSocialLogin = async (payload: SocialLoginUserRequest) => {
     try {
+      const data = await AuthService.socialLoginUser(payload);
+      storeUser(data.access_token);
+      goToApp();
     } catch (error: any) {
-      console.log(error.error);
+      Alert.alert(
+        "Error",
+        error.error,
+        [
+          {
+            text: "OK",
+            onPress: () => console.log("OK Pressed"),
+          },
+        ],
+        { cancelable: false },
+      );
     }
   };
 
@@ -117,7 +149,6 @@ export default function Login() {
         [
           {
             text: "OK",
-            onPress: () => console.log("OK Pressed"),
           },
         ],
         { cancelable: false },
@@ -182,7 +213,6 @@ export default function Login() {
               <RNButton
                 onPress={() => handleSubmit()}
                 loading={isLoading}
-                // onPress={goToLogin}
                 label="Login"
                 style={{ width: "100%" }}
               />
@@ -190,11 +220,6 @@ export default function Login() {
               <RNButton
                 link
                 label="Forgot password ?"
-                style={{ width: "100%" }}
-              />
-              <RNButton
-                onPress={() => logOut()}
-                label="Logout"
                 style={{ width: "100%" }}
               />
             </>
