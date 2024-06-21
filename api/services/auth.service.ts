@@ -1,6 +1,7 @@
 import {
   LoginUserRequest,
   RegisterUserRequest,
+  ResetPasswordRequest,
   SocialLoginUserRequest,
   User,
 } from "@/types/user.types";
@@ -30,6 +31,14 @@ const AuthService = {
     try {
       const { data } = await axiosInstance.post("auth/social-login", payload);
       return data;
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+
+  resetPassword: async (payload: ResetPasswordRequest) => {
+    try {
+      await axiosInstance.post("auth/reset-password", payload);
     } catch (error) {
       throw handleError(error);
     }

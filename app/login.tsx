@@ -8,7 +8,7 @@ import { $sizeStyles } from "@/theme/typography";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { spacing } from "@/theme/spacing";
 import { StatusBar } from "expo-status-bar";
-import { Formik } from "formik";
+import { Formik, FormikHelpers } from "formik";
 import { loginSchema } from "@/yup/login.schema";
 import RnInput from "@/components/shared/RNInput";
 import { Feather } from "@expo/vector-icons";
@@ -162,10 +162,6 @@ export default function Login() {
     setIsLoading(false);
   };
 
-  const logOut = () => {
-    signOut();
-  };
-
   return (
     <KeyboardAwareScrollView
       extraScrollHeight={40}
@@ -180,7 +176,7 @@ export default function Login() {
           onSubmit={handleLogin}
           validationSchema={loginSchema}
         >
-          {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
+          {({ values, errors, touched, handleChange, handleBlur, handleSubmit, resetForm }) => (
             <>
               <RnInput
                 onChangeText={handleChange("email")}

@@ -32,3 +32,9 @@ export interface LoginUserRequest {
   email: string;
   password: string;
 }
+
+export interface ResetPasswordRequest {
+  email: string;
+  password: string;
+  token: string;
+}

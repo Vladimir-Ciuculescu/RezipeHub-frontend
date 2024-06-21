@@ -1,16 +1,16 @@
-import { colors } from '@/theme/colors';
-import { Text, TextField, View } from 'react-native-ui-lib';
-import { StyleProp, StyleSheet, TextInputProps, ViewStyle } from 'react-native';
-import { useState } from 'react';
-import { $sizeStyles } from '@/theme/typography';
-import { spacing } from '@/theme/spacing';
+import { colors } from "@/theme/colors";
+import { Text, TextField, View } from "react-native-ui-lib";
+import { StyleProp, StyleSheet, TextInputProps, ViewStyle } from "react-native";
+import { useState } from "react";
+import { $sizeStyles } from "@/theme/typography";
+import { spacing } from "@/theme/spacing";
 
 interface RNInputProps extends TextInputProps {
   leftIcon?: React.ReactElement<any, string | React.JSXElementConstructor<any>> | undefined;
   rightIcon?: React.ReactElement<any, string | React.JSXElementConstructor<any>> | undefined;
   containerStyle?: StyleProp<ViewStyle>;
   label?: string;
-  placeholder?: TextInputProps['placeholder'];
+  placeholder?: TextInputProps["placeholder"];
   wrapperStyle?: StyleProp<ViewStyle>;
   flex?: boolean;
   touched?: boolean;
@@ -40,8 +40,7 @@ export default function RnInput(props: RNInputProps) {
         style={[wrapperStyle, styles.$baseWrapperStyle]}
       >
         {label && <Text style={[$sizeStyles.n, styles.$labelStyle]}>{label}</Text>}
-        {/* 
-        // @ts-ignore */}
+        {/*  @ts-ignore */}
         <TextField
           {...rest}
           placeholder={placeholder}
@@ -56,6 +55,7 @@ export default function RnInput(props: RNInputProps) {
             leftIcon && !rightIcon && styles.$hasLeftIconStyle,
             !leftIcon && rightIcon && styles.$hasRightIconStyle,
             rightIcon && leftIcon && styles.$hasBothconsStyle,
+            // !leftIcon && !rightIcon && styles.$flexStyle,
             styles.$baseStyle,
           ]}
           leadingAccessory={leftIcon}
@@ -78,17 +78,22 @@ const styles = StyleSheet.create({
 
   $baseContainerstyle: {
     borderRadius: 16,
-    borderStyle: 'solid',
+    borderStyle: "solid",
     height: 54,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: 16,
-    borderColor: 'blue',
+    borderColor: "blue",
     borderWidth: 2.5,
   },
 
-  $baseStyle: { height: 54, flex: 1 },
+  $baseStyle: {
+    height: 54,
+    //flex:1
+  },
 
-  $labelStyle: { fontFamily: 'sofia800', color: colors.greyscale500 },
+  $flexStyle: {},
+
+  $labelStyle: { fontFamily: "sofia800", color: colors.greyscale500 },
 
   $focusedStyle: {
     borderWidth: 2.5,
@@ -100,7 +105,7 @@ const styles = StyleSheet.create({
   },
 
   $trailingAccessoryContainer: {
-    position: 'absolute',
+    position: "absolute",
     right: 0,
   },
 

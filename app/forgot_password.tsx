@@ -8,11 +8,12 @@ import { SendResetPasswordTokenRequesst } from "@/types/token.types";
 import { forgotPasswordSchema } from "@/yup/forgot-password.schema";
 import { useNavigation } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Formik } from "formik";
+import { Formik, FormikHelpers } from "formik";
 import { useLayoutEffect, useState } from "react";
 import { Alert, Pressable, StyleSheet } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Text, View } from "react-native-ui-lib";
+import { router } from "expo-router";
 
 export default function ForgotPassword() {
   const navigation = useNavigation();
@@ -38,21 +39,34 @@ export default function ForgotPassword() {
     navigation.goBack();
   };
 
-  const handleSubmit = async (values: SendResetPasswordTokenRequesst) => {
+  const goToResetPassword = (email: string) => {
+    router.navigate({ pathname: "reset_password", params: { email } });
+  };
+
+  const handleSubmit = async (
+    values: SendResetPasswordTokenRequesst,
+    { resetForm }: FormikHelpers<any>,
+  ) => {
     setLoading(true);
 
     const { email } = values;
     try {
       await TokenService.sendResetPasswordToken(email);
-      showConfirmationMessage();
-      setLoading(false);
+      showConfirmationMessage(email);
+      resetForm();
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   };
 
-  const showConfirmationMessage = () => {
-    Alert.alert("Email sent", "Please check your inbox.", [{ text: "OK" }], { cancelable: false });
+  const showConfirmationMessage = (email: string) => {
+    Alert.alert(
+      "Email sent",
+      "Please check your inbox.",
+      [{ text: "OK", onPress: () => goToResetPassword(email) }],
+      { cancelable: false },
+    );
   };
 
   return (
