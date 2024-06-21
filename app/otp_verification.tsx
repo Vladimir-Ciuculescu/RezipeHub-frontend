@@ -1,15 +1,16 @@
-import TokenService from '@/api/services/token.service';
-import RNButton from '@/components/shared/RNButton';
-import RNIcon from '@/components/shared/RNIcon';
-import { colors } from '@/theme/colors';
-import { spacing } from '@/theme/spacing';
-import { $sizeStyles } from '@/theme/typography';
-import { hideEmail } from '@/utils/hideEmail';
-import { useLocalSearchParams, useNavigation, router } from 'expo-router';
-import React, { useState, useRef, memo, useLayoutEffect } from 'react';
-import { TouchableOpacity, StyleSheet, Pressable, FlatList, Alert, ScrollView } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { TextField, TextFieldRef, Text, View } from 'react-native-ui-lib';
+import TokenService from "@/api/services/token.service";
+import RNButton from "@/components/shared/RNButton";
+import RNIcon from "@/components/shared/RNIcon";
+import { colors } from "@/theme/colors";
+import { spacing } from "@/theme/spacing";
+import { $sizeStyles } from "@/theme/typography";
+import { hideEmail } from "@/utils/hideEmail";
+import { useLocalSearchParams, useNavigation, router } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import React, { useState, useRef, memo, useLayoutEffect } from "react";
+import { TouchableOpacity, StyleSheet, Pressable, FlatList, Alert, ScrollView } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { TextField, TextFieldRef, Text, View } from "react-native-ui-lib";
 
 interface OtpInputProps {
   index: number;
@@ -43,11 +44,11 @@ const OtpInput = memo((props: OtpInputProps) => {
     <TextField
       ref={refCallback}
       value={char}
-      style={[{ textAlign: 'center' }, $sizeStyles.h1]}
+      style={[{ textAlign: "center" }, $sizeStyles.h1]}
       cursorColor={colors.brandPrimary}
       containerStyle={[
         styles.$otpInput,
-        focused ? { borderColor: colors.brandPrimary } : { borderColor: 'transparent' },
+        focused ? { borderColor: colors.brandPrimary } : { borderColor: "transparent" },
       ]}
       maxLength={1}
       keyboardType="numeric"
@@ -64,7 +65,7 @@ export default function OtpVerification() {
   const { userId, email } = useLocalSearchParams<SearchParams>();
 
   const [loading, setLoading] = useState({ confirm: false, resend: false });
-  const [otp, setOtp] = useState(['', '', '', '']);
+  const [otp, setOtp] = useState(["", "", "", ""]);
 
   const inputs = useRef<(TextFieldRef | null)[]>([]);
 
@@ -101,55 +102,55 @@ export default function OtpVerification() {
 
   const handleFocus = (index: number) => {
     const newOtp = [...otp];
-    newOtp[index] = '';
+    newOtp[index] = "";
     setOtp(newOtp);
   };
 
   const handleBackButtonPress = () => {
-    const firstEmptyIndex = otp.findIndex((char) => char === '');
+    const firstEmptyIndex = otp.findIndex((char) => char === "");
     if (firstEmptyIndex === -1 || firstEmptyIndex === 0) {
       const newOtp = [...otp];
-      newOtp[otp.length - 1] = '';
+      newOtp[otp.length - 1] = "";
       setOtp(newOtp);
       inputs.current[otp.length - 1]!.focus();
     } else {
       const newOtp = [...otp];
-      newOtp[firstEmptyIndex - 1] = '';
+      newOtp[firstEmptyIndex - 1] = "";
       setOtp(newOtp);
       inputs.current[firstEmptyIndex - 1]!.focus();
     }
   };
 
   const handleDialPress = (value: string) => {
-    const firstEmptyIndex = otp.findIndex((char) => char === '');
+    const firstEmptyIndex = otp.findIndex((char) => char === "");
     if (firstEmptyIndex !== -1) {
       handleInputChange(firstEmptyIndex, value);
     }
   };
 
   const clearInputs = () => {
-    setOtp(['', '', '', '']);
+    setOtp(["", "", "", ""]);
     inputs.current[0]?.focus();
   };
 
   const confirmOtp = async () => {
-    handleLoading('confirm', true);
+    handleLoading("confirm", true);
 
     try {
-      const token = otp.join('');
+      const token = otp.join("");
       const payload = { userId: parseInt(userId!), token };
       await TokenService.validateToken(payload);
-      showConfirmation();
+      showConfirmationMessage();
     } catch (error: any) {
       showError(error.error);
       clearInputs();
     }
 
-    handleLoading('confirm', false);
+    handleLoading("confirm", false);
   };
 
   const resendOtp = async () => {
-    handleLoading('resend', true);
+    handleLoading("resend", true);
 
     const id = parseInt(userId!);
 
@@ -157,47 +158,47 @@ export default function OtpVerification() {
 
     await TokenService.resendToken(payload);
 
-    handleLoading('resend', false);
+    handleLoading("resend", false);
 
-    showResendConfirmation();
+    showResendConfirmationMessage();
   };
 
-  const showResendConfirmation = () => {
+  const showResendConfirmationMessage = () => {
     Alert.alert(
-      'OTP Resent',
-      'A new OTP has been sent to your email address. Please check your inbox.',
-      [{ text: 'OK' }],
+      "OTP Resent",
+      "A new OTP has been sent to your email address. Please check your inbox.",
+      [{ text: "OK" }],
       { cancelable: false },
     );
   };
 
-  const showConfirmation = () => {
+  const showConfirmationMessage = () => {
     Alert.alert(
-      'Validation Successful',
-      'Your token has been successfully validated. Welcome!',
-      [{ text: 'OK', onPress: goToLogin }],
+      "Validation Successful",
+      "Your token has been successfully validated. Welcome!",
+      [{ text: "OK", onPress: goToLogin }],
       { cancelable: false },
     );
   };
 
   const showError = (error: string) => {
-    Alert.alert('Invalid Token', error, [{ text: 'OK' }], { cancelable: false });
+    Alert.alert("Invalid Token", error, [{ text: "OK" }], { cancelable: false });
   };
 
   const goToLogin = () => {
-    router.replace('login');
+    router.replace("login");
   };
 
-  const DIAL_PAD = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'];
+  const DIAL_PAD = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "del"];
 
   const hiddenEmail = hideEmail(email as string);
 
-  const isConfirmBtnDisabled = otp.join('').length < otp.length;
+  const isConfirmBtnDisabled = otp.join("").length < otp.length;
 
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={{
-        alignItems: 'center',
+        alignItems: "center",
         flexGrow: 1,
         gap: spacing.spacing24,
         paddingHorizontal: spacing.spacing24,
@@ -206,13 +207,14 @@ export default function OtpVerification() {
       }}
       showsVerticalScrollIndicator={false}
     >
+      <StatusBar style="dark" />
       <View style={{ gap: spacing.spacing64 }}>
         <Text style={[$sizeStyles.n]}>
           We Already have sent you verification e-mail to {hiddenEmail}, please check it
         </Text>
         <View
           row
-          style={{ justifyContent: 'space-between' }}
+          style={{ justifyContent: "space-between" }}
         >
           {otp.map((char, index) => (
             <OtpInput
@@ -244,10 +246,10 @@ export default function OtpVerification() {
             data={DIAL_PAD}
             renderItem={({ item }) => (
               <TouchableOpacity
-                onPress={() => (item === 'del' ? handleBackButtonPress() : handleDialPress(item))}
-                style={{ flex: 1, height: 80, justifyContent: 'center', alignItems: 'center' }}
+                onPress={() => (item === "del" ? handleBackButtonPress() : handleDialPress(item))}
+                style={{ flex: 1, height: 80, justifyContent: "center", alignItems: "center" }}
               >
-                {item === 'del' ? (
+                {item === "del" ? (
                   <RNIcon name="delete" />
                 ) : (
                   <Text style={[$sizeStyles.h2]}> {item}</Text>
@@ -267,9 +269,9 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 16,
-    justifyContent: 'center',
+    justifyContent: "center",
     backgroundColor: colors.greyscale150,
     borderWidth: 2,
-    borderStyle: 'solid',
+    borderStyle: "solid",
   },
 });

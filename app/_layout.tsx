@@ -72,12 +72,24 @@ export default function Layout() {
           }}
         />
         <Stack.Screen
+          name="forgot_password"
+          options={{
+            headerBackVisible: false,
+            headerShadowVisible: false,
+            headerTitleAlign: "center",
+          }}
+        />
+        <Stack.Screen
           name="otp_verification"
           options={{
             headerBackVisible: false,
             headerShadowVisible: false,
             headerTitleAlign: "center",
           }}
+        />
+        <Stack.Screen
+          name="(tabs)"
+          options={{ headerShown: false }}
         />
       </Stack>
     </ClerkProvider>

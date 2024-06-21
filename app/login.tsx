@@ -77,6 +77,10 @@ export default function Login() {
     router.navigate("home");
   };
 
+  const goToForgotPassword = () => {
+    router.navigate("forgot_password");
+  };
+
   const onSelectAuth = async (strategy: Strategy) => {
     const selectedAuth = {
       [Strategy.Google]: googleFlow,
@@ -218,6 +222,7 @@ export default function Login() {
               />
 
               <RNButton
+                onPress={goToForgotPassword}
                 link
                 label="Forgot password ?"
                 style={{ width: "100%" }}
