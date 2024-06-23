@@ -1,11 +1,12 @@
 import RNButton from "@/components/shared/RNButton";
 import useUserData from "@/hooks/useUserData";
 import { ACCESS_TOKEN, storage } from "@/storage";
+import { colors } from "@/theme/colors";
 import { useAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { Text, View } from "react-native-ui-lib";
 
-export default function Tab() {
+export default function Home() {
   const router = useRouter();
 
   const user = useUserData();
@@ -18,7 +19,7 @@ export default function Tab() {
   };
 
   return (
-    <View>
+    <View style={{ backgroundColor: colors.greyscale150, flex: 1 }}>
       {user && (
         <>
           <Text>{user.firstName}</Text>
