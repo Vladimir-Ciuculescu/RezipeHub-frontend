@@ -2,7 +2,7 @@ import RNIcon from "@/components/shared/RNIcon";
 import { colors } from "@/theme/colors";
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { Platform, StyleSheet, TouchableOpacity } from "react-native";
 
 export default function TabLayout() {
   return (
@@ -71,9 +71,12 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   $tabBarStyle: {
-    borderRadius: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+
     position: "absolute",
-    height: 83,
+    height: Platform.OS === "ios" ? 83 : 63,
+    paddingTop: Platform.OS === "ios" ? 10 : 0,
   },
 
   $addRecipeBtnStyle: {
