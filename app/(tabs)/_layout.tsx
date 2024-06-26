@@ -1,13 +1,19 @@
 import RNIcon from "@/components/shared/RNIcon";
 import { colors } from "@/theme/colors";
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Platform, StyleSheet, TouchableOpacity } from "react-native";
-
+import { Platform, Pressable, StyleSheet } from "react-native";
 export default function TabLayout() {
+  const router = useRouter();
+
+  const openAddRecipeModal = () => {
+    router.navigate("recipe_title");
+  };
+
   return (
     <>
       <StatusBar style="dark" />
+
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: "blue",
@@ -34,12 +40,15 @@ export default function TabLayout() {
           options={{
             headerShown: false,
             tabBarIcon: () => (
-              <TouchableOpacity style={styles.$addRecipeBtnStyle}>
+              <Pressable
+                onPress={openAddRecipeModal}
+                style={styles.$addRecipeBtnStyle}
+              >
                 <RNIcon
                   name="chef"
                   color={colors.greyscale50}
                 />
-              </TouchableOpacity>
+              </Pressable>
             ),
           }}
         />

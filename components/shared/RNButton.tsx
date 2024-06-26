@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderRadius: 16,
-    height: 50,
+    //height: 54,
     gap: spacing.spacing16,
   },
 

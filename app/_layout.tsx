@@ -11,6 +11,7 @@ import { Stack } from "expo-router/stack";
 import { ClerkProvider } from "@clerk/clerk-expo";
 
 import * as SecureStore from "expo-secure-store";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 
 const tokenCache = {
   getToken(key: string) {
@@ -41,67 +42,77 @@ export default function Layout() {
   if (!fontsLoaded) return null;
 
   return (
-    <ClerkProvider
-      publishableKey={clerkKey!}
-      // tokenCache={tokenCache as any}
-    >
-      <Stack screenOptions={{ contentStyle: styles.$stackContainerStyle }}>
-        <Stack.Screen
-          options={{ headerShown: false }}
-          name="index"
-        />
-        <Stack.Screen
-          name="home"
-          options={{ headerShown: false }}
-        />
+    <ActionSheetProvider>
+      <ClerkProvider
+        publishableKey={clerkKey!}
+        // tokenCache={tokenCache as any}
+      >
+        <Stack
+          screenOptions={{
+            contentStyle: styles.$stackContainerStyle,
+          }}
+        >
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="index"
+          />
+          <Stack.Screen
+            name="home"
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name="login"
-          options={{
-            headerBackVisible: false,
-            headerShadowVisible: false,
-            headerTitleAlign: "center",
-          }}
-        />
-        <Stack.Screen
-          name="register"
-          options={{
-            headerBackVisible: false,
-            headerShadowVisible: false,
-            headerTitleAlign: "center",
-          }}
-        />
-        <Stack.Screen
-          name="forgot_password"
-          options={{
-            headerBackVisible: false,
-            headerShadowVisible: false,
-            headerTitleAlign: "center",
-          }}
-        />
-        <Stack.Screen
-          name="reset_password"
-          options={{
-            headerBackVisible: false,
-            headerShadowVisible: false,
-            headerTitleAlign: "center",
-          }}
-        />
-        <Stack.Screen
-          name="otp_verification"
-          options={{
-            headerBackVisible: false,
-            headerShadowVisible: false,
-            headerTitleAlign: "center",
-          }}
-        />
+          <Stack.Screen
+            name="login"
+            options={{
+              headerBackVisible: false,
+              headerShadowVisible: false,
+              headerTitleAlign: "center",
+            }}
+          />
+          <Stack.Screen
+            name="register"
+            options={{
+              headerBackVisible: false,
+              headerShadowVisible: false,
+              headerTitleAlign: "center",
+            }}
+          />
+          <Stack.Screen
+            name="forgot_password"
+            options={{
+              headerBackVisible: false,
+              headerShadowVisible: false,
+              headerTitleAlign: "center",
+            }}
+          />
+          <Stack.Screen
+            name="reset_password"
+            options={{
+              headerBackVisible: false,
+              headerShadowVisible: false,
+              headerTitleAlign: "center",
+            }}
+          />
+          <Stack.Screen
+            name="otp_verification"
+            options={{
+              headerBackVisible: false,
+              headerShadowVisible: false,
+              headerTitleAlign: "center",
+            }}
+          />
 
-        <Stack.Screen
-          name="(tabs)"
-          options={{ headerShown: false }}
-        />
-      </Stack>
-    </ClerkProvider>
+          <Stack.Screen
+            options={{ presentation: "fullScreenModal" }}
+            name="recipe_title"
+          />
+          <Stack.Screen
+            name="(tabs)"
+            options={{ headerShown: false }}
+          />
+        </Stack>
+      </ClerkProvider>
+    </ActionSheetProvider>
   );
 }
 

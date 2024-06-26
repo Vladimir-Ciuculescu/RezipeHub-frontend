@@ -2,7 +2,8 @@ import Email from "./email.svg";
 import Eye from "./eye.svg";
 import Profile from "./profile.svg";
 import Profile_focused from "./profile_focused.svg";
-import ArrowLeft from "./arrow_left.svg";
+import Arrow_left from "./arrow_left.svg";
+import Arrow_right from "./arrow_right.svg";
 import Lock from "./lock.svg";
 import Delete from "./delete.svg";
 import Home from "./home.svg";
@@ -18,7 +19,8 @@ export {
   Eye,
   Profile,
   Profile_focused,
-  ArrowLeft,
+  Arrow_left,
+  Arrow_right,
   Lock,
   Delete,
   Home,

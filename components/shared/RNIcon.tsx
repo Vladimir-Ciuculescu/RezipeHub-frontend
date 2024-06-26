@@ -1,5 +1,4 @@
 import {
-  ArrowLeft,
   Delete,
   Email,
   Eye,
@@ -13,6 +12,8 @@ import {
   Search,
   Search_focused,
   Chef,
+  Arrow_left,
+  Arrow_right,
 } from "@/assets/icons";
 import { colors } from "@/theme/colors";
 import { forwardRef } from "react";
@@ -24,7 +25,8 @@ enum Icons {
   email = "email",
   profile = "profile",
   profile_focused = "profile_focused",
-  arrowLeft = "arrowLeft",
+  arrow_left = "arrow_left",
+  arrow_right = "arrow_right",
   lock = "lock",
   delete = "delete",
   home = "home",
@@ -45,7 +47,8 @@ const icons: IconMap = {
   email: Email,
   profile: Profile,
   profile_focused: Profile_focused,
-  arrowLeft: ArrowLeft,
+  arrow_left: Arrow_left,
+  arrow_right: Arrow_right,
   lock: Lock,
   delete: Delete,
   home: Home,

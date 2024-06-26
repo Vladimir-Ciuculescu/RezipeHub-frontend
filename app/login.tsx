@@ -49,7 +49,7 @@ export default function Login() {
     navigation.setOptions({
       headerLeft: () => (
         <Pressable onPress={goToHome}>
-          <RNIcon name="arrowLeft" />
+          <RNIcon name="arrow_left" />
         </Pressable>
       ),
 

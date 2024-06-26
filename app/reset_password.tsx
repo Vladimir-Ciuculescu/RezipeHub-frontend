@@ -27,7 +27,7 @@ export default function ResetPassword() {
     navigation.setOptions({
       headerLeft: () => (
         <Pressable onPress={goBack}>
-          <RNIcon name="arrowLeft" />
+          <RNIcon name="arrow_left" />
         </Pressable>
       ),
 
