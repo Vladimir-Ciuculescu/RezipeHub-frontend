@@ -17,8 +17,8 @@ import {
   SofiaSans_700Bold_Italic as sofia700_italic,
   SofiaSans_800ExtraBold_Italic as sofia800_italic,
   SofiaSans_900Black_Italic as sofia900_talic,
-} from '@expo-google-fonts/sofia-sans';
-import { TextStyle } from 'react-native';
+} from "@expo-google-fonts/sofia-sans";
+import { TextStyle } from "react-native";
 
 export const fontsToLoad = {
   //Classic font
@@ -45,33 +45,33 @@ export const fontsToLoad = {
 };
 
 export const fonts = {
-  sofia100: 'sofia100',
-  sofia200: 'sofia200',
-  sofia300: 'sofia300',
-  sofia400: 'sofia400',
-  sofia500: 'sofia500',
-  sofia600: 'sofia600',
-  sofia700: 'sofia700',
-  sofia800: 'sofia800',
-  sofia900: 'sofia900',
-  sofia100_italic: 'sofia100_italic',
-  sofia200_italic: 'sofia200_italic',
-  sofia300_italic: 'sofia300_italic',
-  sofia400_italic: 'sofia400_italic',
-  sofia500_italic: 'sofia500_italic',
-  sofia600_italic: 'sofia600_italic',
-  sofia700_italic: 'sofia700_italic',
-  sofia800_italic: 'sofia800_italic',
-  sofia900_italic: 'sofia900_italic',
+  sofia100: "sofia100",
+  sofia200: "sofia200",
+  sofia300: "sofia300",
+  sofia400: "sofia400",
+  sofia500: "sofia500",
+  sofia600: "sofia600",
+  sofia700: "sofia700",
+  sofia800: "sofia800",
+  sofia900: "sofia900",
+  sofia100_italic: "sofia100_italic",
+  sofia200_italic: "sofia200_italic",
+  sofia300_italic: "sofia300_italic",
+  sofia400_italic: "sofia400_italic",
+  sofia500_italic: "sofia500_italic",
+  sofia600_italic: "sofia600_italic",
+  sofia700_italic: "sofia700_italic",
+  sofia800_italic: "sofia800_italic",
+  sofia900_italic: "sofia900_italic",
 };
 
 export const $sizeStyles = {
   xs: { fontSize: 12, lineHeight: 18 } satisfies TextStyle,
   s: { fontSize: 14, lineHeight: 20 } satisfies TextStyle,
-  n: { fontSize: 16, lineHeight: 22 } satisfies TextStyle,
-  l: { fontSize: 18, lineHeight: 26 } satisfies TextStyle,
-  xl: { fontSize: 20, lineHeight: 30, fontFamily: 'sofia800' } satisfies TextStyle,
-  h3: { fontSize: 24, lineHeight: 32, fontFamily: 'sofia800' } satisfies TextStyle,
-  h2: { fontSize: 28, lineHeight: 36, fontFamily: 'sofia800' } satisfies TextStyle,
-  h1: { fontSize: 32, lineHeight: 42, fontFamily: 'sofia800' } satisfies TextStyle,
+  n: { fontSize: 16, lineHeight: 22, fontFamily: "sofia400" } satisfies TextStyle,
+  l: { fontSize: 18, lineHeight: 26, fontFamily: "sofia800" } satisfies TextStyle,
+  xl: { fontSize: 20, lineHeight: 30, fontFamily: "sofia800" } satisfies TextStyle,
+  h3: { fontSize: 24, lineHeight: 32, fontFamily: "sofia800" } satisfies TextStyle,
+  h2: { fontSize: 28, lineHeight: 36, fontFamily: "sofia800" } satisfies TextStyle,
+  h1: { fontSize: 32, lineHeight: 42, fontFamily: "sofia800" } satisfies TextStyle,
 };

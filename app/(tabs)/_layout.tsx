@@ -7,7 +7,7 @@ export default function TabLayout() {
   const router = useRouter();
 
   const openAddRecipeModal = () => {
-    router.navigate("recipe_title");
+    router.navigate("recipe_modal_stack");
   };
 
   return (
@@ -32,7 +32,12 @@ export default function TabLayout() {
           name="search"
           options={{
             headerShown: false,
-            tabBarIcon: ({ focused }) => <RNIcon name={focused ? "search_focused" : "search"} />,
+            tabBarIcon: ({ focused }) => (
+              <RNIcon
+                color={colors.greyscale300}
+                name={focused ? "search_focused" : "search"}
+              />
+            ),
           }}
         />
         <Tabs.Screen

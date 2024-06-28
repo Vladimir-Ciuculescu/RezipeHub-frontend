@@ -103,8 +103,8 @@ export default function Layout() {
           />
 
           <Stack.Screen
-            options={{ presentation: "fullScreenModal" }}
-            name="recipe_title"
+            name="recipe_modal_stack"
+            options={{ presentation: "fullScreenModal", headerShown: false }}
           />
           <Stack.Screen
             name="(tabs)"

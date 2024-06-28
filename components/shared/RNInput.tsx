@@ -58,6 +58,7 @@ export default function RnInput(props: RNInputProps) {
             // !leftIcon && !rightIcon && styles.$flexStyle,
             styles.$baseStyle,
           ]}
+          labelStyle={{ fontFamily: "sofia800", color: "red" }}
           leadingAccessory={leftIcon}
           trailingAccessory={<View style={styles.$trailingAccessoryContainer}>{rightIcon}</View>}
         />
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
   $baseContainerstyle: {
     borderRadius: 16,
     borderStyle: "solid",
-    height: 54,
+    // height: 54,
     justifyContent: "center",
     paddingHorizontal: 16,
     borderColor: "blue",
@@ -88,6 +89,8 @@ const styles = StyleSheet.create({
 
   $baseStyle: {
     height: 54,
+    ...$sizeStyles.n,
+
     //flex:1
   },
 

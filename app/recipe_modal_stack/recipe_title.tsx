@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, StyleSheet, Pressable, Alert, Image } from "react-native";
+import { Text, StyleSheet, Pressable, Alert, Image } from "react-native";
 import React, { useLayoutEffect, useRef } from "react";
 import { useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
@@ -16,7 +16,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 
-function Modal() {
+function RecipeTitle() {
   const { showActionSheetWithOptions } = useActionSheet();
 
   const router = useRouter();
@@ -51,9 +51,9 @@ function Modal() {
         </Pressable>
       ),
       headerRight: () => (
-        <TouchableOpacity onPress={goNext}>
+        <Pressable onPress={goNext}>
           <RNIcon name="arrow_right" />
-        </TouchableOpacity>
+        </Pressable>
       ),
 
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Add Recipe</Text>,
@@ -101,6 +101,8 @@ function Modal() {
         showEmptyServingsMessage();
         return;
       }
+
+      router.navigate("recipe_modal_stack/recipe_items");
     }
   };
 
@@ -186,12 +188,12 @@ function Modal() {
                 onPress={openGallery}
                 label="Add photo"
                 style={styles.$addPhotoBtnStye}
-                labelStyle={[{ color: colors.accent200 }, $sizeStyles.l]}
+                labelStyle={[{ color: colors.greyscale50 }, $sizeStyles.l]}
                 iconSource={() => (
                   <FontAwesome
                     name="photo"
                     size={20}
-                    color={colors.accent200}
+                    color={colors.greyscale50}
                   />
                 )}
               />
@@ -220,7 +222,7 @@ function Modal() {
   );
 }
 
-export default Modal;
+export default RecipeTitle;
 
 const styles = StyleSheet.create({
   $containerStyle: {
@@ -233,7 +235,7 @@ const styles = StyleSheet.create({
   },
 
   $addPhotoBtnStye: {
-    backgroundColor: "transparent",
+    backgroundColor: colors.accent200,
     width: "100%",
     borderColor: colors.accent200,
     borderWidth: 2,
