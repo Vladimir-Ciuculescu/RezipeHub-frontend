@@ -15,6 +15,7 @@ interface RNInputProps extends TextInputProps {
   flex?: boolean;
   touched?: boolean;
   error?: string;
+  value: string | undefined;
 }
 
 export default function RnInput(props: RNInputProps) {
@@ -29,6 +30,7 @@ export default function RnInput(props: RNInputProps) {
       flex,
       touched,
       error,
+      value,
       ...rest
     } = props;
 
@@ -43,6 +45,7 @@ export default function RnInput(props: RNInputProps) {
         {/*  @ts-ignore */}
         <TextField
           {...rest}
+          value={value}
           placeholder={placeholder}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
@@ -90,7 +93,6 @@ const styles = StyleSheet.create({
   $baseStyle: {
     height: 54,
     ...$sizeStyles.n,
-
     //flex:1
   },
 

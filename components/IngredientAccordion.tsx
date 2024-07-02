@@ -1,5 +1,5 @@
 import { LayoutChangeEvent, Pressable, StyleSheet, Text, View } from "react-native";
-import React, { FC, useRef } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import Animated, {
   ReduceMotion,
   useAnimatedStyle,
@@ -12,6 +12,7 @@ import { useRouter } from "expo-router";
 import { IngredientResponse, Nutrient } from "@/types/ingredient";
 import { $sizeStyles } from "@/theme/typography";
 import { colors } from "@/theme/colors";
+import { formatFloatingValue } from "@/utils/formatFloatingValue";
 
 const COLLAPSED_HEIGHT = 50;
 
@@ -25,7 +26,7 @@ const baseSpringConfig = {
 
 const getSpringConfig = (isExpanding: boolean) => ({
   ...baseSpringConfig,
-  damping: isExpanding ? 10 : 15,
+  damping: isExpanding ? 17 : 25,
   stiffness: isExpanding ? 100 : 120,
 });
 
@@ -51,6 +52,15 @@ const IngredientAccordion: FC<IngredientAccordionProps> = ({ ingredient }) => {
     return { height: height.value };
   });
 
+  useEffect(() => {
+    // fullHeight.current = 0;
+    // progress.value = 0;
+    height.value = COLLAPSED_HEIGHT;
+    iconRotation.value = "0deg";
+
+    // height.value = COLLAPSED_HEIGHT;
+  }, [ingredient]);
+
   const handleAccordionPress = () => {
     const isExpanding = progress.value === 0;
     progress.value = withSpring(isExpanding ? 1 : 0, getSpringConfig(isExpanding));
@@ -69,7 +79,10 @@ const IngredientAccordion: FC<IngredientAccordionProps> = ({ ingredient }) => {
   };
 
   const gotToConfirmIngredient = () => {
-    router.navigate("recipe_modal_stack/recipe_confirm_ingredient");
+    router.navigate({
+      pathname: "recipe_modal_stack/recipe_confirm_ingredient",
+      params: { ingredient: JSON.stringify(ingredient) },
+    });
   };
 
   const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -94,7 +107,13 @@ const IngredientAccordion: FC<IngredientAccordionProps> = ({ ingredient }) => {
                   color="black"
                 />
               </AnimatedPressable>
-              <Text style={styles.title}>{ingredient.food.label}</Text>
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={styles.title}
+              >
+                {ingredient.food.label}
+              </Text>
             </View>
             <AntDesign
               name="right"
@@ -105,12 +124,13 @@ const IngredientAccordion: FC<IngredientAccordionProps> = ({ ingredient }) => {
 
           {nutrientLabels.map(({ key, label }) => {
             const value = ingredient.food.nutrients[key];
-            return value ? (
+            return value || value === 0 ? (
               <Text
                 key={key}
                 style={styles.$nutrientInfoStyle}
               >
-                {label}: <Text style={styles.$nutrientValueStyle}>{value}</Text>
+                {label}:{" "}
+                <Text style={styles.$nutrientValueStyle}>{formatFloatingValue(value)}</Text>
               </Text>
             ) : null;
           })}
@@ -148,6 +168,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.spacing12,
+    flex: 1,
   },
 
   $pressableContainerStyle: {
@@ -164,6 +185,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...$sizeStyles.l,
+    flex: 1,
   },
   $nutrientInfoStyle: {
     ...$sizeStyles.n,

@@ -13,7 +13,7 @@ interface Food {
   nutrients: Nutrient;
 }
 
-interface Measure {
+export interface Measure {
   uri: string;
   //Unit measure
   label: string;
@@ -79,4 +79,25 @@ export interface Nutrient {
   WATER?: number;
   //Zinc
   ZN?: number;
+}
+
+type NutrientSymbol = {
+  [K in keyof Nutrient]: NutrientDetail;
+};
+
+export interface NutrientDetail {
+  label: "string";
+  quantity: number;
+  unit: string;
+}
+
+export interface NutrientsRequestPayload {
+  foodId: string;
+  measureURI: string;
+  quantity: number;
+}
+
+export interface NutrientResponse {
+  totalNutrients: NutrientSymbol;
+  totalDaily: NutrientSymbol;
 }

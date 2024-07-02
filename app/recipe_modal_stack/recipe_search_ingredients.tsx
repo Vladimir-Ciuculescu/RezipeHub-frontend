@@ -75,6 +75,7 @@ export default function RecipeSearchIngredients() {
         <FlatList
           showsVerticalScrollIndicator={false}
           data={results}
+          keyExtractor={(item, index) => "key" + index}
           contentContainerStyle={styles.$flatListContainerStyle}
           renderItem={({ item, index }) => (
             <IngredientAccordion

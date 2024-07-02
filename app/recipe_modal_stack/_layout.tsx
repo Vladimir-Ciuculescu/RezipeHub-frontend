@@ -34,6 +34,14 @@ export default function Layout() {
         }}
         name="recipe_search_ingredients"
       />
+      <Stack.Screen
+        options={{
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerTitleAlign: "center",
+        }}
+        name="recipe_confirm_ingredient"
+      />
     </Stack>
   );
 }

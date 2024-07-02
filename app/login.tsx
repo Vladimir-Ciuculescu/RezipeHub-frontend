@@ -59,7 +59,6 @@ export default function Login() {
 
   useEffect(() => {
     if (isSignedIn && loggedIn) {
-      console.log(userId, isLoaded, sessionId);
       const { id, primaryEmailAddress, firstName, lastName } = user!;
       const payload: SocialLoginUserRequest = {
         provider: provider!,
