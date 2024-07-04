@@ -3,7 +3,7 @@ if (__DEV__) {
 }
 
 import React from "react";
-import { StyleSheet } from "react-native";
+import { LogBox, StyleSheet } from "react-native";
 import { colors } from "@/theme/colors";
 import { useFonts } from "expo-font";
 import { fontsToLoad } from "@/theme/typography";
@@ -12,6 +12,10 @@ import { ClerkProvider } from "@clerk/clerk-expo";
 
 import * as SecureStore from "expo-secure-store";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
+
+LogBox.ignoreLogs([
+  "Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead.",
+]);
 
 const tokenCache = {
   getToken(key: string) {

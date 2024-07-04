@@ -273,5 +273,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  $labelStyle: { ...$sizeStyles.n, color: colors.greyscale300 },
+  $labelStyle: { ...$sizeStyles.n, fontFamily: "sofia600", color: colors.greyscale300 },
 });

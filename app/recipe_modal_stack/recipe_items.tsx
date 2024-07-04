@@ -3,10 +3,9 @@ import React, { useLayoutEffect, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
 import { $sizeStyles } from "@/theme/typography";
 import RNIcon from "@/components/shared/RNIcon";
-import { Dash, View } from "react-native-ui-lib";
+import { View } from "react-native-ui-lib";
 import RNButton from "@/components/shared/RNButton";
 import { colors } from "@/theme/colors";
-import { FontAwesome } from "@expo/vector-icons";
 import { spacing } from "@/theme/spacing";
 
 export default function Recipe() {
@@ -74,15 +73,9 @@ export default function Recipe() {
         row
         style={{ justifyContent: "center", alignItems: "center", gap: spacing.spacing12 }}
       >
-        <Dash
-          containerStyle={{ flex: 1 }}
-          style={{ backgroundColor: colors.accent200 }}
-        />
+        <View style={styles.$dashStyle} />
         <Text style={[$sizeStyles.h3]}>OR</Text>
-        <Dash
-          containerStyle={{ flex: 1 }}
-          style={{ backgroundColor: colors.accent200 }}
-        />
+        <View style={styles.$dashStyle} />
       </View>
 
       <View
@@ -125,5 +118,12 @@ const styles = StyleSheet.create({
   $btnLabelStyle: {
     color: colors.greyscale50,
     ...$sizeStyles.n,
+    fontFamily: "sofia800",
+  },
+
+  $dashStyle: {
+    backgroundColor: colors.accent200,
+    height: 2,
+    flex: 1,
   },
 });

@@ -92,7 +92,7 @@ export default function ResetPassword() {
     >
       <StatusBar style="dark" />
 
-      <Text style={[$sizeStyles.n]}>
+      <Text style={styles.$labelStyle}>
         Please enter the token sent to your email and set your new password.
       </Text>
       <Formik
@@ -158,5 +158,10 @@ const styles = StyleSheet.create({
     gap: spacing.spacing24,
     paddingHorizontal: spacing.spacing24,
     paddingTop: spacing.spacing24,
+  },
+
+  $labelStyle: {
+    ...$sizeStyles.n,
+    fontFamily: "sofia800",
   },
 });

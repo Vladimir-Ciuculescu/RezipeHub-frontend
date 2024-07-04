@@ -1,4 +1,4 @@
-import { Text, Pressable, StyleSheet, ScrollView } from "react-native";
+import { Text, Pressable, StyleSheet, ScrollView, Platform } from "react-native";
 import React, { FC, useEffect, useLayoutEffect, useState } from "react";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import FoodService from "@/api/services/food.service";
@@ -12,11 +12,12 @@ import {
 } from "@/types/ingredient";
 import { AntDesign } from "@expo/vector-icons";
 import { spacing } from "@/theme/spacing";
-import { Picker, View } from "react-native-ui-lib";
+import { SegmentedControl, View } from "react-native-ui-lib";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { colors } from "@/theme/colors";
 import RnInput from "@/components/shared/RNInput";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
+import RNPickerSelect from "react-native-picker-select";
 
 const nutrientsLabelMapping: any = {
   ENERC_KCAL: "Calories",
@@ -70,13 +71,33 @@ interface NutrientItemProps {
   nutrient: [string, NutrientDetail];
 }
 
+const NutrientItem: FC<NutrientItemProps> = ({ nutrient }) => {
+  const label = nutrient[0];
+  const quantity = nutrient[1].quantity;
+  const unitMeasure = nutrient[1].unit;
+
+  const nutrientLabel = nutrientsLabelMapping[label] || nutrient[1].label;
+  return (
+    <View
+      row
+      style={{ justifyContent: "space-between" }}
+    >
+      <Text style={styles.$nutrientLabelStyle}>{nutrientLabel}</Text>
+      <Text style={styles.$nutrientValueStyle}>
+        {formatFloatingValue(quantity)} {unitMeasure}
+      </Text>
+    </View>
+  );
+};
+
 export default function RecipeConfirmIngredient() {
   const { ingredient } = useLocalSearchParams<any>();
   const navigation = useNavigation();
   const router = useRouter();
   const [nutrientsInfo, setNutrientsInfo] = useState<NutrientResponse>();
   const [unitMeasure, setUnitMeasure] = useState("Gram");
-  //By default, the screen will display nutrition info per 100 grams
+  const [pickerDismissed, setPickerDismissed] = useState(true);
+  const [segmentIndex, setSegmentIndex] = useState(0);
   const [quantity, setQuantity] = useState("100");
 
   const parsedIngredient: IngredientResponse = JSON.parse(ingredient);
@@ -120,57 +141,39 @@ export default function RecipeConfirmIngredient() {
   }, [navigation]);
 
   useEffect(() => {
-    const measure = measures.find((item) => item.value === unitMeasure);
+    if (pickerDismissed || Platform.OS === "android") {
+      const measure = measures.find((item) => item.value === unitMeasure);
 
-    let payload: any = {};
+      let payload: any = {};
 
-    if (measure) {
-      payload = {
-        foodId: parsedIngredient.food.foodId,
-        measureUri: measure!.uri,
-        quantity: parseInt(quantity),
-      };
-    } else {
-      payload = defaultMeasurementObject;
+      if (measure) {
+        payload = {
+          foodId: parsedIngredient.food.foodId,
+          measureUri: measure!.uri,
+          quantity: parseInt(quantity),
+        };
+      } else {
+        payload = defaultMeasurementObject;
+      }
+
+      getNutritionData(payload.foodId, payload.measureUri, payload.quantity);
     }
-
-    getNutritionData(payload.foodId, payload.measureUri, payload.quantity);
-  }, [unitMeasure]);
+  }, [pickerDismissed, unitMeasure]);
 
   const getNutritionData = async (foodId: string, uri: string, quantity: number) => {
     let payload: NutrientsRequestPayload | undefined;
 
-    payload = { foodId, measureURI: uri, quantity };
-
-    const data = await FoodService.getNutritionData(payload);
-    setNutrientsInfo(data);
+    try {
+      payload = { foodId, measureURI: uri, quantity };
+      const data = await FoodService.getNutritionData(payload);
+      setNutrientsInfo(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const gotBack = () => {
     router.back();
-  };
-
-  const NutrientItem: FC<NutrientItemProps> = ({ nutrient }) => {
-    const label = nutrient[0];
-    const quantity = nutrient[1].quantity;
-    const unitMeasure = nutrient[1].unit;
-
-    const nutrientLabel = nutrientsLabelMapping[label] || nutrient[1].label;
-    return (
-      <View
-        row
-        style={{ justifyContent: "space-between" }}
-      >
-        <Text style={styles.$nutrientLabelStyle}>{nutrientLabel}</Text>
-        <Text style={styles.$nutrientValueStyle}>
-          {formatFloatingValue(quantity)} {unitMeasure}
-        </Text>
-      </View>
-    );
-  };
-
-  const handleUnitMeasure = (value: any) => {
-    setUnitMeasure(value);
   };
 
   const submitQuantity = async () => {
@@ -192,19 +195,21 @@ export default function RecipeConfirmIngredient() {
 
           <View style={styles.$baseWrapperStyle}>
             <Text style={[$sizeStyles.n, styles.$labelStyle]}>Unit measure</Text>
-            <Picker
-              containerStyle={styles.$pickerContainerStyle}
+
+            <RNPickerSelect
+              doneText="Search"
+              placeholder={{}}
+              onUpArrow={() => {}}
+              onOpen={() => setPickerDismissed(false)}
+              onClose={() => setPickerDismissed(true)}
               value={unitMeasure}
-              onChange={handleUnitMeasure}
-              placeholder="Serving Size"
-              useWheelPicker
-              trailingAccessory={
-                <AntDesign
-                  name="down"
-                  size={20}
-                  color="black"
-                />
-              }
+              onValueChange={setUnitMeasure}
+              onDonePress={() => setPickerDismissed(true)}
+              style={{
+                viewContainer: styles.$pickerContainerStyle,
+                chevronUp: { display: "none" },
+                chevronDown: { display: "none" },
+              }}
               items={measures}
             />
           </View>
@@ -220,14 +225,27 @@ export default function RecipeConfirmIngredient() {
           />
           <View style={styles.$baseWrapperStyle}>
             <Text style={[$sizeStyles.h3, styles.$labelStyle]}>Nutritional information</Text>
+            <SegmentedControl
+              initialIndex={segmentIndex}
+              segments={[{ label: "Measures" }, { label: "Percentage" }]}
+              activeColor={colors.greyscale50}
+              borderRadius={16}
+              onChangeIndex={setSegmentIndex}
+              backgroundColor={colors.greyscale150}
+              activeBackgroundColor={colors.brandPrimary}
+              inactiveColor={colors.brandPrimary}
+              segmentsStyle={styles.$segmentStyle}
+              segmentLabelStyle={styles.$segmentLabelstyle}
+            />
 
             {nutrientsInfo &&
-              nutrientsInfo.totalNutrients &&
-              Object.entries(nutrientsInfo.totalNutrients).map((nutrient, index, array) => {
+              Object.entries(
+                segmentIndex === 0 ? nutrientsInfo.totalNutrients : nutrientsInfo.totalDaily,
+              ).map((nutrient, index, array) => {
                 return (
                   <>
                     <NutrientItem
-                      key={nutrient[0]}
+                      key={`${nutrient[0]} - ${index}`}
                       nutrient={nutrient}
                     />
                     {index < array.length - 1 && <View style={styles.separator} />}
@@ -260,6 +278,7 @@ const styles = StyleSheet.create({
     borderColor: colors.greyscale150,
     borderWidth: 2.5,
     height: 54,
+    color: "red",
   },
 
   $baseWrapperStyle: {
@@ -273,12 +292,22 @@ const styles = StyleSheet.create({
   },
 
   $nutrientLabelStyle: {
-    ...$sizeStyles.l,
+    ...$sizeStyles.n,
+    fontFamily: "sofia800",
     color: colors.greyscale300,
   },
 
   $nutrientValueStyle: {
-    ...$sizeStyles.l,
+    ...$sizeStyles.n,
     color: colors.greyscale400,
+    fontFamily: "sofia800",
+  },
+
+  $segmentStyle: {
+    height: 54,
+  },
+
+  $segmentLabelstyle: {
+    ...$sizeStyles.n,
   },
 });

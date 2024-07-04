@@ -78,7 +78,7 @@ export default function ForgotPassword() {
     >
       <StatusBar style="dark" />
       <View style={{ width: "100%", gap: spacing.spacing32 }}>
-        <Text style={[$sizeStyles.n]}>
+        <Text style={styles.$labelStyle}>
           Enter your email and we will send you a link to reset your password.
         </Text>
         <Formik
@@ -120,5 +120,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.spacing24,
     paddingTop: spacing.spacing24,
     paddingBottom: spacing.spacing32,
+  },
+
+  $labelStyle: {
+    ...$sizeStyles.n,
+    fontFamily: "sofia800",
   },
 });

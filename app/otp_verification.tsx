@@ -209,7 +209,7 @@ export default function OtpVerification() {
     >
       <StatusBar style="dark" />
       <View style={{ gap: spacing.spacing64 }}>
-        <Text style={[$sizeStyles.n]}>
+        <Text style={styles.$labelStyle}>
           We Already have sent you verification e-mail to {hiddenEmail}, please check it
         </Text>
         <View
@@ -273,5 +273,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.greyscale150,
     borderWidth: 2,
     borderStyle: "solid",
+  },
+  $labelStyle: {
+    ...$sizeStyles.n,
+    fontFamily: "sofia800",
   },
 });
