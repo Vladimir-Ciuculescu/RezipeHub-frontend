@@ -3,6 +3,13 @@ export interface IngredientResponse {
   measures: Measure[];
 }
 
+export interface IngredientItem {
+  measure: string;
+  quantity: string;
+  title: string;
+  calories: number;
+}
+
 interface Food {
   category: string;
   categoryLabel?: string;

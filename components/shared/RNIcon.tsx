@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import {
   Delete,
   Email,
@@ -14,9 +15,9 @@ import {
   Chef,
   Arrow_left,
   Arrow_right,
+  Trash,
 } from "@/assets/icons";
 import { colors } from "@/theme/colors";
-import { forwardRef } from "react";
 
 type SVGIcon = React.FunctionComponent<React.SVGAttributes<SVGElement>>;
 
@@ -36,6 +37,7 @@ enum Icons {
   search = "search",
   search_focused = "search_focused",
   chef = "chef",
+  trash = "trash",
 }
 
 type IconMap = {
@@ -58,6 +60,7 @@ const icons: IconMap = {
   search: Search,
   search_focused: Search_focused,
   chef: Chef,
+  trash: Trash,
 };
 
 interface RNIconProps {

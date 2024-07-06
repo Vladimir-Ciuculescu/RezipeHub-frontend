@@ -18,6 +18,8 @@ import { colors } from "@/theme/colors";
 import RnInput from "@/components/shared/RNInput";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
 import RNPickerSelect from "react-native-picker-select";
+import useRecipeStore from "@/zustand/store";
+// import { useRecipeStore } from "@/zustand/store";
 
 const nutrientsLabelMapping: any = {
   ENERC_KCAL: "Calories",
@@ -99,6 +101,7 @@ export default function RecipeConfirmIngredient() {
   const [pickerDismissed, setPickerDismissed] = useState(true);
   const [segmentIndex, setSegmentIndex] = useState(0);
   const [quantity, setQuantity] = useState("100");
+  const addIngredientAction = useRecipeStore.use.addIngredientAction();
 
   const parsedIngredient: IngredientResponse = JSON.parse(ingredient);
 
@@ -129,7 +132,7 @@ export default function RecipeConfirmIngredient() {
 
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Confirm ingredient</Text>,
       headerRight: () => (
-        <Pressable onPress={() => {}}>
+        <Pressable onPress={addIngredient}>
           <AntDesign
             name="check"
             size={24}
@@ -138,7 +141,7 @@ export default function RecipeConfirmIngredient() {
         </Pressable>
       ),
     });
-  }, [navigation]);
+  }, [navigation, unitMeasure, quantity, nutrientsInfo]);
 
   useEffect(() => {
     if (pickerDismissed || Platform.OS === "android") {
@@ -159,6 +162,20 @@ export default function RecipeConfirmIngredient() {
       getNutritionData(payload.foodId, payload.measureUri, payload.quantity);
     }
   }, [pickerDismissed, unitMeasure]);
+
+  const addIngredient = () => {
+    console.log(nutrientsInfo?.totalNutrients.ENERC_KCAL);
+
+    const payload = {
+      title: parsedIngredient.food.label,
+      measure: unitMeasure,
+      quantity: quantity,
+      calories: nutrientsInfo?.totalNutrients.ENERC_KCAL!.quantity!,
+    };
+
+    addIngredientAction(payload);
+    router.dismiss(2);
+  };
 
   const getNutritionData = async (foodId: string, uri: string, quantity: number) => {
     let payload: NutrientsRequestPayload | undefined;

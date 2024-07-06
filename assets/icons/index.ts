@@ -13,6 +13,7 @@ import Notification_focused from "./notifications_focused.svg";
 import Search from "./search.svg";
 import Search_focused from "./search_focused.svg";
 import Chef from "./chef.svg";
+import Trash from "./trash.svg";
 
 export {
   Email,
@@ -30,4 +31,5 @@ export {
   Search,
   Search_focused,
   Chef,
+  Trash,
 };
