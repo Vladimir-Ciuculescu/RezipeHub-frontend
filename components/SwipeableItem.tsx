@@ -6,9 +6,11 @@ import { colors } from "@/theme/colors";
 
 interface SwipeableItemProps {
   children: React.ReactNode;
+  deleteItem: () => void;
+  isEditing: boolean;
 }
 
-const SwipeableItem: React.FC<SwipeableItemProps> = ({ children }) => {
+const SwipeableItem: React.FC<SwipeableItemProps> = ({ children, deleteItem, isEditing }) => {
   const renderRightActionItem = (
     color: string,
     x: number,
@@ -22,8 +24,8 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ children }) => {
     return (
       <Animated.View style={{ flex: 1, transform: [{ translateX: trans }] }}>
         <RectButton
+          onPress={deleteItem}
           style={[styles.$rightActionStyle, { backgroundColor: color }]}
-          activeOpacity={0}
         >
           <RNIcon
             name="trash"
@@ -53,6 +55,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ children }) => {
       enableTrackpadTwoFingerGesture
       leftThreshold={30}
       rightThreshold={40}
+      dragOffsetFromRightEdge={isEditing ? Number.MAX_VALUE : 0}
       renderRightActions={renderRightActions}
     >
       {children}

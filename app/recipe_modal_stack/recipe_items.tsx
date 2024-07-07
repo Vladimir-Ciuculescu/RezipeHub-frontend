@@ -1,9 +1,22 @@
 import React, { useLayoutEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, Pressable, Alert, ScrollView } from "react-native";
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Pressable,
+  Alert,
+  ScrollView,
+  ViewStyle,
+} from "react-native";
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { GestureHandlerRootView, RectButton } from "react-native-gesture-handler";
 import { spacing } from "@/theme/spacing";
-import { AntDesign, Entypo } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import { colors } from "@/theme/colors";
 import { View } from "react-native-ui-lib";
 import SwipeableItem from "@/components/SwipeableItem";
@@ -11,12 +24,9 @@ import { useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import { $sizeStyles } from "@/theme/typography";
 import RNButton from "@/components/shared/RNButton";
-// import { useRecipeStore } from "@/zustand/store";
 import { IngredientItem } from "@/types/ingredient";
-import { createSelectors } from "@/zustand/createSelectors";
 import useRecipeStore from "@/zustand/store";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
-// import { createSelectors } from "@/zustand/createSelectors";
 
 export default function RecipeItems() {
   const router = useRouter();
@@ -29,6 +39,7 @@ export default function RecipeItems() {
   const [edit, setEdit] = useState(false);
 
   const items = useRecipeStore.use.ingredients();
+  const removeIngredientAction = useRecipeStore.use.removeIngredientAction();
 
   const editButtonStyle = useAnimatedStyle(() => ({
     paddingLeft: withTiming(paddingLeftValue.value),
@@ -87,40 +98,34 @@ export default function RecipeItems() {
 
   interface IngredientRowProps {
     item: IngredientItem;
+    style: ViewStyle;
+    deleteItem: () => void;
   }
 
-  const IngredientRow: React.FC<IngredientRowProps> = ({ item }) => {
+  const IngredientRow: React.FC<IngredientRowProps> = ({ item, style, deleteItem }) => {
     const { title, quantity, measure, calories } = item;
 
-    console.log(111, calories, typeof calories);
-
-    const heightValue = useSharedValue(80);
-
-    const containerStyle = useAnimatedStyle(() => ({
-      transform: [{ translateX: withTiming(containerValue.value) }],
-      height: heightValue.value,
-    }));
-
-    const deleteItem = () => {
-      heightValue.value = withTiming(0);
-    };
-
-    const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
     const AnimatedArrowIcon = Animated.createAnimatedComponent(AntDesign);
+    const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
     return (
-      <Animated.View style={[styles.$ingredientRowStyle, containerStyle]}>
-        <AnimatedTouchable style={editButtonStyle}>
-          <Entypo
-            onPress={deleteItem}
-            name="circle-with-minus"
+      <Animated.View style={[styles.$ingredientRowStyle, style]}>
+        <AnimatedTouchableOpacity
+          style={editButtonStyle}
+          onPress={deleteItem}
+        >
+          <AntDesign
+            name="minuscircle"
             size={22}
             color={colors.red600}
           />
-        </AnimatedTouchable>
+        </AnimatedTouchableOpacity>
 
         <View row>
-          <RectButton style={styles.$rectButtonStyle}>
+          <RectButton
+            activeOpacity={0}
+            style={styles.$rectButtonStyle}
+          >
             <View
               row
               flex
@@ -136,7 +141,7 @@ export default function RecipeItems() {
               <AnimatedArrowIcon
                 style={arrowIconStyle}
                 name="right"
-                color="black"
+                color={colors.accent200}
                 size={24}
               />
             </View>
@@ -147,13 +152,35 @@ export default function RecipeItems() {
   };
 
   interface SwipeableRowProps {
-    item: any;
+    item: IngredientItem;
   }
 
   const SwipeableRow: React.FC<SwipeableRowProps> = ({ item }) => {
+    const heightValue = useSharedValue(80);
+
+    const containerStyle = useAnimatedStyle(() => ({
+      transform: [{ translateX: withTiming(containerValue.value) }],
+      height: heightValue.value,
+    }));
+
+    const deleteItem = () => {
+      heightValue.value = withTiming(0, { duration: 300 }, (isFinished) => {
+        if (isFinished) {
+          runOnJS(removeIngredientAction)(item.foodId);
+        }
+      });
+    };
+
     return (
-      <SwipeableItem>
-        <IngredientRow item={item} />
+      <SwipeableItem
+        isEditing={edit}
+        deleteItem={deleteItem}
+      >
+        <IngredientRow
+          deleteItem={deleteItem}
+          style={containerStyle}
+          item={item}
+        />
       </SwipeableItem>
     );
   };
@@ -172,6 +199,7 @@ export default function RecipeItems() {
               />
             ))
           : null}
+
         <View style={styles.$buttonsContainerstyle}>
           <View
             row
@@ -216,6 +244,12 @@ export default function RecipeItems() {
 const styles = StyleSheet.create({
   $scrollVieContainerStyle: {
     paddingTop: spacing.spacing16,
+  },
+
+  $rightActionStyle: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
   },
 
   $scrollViewContentContainerStyle: {

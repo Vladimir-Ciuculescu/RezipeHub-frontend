@@ -1,4 +1,4 @@
-import { IngredientItem, IngredientResponse } from "@/types/ingredient";
+import { IngredientItem } from "@/types/ingredient";
 import { create } from "zustand";
 import { createSelectors } from "./createSelectors";
 
@@ -8,12 +8,17 @@ interface State {
 
 interface Action {
   addIngredientAction: (ingredient: IngredientItem) => void;
+  removeIngredientAction: (foodId: string) => void;
 }
 
 const useRecipeStoreBase = create<State & Action>((set) => ({
   ingredients: [],
-  addIngredientAction: (ingredient) =>
-    set((state: any) => ({ ingredients: [...state.ingredients, ingredient] })),
+  addIngredientAction: (ingredient: IngredientItem) =>
+    set((state: State) => ({ ingredients: [...state.ingredients, ingredient] })),
+  removeIngredientAction: (foodId: string) =>
+    set((state: State) => ({
+      ingredients: state.ingredients.filter((ingredient) => ingredient.foodId !== foodId),
+    })),
 }));
 
 const useRecipeStore = createSelectors(useRecipeStoreBase);

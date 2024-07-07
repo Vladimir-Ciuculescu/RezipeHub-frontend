@@ -19,7 +19,6 @@ import RnInput from "@/components/shared/RNInput";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
 import RNPickerSelect from "react-native-picker-select";
 import useRecipeStore from "@/zustand/store";
-// import { useRecipeStore } from "@/zustand/store";
 
 const nutrientsLabelMapping: any = {
   ENERC_KCAL: "Calories",
@@ -167,6 +166,7 @@ export default function RecipeConfirmIngredient() {
     console.log(nutrientsInfo?.totalNutrients.ENERC_KCAL);
 
     const payload = {
+      foodId: parsedIngredient.food.foodId,
       title: parsedIngredient.food.label,
       measure: unitMeasure,
       quantity: quantity,

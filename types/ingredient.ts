@@ -4,6 +4,7 @@ export interface IngredientResponse {
 }
 
 export interface IngredientItem {
+  foodId: string;
   measure: string;
   quantity: string;
   title: string;
