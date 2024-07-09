@@ -16,6 +16,7 @@ interface RNInputProps extends TextInputProps {
   touched?: boolean;
   error?: string;
   value: string | undefined;
+  multiline?: TextInputProps["multiline"];
 }
 
 export default function RnInput(props: RNInputProps) {
@@ -31,6 +32,7 @@ export default function RnInput(props: RNInputProps) {
       touched,
       error,
       value,
+      multiline,
       ...rest
     } = props;
 
@@ -45,12 +47,14 @@ export default function RnInput(props: RNInputProps) {
         {/*  @ts-ignore */}
         <TextField
           {...rest}
+          multiline={multiline}
           value={value}
           placeholder={placeholder}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           containerStyle={[
             styles.$baseContainerstyle,
+            multiline ? styles.$multilineStyle : styles.$singlelineStyle,
             isFocused ? styles.$focusedStyle : styles.$unfocusedStyle,
             containerStyle,
           ]}
@@ -60,6 +64,7 @@ export default function RnInput(props: RNInputProps) {
             rightIcon && leftIcon && styles.$hasBothconsStyle,
             // !leftIcon && !rightIcon && styles.$flexStyle,
             styles.$baseStyle,
+            { fontFamily: "sofia800" },
           ]}
           labelStyle={{ fontFamily: "sofia800", color: "red" }}
           leadingAccessory={leftIcon}
@@ -81,22 +86,27 @@ const styles = StyleSheet.create({
   },
 
   $baseContainerstyle: {
-    borderRadius: 16,
+    borderRadius: spacing.spacing16,
     borderStyle: "solid",
-    // height: 54,
+    minHeight: 54,
     justifyContent: "center",
-    paddingHorizontal: 16,
+
     borderColor: "blue",
     borderWidth: 2.5,
   },
 
-  $baseStyle: {
-    height: 54,
-    ...$sizeStyles.n,
-    //flex:1
+  $singlelineStyle: {
+    paddingHorizontal: spacing.spacing16,
   },
 
-  $flexStyle: {},
+  $multilineStyle: {
+    paddingHorizontal: spacing.spacing16,
+    paddingVertical: spacing.spacing16,
+  },
+
+  $baseStyle: {
+    ...$sizeStyles.n,
+  },
 
   $labelStyle: { fontFamily: "sofia800", color: colors.greyscale500 },
 

@@ -52,15 +52,6 @@ const IngredientAccordion: FC<IngredientAccordionProps> = ({ ingredient }) => {
     return { height: height.value };
   });
 
-  useEffect(() => {
-    // fullHeight.current = 0;
-    // progress.value = 0;
-    height.value = COLLAPSED_HEIGHT;
-    iconRotation.value = "0deg";
-
-    // height.value = COLLAPSED_HEIGHT;
-  }, [ingredient]);
-
   const handleAccordionPress = () => {
     const isExpanding = progress.value === 0;
     progress.value = withSpring(isExpanding ? 1 : 0, getSpringConfig(isExpanding));

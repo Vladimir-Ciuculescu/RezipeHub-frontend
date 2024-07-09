@@ -24,6 +24,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ children, deleteItem, isE
     return (
       <Animated.View style={{ flex: 1, transform: [{ translateX: trans }] }}>
         <RectButton
+          rippleColor="transparent"
           onPress={deleteItem}
           style={[styles.$rightActionStyle, { backgroundColor: color }]}
         >

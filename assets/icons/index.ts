@@ -14,6 +14,7 @@ import Search from "./search.svg";
 import Search_focused from "./search_focused.svg";
 import Chef from "./chef.svg";
 import Trash from "./trash.svg";
+import Cook from "./cook.svg";
 
 export {
   Email,
@@ -32,4 +33,5 @@ export {
   Search_focused,
   Chef,
   Trash,
+  Cook,
 };

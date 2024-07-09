@@ -167,6 +167,7 @@ export default function Login() {
       enableAutomaticScroll
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.$keyboardContainerStyle}
+      scrollEventThrottle={16}
     >
       <StatusBar style="dark" />
       <View style={{ width: "100%", gap: spacing.spacing24 }}>
@@ -209,6 +210,7 @@ export default function Login() {
                   </Pressable>
                 }
               />
+
               <RNButton
                 onPress={() => handleSubmit()}
                 loading={isLoading}

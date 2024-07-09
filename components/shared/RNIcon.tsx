@@ -16,6 +16,7 @@ import {
   Arrow_left,
   Arrow_right,
   Trash,
+  Cook,
 } from "@/assets/icons";
 import { colors } from "@/theme/colors";
 
@@ -38,6 +39,7 @@ enum Icons {
   search_focused = "search_focused",
   chef = "chef",
   trash = "trash",
+  cook = "cook",
 }
 
 type IconMap = {
@@ -61,6 +63,7 @@ const icons: IconMap = {
   search_focused: Search_focused,
   chef: Chef,
   trash: Trash,
+  cook: Cook,
 };
 
 interface RNIconProps {

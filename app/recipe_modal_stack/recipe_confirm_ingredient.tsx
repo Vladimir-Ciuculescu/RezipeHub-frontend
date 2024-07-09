@@ -10,7 +10,7 @@ import {
   NutrientResponse,
   NutrientsRequestPayload,
 } from "@/types/ingredient";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { spacing } from "@/theme/spacing";
 import { SegmentedControl, View } from "react-native-ui-lib";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -135,7 +135,7 @@ export default function RecipeConfirmIngredient() {
           <AntDesign
             name="check"
             size={24}
-            color={colors.brandPrimary}
+            color={colors.accent200}
           />
         </Pressable>
       ),
@@ -163,8 +163,6 @@ export default function RecipeConfirmIngredient() {
   }, [pickerDismissed, unitMeasure]);
 
   const addIngredient = () => {
-    console.log(nutrientsInfo?.totalNutrients.ENERC_KCAL);
-
     const payload = {
       foodId: parsedIngredient.food.foodId,
       title: parsedIngredient.food.label,
@@ -214,20 +212,26 @@ export default function RecipeConfirmIngredient() {
             <Text style={[$sizeStyles.n, styles.$labelStyle]}>Unit measure</Text>
 
             <RNPickerSelect
-              doneText="Search"
               placeholder={{}}
-              onUpArrow={() => {}}
+              doneText="Search"
               onOpen={() => setPickerDismissed(false)}
               onClose={() => setPickerDismissed(true)}
               value={unitMeasure}
               onValueChange={setUnitMeasure}
               onDonePress={() => setPickerDismissed(true)}
+              items={measures}
               style={{
-                viewContainer: styles.$pickerContainerStyle,
                 chevronUp: { display: "none" },
                 chevronDown: { display: "none" },
+                inputIOS: styles.$inputAndroidStyle,
+                inputAndroid: styles.$inputIOSStyle,
+
+                iconContainer: styles.$iconContainerStyle,
               }}
-              items={measures}
+              useNativeAndroidPickerStyle={false}
+              Icon={() => {
+                return <RNIcon name="cook" />;
+              }}
             />
           </View>
           <RnInput
@@ -300,6 +304,31 @@ const styles = StyleSheet.create({
 
   $baseWrapperStyle: {
     gap: spacing.spacing12,
+  },
+
+  $inputAndroidStyle: {
+    height: 54,
+    borderColor: colors.greyscale150,
+    borderWidth: 2,
+    fontFamily: "sofia800",
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    color: colors.slate900,
+  },
+
+  $inputIOSStyle: {
+    height: 54,
+    borderColor: colors.greyscale150,
+    color: colors.slate900,
+    borderWidth: 2,
+    fontFamily: "sofia800",
+    paddingHorizontal: 16,
+    borderRadius: 16,
+  },
+
+  $iconContainerStyle: {
+    top: 14,
+    right: spacing.spacing16,
   },
 
   $labelStyle: { fontFamily: "sofia800", color: colors.greyscale500 },

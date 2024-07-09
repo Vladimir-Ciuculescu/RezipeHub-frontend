@@ -81,6 +81,10 @@ export default function RecipeItems() {
     router.navigate("recipe_modal_stack/recipe_search_ingredients");
   };
 
+  const gotToAddSteps = () => {
+    router.navigate("recipe_modal_stack/recipe_add_steps");
+  };
+
   const showNoIngredientsMessage = () => {
     Alert.alert("Cannot continue", "Please enter one or more ingredients", [{ text: "OK" }], {
       cancelable: false,
@@ -187,10 +191,7 @@ export default function RecipeItems() {
 
   return (
     <GestureHandlerRootView>
-      <ScrollView
-        style={styles.$scrollVieContainerStyle}
-        contentContainerStyle={styles.$scrollViewContentContainerStyle}
-      >
+      <ScrollView style={styles.$scrollVieContainerStyle}>
         {items && items.length
           ? items.map((item: IngredientItem, key: number) => (
               <SwipeableRow
@@ -224,13 +225,14 @@ export default function RecipeItems() {
             style={styles.$buttonsRowContainerStyle}
           >
             <RNButton
-              label="Add instructions"
+              onPress={gotToAddSteps}
+              label="Add steps"
               style={styles.$btnStyle}
               labelStyle={styles.$btnLabelStyle}
             />
             <RNButton
               disabled
-              label="Edit instructions"
+              label="Edit steps"
               style={styles.$btnStyle}
               labelStyle={styles.$btnLabelStyle}
             />
@@ -250,10 +252,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 1,
     justifyContent: "center",
-  },
-
-  $scrollViewContentContainerStyle: {
-    gap: spacing.spacing16,
   },
 
   $buttonsContainerstyle: {
