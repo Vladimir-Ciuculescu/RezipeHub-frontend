@@ -1,8 +1,25 @@
+import React from "react";
 import { Animated, StyleSheet } from "react-native";
+import Reanimated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { RectButton, Swipeable } from "react-native-gesture-handler";
 import { View } from "react-native-ui-lib";
-import RNIcon from "./shared/RNIcon";
 import { colors } from "@/theme/colors";
+import { spacing } from "@/theme/spacing";
+import { AntDesign } from "@expo/vector-icons";
+import RNIcon from "./shared/RNIcon";
+
+interface SwipeableListItemProps {
+  isEditing: boolean;
+  onDelete: () => void;
+  children: React.ReactNode;
+  rowStyle: any;
+  editButtonStyle: any;
+}
 
 interface SwipeableItemProps {
   children: React.ReactNode;
@@ -10,7 +27,19 @@ interface SwipeableItemProps {
   isEditing: boolean;
 }
 
-const SwipeableItem: React.FC<SwipeableItemProps> = ({ children, deleteItem, isEditing }) => {
+const SwipeableListItem: React.FC<SwipeableListItemProps> = ({
+  isEditing,
+  onDelete,
+  children,
+  rowStyle,
+  editButtonStyle,
+}) => {
+  const heightValue = useSharedValue(80);
+  const containerStyle = useAnimatedStyle(() => ({
+    height: heightValue.value,
+    transform: [{ translateX: withTiming(isEditing ? 0 : -20) }],
+  }));
+
   const renderRightActionItem = (
     color: string,
     x: number,
@@ -50,6 +79,14 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ children, deleteItem, isE
     );
   };
 
+  const deleteItem = () => {
+    heightValue.value = withTiming(0, { duration: 300 }, (isFinished) => {
+      if (isFinished) {
+        runOnJS(onDelete)();
+      }
+    });
+  };
+
   return (
     <Swipeable
       friction={2}
@@ -59,12 +96,23 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({ children, deleteItem, isE
       dragOffsetFromRightEdge={isEditing ? Number.MAX_VALUE : 0}
       renderRightActions={renderRightActions}
     >
-      {children}
+      <Reanimated.View style={[rowStyle, containerStyle]}>
+        <Reanimated.View style={editButtonStyle}>
+          <RectButton onPress={deleteItem}>
+            <AntDesign
+              name="minuscircle"
+              size={22}
+              color={colors.red600}
+            />
+          </RectButton>
+        </Reanimated.View>
+        <View row>{children}</View>
+      </Reanimated.View>
     </Swipeable>
   );
 };
 
-export default SwipeableItem;
+export default SwipeableListItem;
 
 const styles = StyleSheet.create({
   $rightActionStyle: {

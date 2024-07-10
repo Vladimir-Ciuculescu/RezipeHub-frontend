@@ -20,6 +20,7 @@ import { MotiView } from "moti";
 import RnInput from "@/components/shared/RNInput";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import RNButton from "@/components/shared/RNButton";
+import useRecipeStore from "@/zustand/useRecipeStore";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -27,15 +28,13 @@ export default function RecipeAddSteps() {
   const navigation = useNavigation();
   const router = useRouter();
 
-  const [items, setItems] = useState([
-    {
-      text: "",
-    },
-  ]);
+  const [steps, setSteps] = useState([{ description: "" }]);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const paginationFlatListRef = useRef<FlatList>(null);
   const inputsFlatlListRef = useRef<FlatList>(null);
+
+  const addStepsAction = useRecipeStore.use.addStepsAction();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -50,7 +49,7 @@ export default function RecipeAddSteps() {
 
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Add steps</Text>,
       headerRight: () => (
-        <Pressable>
+        <Pressable onPress={confirmSteps}>
           <AntDesign
             name="check"
             size={24}
@@ -59,7 +58,7 @@ export default function RecipeAddSteps() {
         </Pressable>
       ),
     });
-  }, [navigation]);
+  }, [navigation, steps]);
 
   useEffect(() => {
     paginationFlatListRef.current!.scrollToIndex({
@@ -70,18 +69,25 @@ export default function RecipeAddSteps() {
     inputsFlatlListRef.current!.scrollToIndex({ index: activeIndex, animated: true });
   }, [activeIndex]);
 
+  const confirmSteps = () => {
+    const newSteps = steps.map((step, index) => ({ ...step, number: index + 1 }));
+    addStepsAction(newSteps);
+
+    router.dismiss(1);
+  };
+
   const gotBack = () => {
     router.back();
   };
 
   const addStep = () => {
-    const newIndex = items.length;
-    setItems([...items, { text: "" }]);
+    const newIndex = steps.length;
+    setSteps([...steps, { description: "" }]);
     setActiveIndex(newIndex);
   };
 
   const deleteStep = () => {
-    setItems(() => items.filter((_, index) => index !== activeIndex));
+    setSteps(() => steps.filter((_, index) => index !== activeIndex));
     setActiveIndex(activeIndex - 1);
   };
 
@@ -90,9 +96,9 @@ export default function RecipeAddSteps() {
   };
 
   const handleTextChange = (text: string, index: number) => {
-    const newItems = [...items];
-    newItems[index].text = text;
-    setItems(newItems);
+    const newItems = [...steps];
+    newItems[index].description = text;
+    setSteps(newItems);
   };
 
   const handleKeyPress = ({ nativeEvent }: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
@@ -116,7 +122,7 @@ export default function RecipeAddSteps() {
       <View style={{ gap: spacing.spacing32 }}>
         <FlatList
           ref={paginationFlatListRef}
-          data={items}
+          data={steps}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.$paginationContainerStyle}
@@ -157,7 +163,7 @@ export default function RecipeAddSteps() {
         <FlatList
           scrollEnabled={false}
           ref={inputsFlatlListRef}
-          data={items}
+          data={steps}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.$stepsContainerStyle}

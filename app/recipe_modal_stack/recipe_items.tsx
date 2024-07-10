@@ -1,53 +1,59 @@
-import React, { useLayoutEffect, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Pressable,
-  Alert,
-  ScrollView,
-  ViewStyle,
-} from "react-native";
-import Animated, {
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { StyleSheet, Text, Pressable, Alert, ScrollView } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { GestureHandlerRootView, RectButton } from "react-native-gesture-handler";
 import { spacing } from "@/theme/spacing";
-import { AntDesign } from "@expo/vector-icons";
 import { colors } from "@/theme/colors";
 import { View } from "react-native-ui-lib";
-import SwipeableItem from "@/components/SwipeableItem";
-import { useNavigation, useRouter } from "expo-router";
+import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import { $sizeStyles } from "@/theme/typography";
 import RNButton from "@/components/shared/RNButton";
-import { IngredientItem } from "@/types/ingredient";
-import useRecipeStore from "@/zustand/store";
+import useRecipeStore from "@/zustand/useRecipeStore";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
+import SwipeableItem from "@/components/SwipeableItem";
+import { AntDesign } from "@expo/vector-icons";
+import { IngredientItem } from "@/types/ingredient";
+import { Step } from "@/types/step";
+
+interface IngredientRowProps {
+  ingredient: IngredientItem;
+}
+
+interface StepRowProps {
+  item: Step;
+  index: number;
+}
 
 export default function RecipeItems() {
   const router = useRouter();
   const navigation = useNavigation();
-  const containerValue = useSharedValue(-20);
-  const paddingLeftValue = useSharedValue(0);
-  const opacityValue = useSharedValue(0);
-  const opacity2value = useSharedValue(1);
 
-  const [edit, setEdit] = useState(false);
+  //Shared values for ingredient row animated style
+  const ingredientPaddingLeft = useSharedValue(0);
+  const ingredientOpacity = useSharedValue(0);
+  const ingredientArrowOpacity = useSharedValue(1);
 
-  const items = useRecipeStore.use.ingredients();
+  //Shared values for step animated style
+  const stepPaddingLeft = useSharedValue(0);
+  const stepOpacity = useSharedValue(0);
+
+  const [editIngredients, setEditIngredients] = useState(false);
+  const [editSteps, setEditSteps] = useState(false);
+
+  const ingredients = useRecipeStore.use.ingredients();
+  const steps = useRecipeStore.use.steps();
   const removeIngredientAction = useRecipeStore.use.removeIngredientAction();
+  const removeStepAction = useRecipeStore.use.removeStepAction();
 
-  const editButtonStyle = useAnimatedStyle(() => ({
-    paddingLeft: withTiming(paddingLeftValue.value),
-    opacity: withTiming(opacityValue.value),
+  const ingredientEditButtonStyle = useAnimatedStyle(() => ({
+    paddingLeft: withTiming(ingredientPaddingLeft.value),
+    opacity: withTiming(ingredientOpacity.value),
   }));
 
-  const arrowIconStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(opacity2value.value),
+  const stepEditButtonStyle = useAnimatedStyle(() => ({
+    paddingLeft: withTiming(stepPaddingLeft.value),
+    opacity: withTiming(stepOpacity.value),
   }));
 
   useLayoutEffect(() => {
@@ -62,17 +68,25 @@ export default function RecipeItems() {
           <RNIcon name="arrow_right" />
         </Pressable>
       ),
-
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Add ingredients</Text>,
     });
   }, [navigation]);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        switchIngredientsEdit(true);
+        switchStepsEdit(true);
+      };
+    }, []),
+  );
 
   const cancel = () => {
     router.back();
   };
 
   const goNext = () => {
-    if (!items.length) {
+    if (!ingredients.length) {
       showNoIngredientsMessage();
     }
   };
@@ -91,115 +105,85 @@ export default function RecipeItems() {
     });
   };
 
-  const switchEdit = () => {
-    containerValue.value = !edit ? 0 : -20;
-    paddingLeftValue.value = !edit ? spacing.spacing16 : 0;
-    opacityValue.value = !edit ? 1 : 0;
-    opacity2value.value = !edit ? 0 : 1;
-
-    setEdit(!edit);
+  const switchIngredientsEdit = (value: boolean) => {
+    ingredientPaddingLeft.value = !value ? 16 : 0;
+    ingredientOpacity.value = !value ? 1 : 0;
+    ingredientArrowOpacity.value = !value ? 0 : 1;
+    setEditIngredients(!value);
   };
 
-  interface IngredientRowProps {
-    item: IngredientItem;
-    style: ViewStyle;
-    deleteItem: () => void;
-  }
+  const switchStepsEdit = (value: boolean) => {
+    stepPaddingLeft.value = !value ? spacing.spacing16 : 10;
+    stepOpacity.value = !value ? 1 : 0;
+    setEditSteps(!value);
+  };
 
-  const IngredientRow: React.FC<IngredientRowProps> = ({ item, style, deleteItem }) => {
-    const { title, quantity, measure, calories } = item;
-
-    const AnimatedArrowIcon = Animated.createAnimatedComponent(AntDesign);
-    const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+  const IngredientRow: React.FC<IngredientRowProps> = ({ ingredient }) => {
+    const { title, quantity, measure, calories } = ingredient;
 
     return (
-      <Animated.View style={[styles.$ingredientRowStyle, style]}>
-        <AnimatedTouchableOpacity
-          style={editButtonStyle}
-          onPress={deleteItem}
+      <RectButton
+        rippleColor="transparent"
+        activeOpacity={0}
+        style={styles.$rectButtonStyle}
+      >
+        <View>
+          <Text style={styles.$ingredientLabelStyle}>{title}</Text>
+          <Text style={styles.$ingredientInfoStyle}>
+            {quantity} {measure}, {formatFloatingValue(calories)} calories
+          </Text>
+        </View>
+        <Animated.View
+          style={useAnimatedStyle(() => ({ opacity: withTiming(ingredientArrowOpacity.value) }))}
         >
           <AntDesign
-            name="minuscircle"
-            size={22}
-            color={colors.red600}
+            name="right"
+            color={colors.accent200}
+            size={24}
           />
-        </AnimatedTouchableOpacity>
-
-        <View row>
-          <RectButton
-            activeOpacity={0}
-            style={styles.$rectButtonStyle}
-          >
-            <View
-              row
-              flex
-              style={styles.$ingredientInfoContainerStyle}
-            >
-              <View>
-                <Text style={styles.$ingredientLabelStyle}>{title}</Text>
-                <Text style={styles.$ingredientInfoStyle}>
-                  {quantity} {measure}, {formatFloatingValue(calories)} calories
-                </Text>
-              </View>
-
-              <AnimatedArrowIcon
-                style={arrowIconStyle}
-                name="right"
-                color={colors.accent200}
-                size={24}
-              />
-            </View>
-          </RectButton>
-        </View>
-      </Animated.View>
+        </Animated.View>
+      </RectButton>
     );
   };
 
-  interface SwipeableRowProps {
-    item: IngredientItem;
-  }
-
-  const SwipeableRow: React.FC<SwipeableRowProps> = ({ item }) => {
-    const heightValue = useSharedValue(80);
-
-    const containerStyle = useAnimatedStyle(() => ({
-      transform: [{ translateX: withTiming(containerValue.value) }],
-      height: heightValue.value,
-    }));
-
-    const deleteItem = () => {
-      heightValue.value = withTiming(0, { duration: 300 }, (isFinished) => {
-        if (isFinished) {
-          runOnJS(removeIngredientAction)(item.foodId);
-        }
-      });
-    };
-
-    return (
-      <SwipeableItem
-        isEditing={edit}
-        deleteItem={deleteItem}
+  const StepRow: React.FC<StepRowProps> = ({ item, index }) => (
+    <RectButton
+      rippleColor="transparent"
+      activeOpacity={0}
+      style={styles.$rectStepStyle}
+    >
+      <View
+        row
+        style={{ gap: spacing.spacing16, alignItems: "center" }}
       >
-        <IngredientRow
-          deleteItem={deleteItem}
-          style={containerStyle}
-          item={item}
-        />
-      </SwipeableItem>
-    );
-  };
+        <View style={styles.$stepInfoStyle}>
+          <Text style={{ ...$sizeStyles.xl, color: colors.accent200 }}>{index + 1}</Text>
+        </View>
+        <Text style={{ ...$sizeStyles.n, color: colors.greyscale400, fontFamily: "sofia800" }}>
+          {item.description}
+        </Text>
+      </View>
+    </RectButton>
+  );
+
+  const isEditIngredientsDisabled = ingredients.length;
+
+  const isEditStepsDisabled = steps.length;
 
   return (
     <GestureHandlerRootView>
       <ScrollView style={styles.$scrollVieContainerStyle}>
-        {items && items.length
-          ? items.map((item: IngredientItem, key: number) => (
-              <SwipeableRow
-                item={item}
-                key={key}
-              />
-            ))
-          : null}
+        {ingredients.map((item) => (
+          <SwipeableItem
+            key={item.foodId}
+            isEditing={editIngredients}
+            onDelete={() => removeIngredientAction(item.foodId)}
+            rowStyle={styles.$ingredientRowStyle}
+            editButtonStyle={ingredientEditButtonStyle}
+          >
+            <IngredientRow ingredient={item} />
+          </SwipeableItem>
+        ))}
 
         <View style={styles.$buttonsContainerstyle}>
           <View
@@ -213,11 +197,28 @@ export default function RecipeItems() {
               labelStyle={styles.$btnLabelStyle}
             />
             <RNButton
-              onPress={switchEdit}
+              disabled={!isEditIngredientsDisabled}
+              onPress={() => switchIngredientsEdit(editIngredients)}
               label="Edit ingredients"
               style={styles.$btnStyle}
               labelStyle={styles.$btnLabelStyle}
             />
+          </View>
+          <View>
+            {steps.map((item, index) => (
+              <SwipeableItem
+                key={item.number}
+                isEditing={editSteps}
+                onDelete={() => removeStepAction(item.number)}
+                rowStyle={styles.$ingredientRowStyle}
+                editButtonStyle={stepEditButtonStyle}
+              >
+                <StepRow
+                  item={item}
+                  index={index}
+                />
+              </SwipeableItem>
+            ))}
           </View>
 
           <View
@@ -231,7 +232,8 @@ export default function RecipeItems() {
               labelStyle={styles.$btnLabelStyle}
             />
             <RNButton
-              disabled
+              disabled={!isEditStepsDisabled}
+              onPress={() => switchStepsEdit(editSteps)}
               label="Edit steps"
               style={styles.$btnStyle}
               labelStyle={styles.$btnLabelStyle}
@@ -247,33 +249,22 @@ const styles = StyleSheet.create({
   $scrollVieContainerStyle: {
     paddingTop: spacing.spacing16,
   },
-
-  $rightActionStyle: {
-    alignItems: "center",
-    flex: 1,
-    justifyContent: "center",
-  },
-
   $buttonsContainerstyle: {
     gap: spacing.spacing24,
-    paddingHorizontal: spacing.spacing24,
   },
-
   $buttonsRowContainerStyle: {
     gap: spacing.spacing16,
+    paddingHorizontal: spacing.spacing24,
   },
-
   $ingredientRowStyle: {
     flexDirection: "row",
     flex: 1,
     alignItems: "center",
   },
-
   $ingredientInfoContainerStyle: {
     justifyContent: "space-between",
     alignItems: "center",
   },
-
   $ingredientLabelStyle: {
     ...$sizeStyles.l,
     fontFamily: "sofia800",
@@ -283,15 +274,33 @@ const styles = StyleSheet.create({
     fontFamily: "sofia800",
     color: colors.greyscale300,
   },
-
   $rectButtonStyle: {
     flex: 1,
     height: 80,
     paddingVertical: 10,
     paddingHorizontal: 20,
+    alignItems: "center",
     justifyContent: "space-between",
-    flexDirection: "column",
+    flexDirection: "row",
     backgroundColor: "white",
+  },
+
+  $rectStepStyle: {
+    flex: 1,
+    height: 80,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignItems: "center",
+    flexDirection: "row",
+    backgroundColor: "white",
+  },
+
+  $stepInfoStyle: {
+    height: 28,
+    width: 28,
+    borderRadius: spacing.spacing8,
+    backgroundColor: colors.greyscale150,
+    alignItems: "center",
   },
 
   $btnStyle: {
@@ -302,7 +311,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderStyle: "solid",
   },
-
   $btnLabelStyle: {
     color: colors.greyscale50,
     ...$sizeStyles.n,

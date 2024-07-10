@@ -18,7 +18,7 @@ import { colors } from "@/theme/colors";
 import RnInput from "@/components/shared/RNInput";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
 import RNPickerSelect from "react-native-picker-select";
-import useRecipeStore from "@/zustand/store";
+import useRecipeStore from "@/zustand/useRecipeStore";
 
 const nutrientsLabelMapping: any = {
   ENERC_KCAL: "Calories",
