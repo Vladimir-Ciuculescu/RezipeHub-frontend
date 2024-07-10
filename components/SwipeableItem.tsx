@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef, useCallback, useEffect, useRef } from "react";
 import { Animated, StyleSheet } from "react-native";
 import Reanimated, {
   runOnJS,
@@ -9,9 +9,11 @@ import Reanimated, {
 import { RectButton, Swipeable } from "react-native-gesture-handler";
 import { View } from "react-native-ui-lib";
 import { colors } from "@/theme/colors";
-import { spacing } from "@/theme/spacing";
 import { AntDesign } from "@expo/vector-icons";
 import RNIcon from "./shared/RNIcon";
+import { useFocusEffect } from "expo-router";
+
+const HEIGHT = 80;
 
 interface SwipeableListItemProps {
   isEditing: boolean;
@@ -19,26 +21,40 @@ interface SwipeableListItemProps {
   children: React.ReactNode;
   rowStyle: any;
   editButtonStyle: any;
+  resizable?: boolean;
+  onReset?: () => void;
 }
 
-interface SwipeableItemProps {
-  children: React.ReactNode;
-  deleteItem: () => void;
-  isEditing: boolean;
-}
+const SwipeableListItem: React.FC<SwipeableListItemProps> = (props) => {
+  const { resizable, isEditing, onDelete, children, rowStyle, editButtonStyle } = props;
 
-const SwipeableListItem: React.FC<SwipeableListItemProps> = ({
-  isEditing,
-  onDelete,
-  children,
-  rowStyle,
-  editButtonStyle,
-}) => {
-  const heightValue = useSharedValue(80);
+  const heightValue = useSharedValue<number | string>(resizable ? "auto" : HEIGHT);
+
+  const containerRef = useRef<any>(null);
+  const swipeableRef = useRef<Swipeable>(null);
+
   const containerStyle = useAnimatedStyle(() => ({
-    height: heightValue.value,
+    minHeight: resizable ? HEIGHT : undefined,
+    height: typeof heightValue.value === "number" ? heightValue.value : "auto",
+    //height: resizable ? undefined : 80,
     transform: [{ translateX: withTiming(isEditing ? 0 : -20) }],
   }));
+
+  useEffect(() => {
+    if (containerRef.current && resizable) {
+      containerRef.current.measure((_: any, __: any, ___: any, height: number) => {
+        heightValue.value = height;
+      });
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (swipeableRef.current) {
+        swipeableRef.current.close();
+      }
+    }, [isEditing]),
+  );
 
   const renderRightActionItem = (
     color: string,
@@ -89,6 +105,7 @@ const SwipeableListItem: React.FC<SwipeableListItemProps> = ({
 
   return (
     <Swipeable
+      ref={swipeableRef}
       friction={2}
       enableTrackpadTwoFingerGesture
       leftThreshold={30}
@@ -96,7 +113,10 @@ const SwipeableListItem: React.FC<SwipeableListItemProps> = ({
       dragOffsetFromRightEdge={isEditing ? Number.MAX_VALUE : 0}
       renderRightActions={renderRightActions}
     >
-      <Reanimated.View style={[rowStyle, containerStyle]}>
+      <Reanimated.View
+        ref={containerRef}
+        style={[rowStyle, containerStyle]}
+      >
         <Reanimated.View style={editButtonStyle}>
           <RectButton onPress={deleteItem}>
             <AntDesign
@@ -111,6 +131,8 @@ const SwipeableListItem: React.FC<SwipeableListItemProps> = ({
     </Swipeable>
   );
 };
+
+// export default SwipeableListItem
 
 export default SwipeableListItem;
 

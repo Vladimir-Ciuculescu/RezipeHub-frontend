@@ -1,5 +1,5 @@
 import { Text, StyleSheet, Pressable, Alert, Image } from "react-native";
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import { AntDesign } from "@expo/vector-icons";
@@ -7,7 +7,7 @@ import { $sizeStyles } from "@/theme/typography";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { spacing } from "@/theme/spacing";
 import { StatusBar } from "expo-status-bar";
-import { Formik, FormikProps } from "formik";
+import { FormikProps } from "formik";
 import RnInput from "@/components/shared/RNInput";
 import RNButton from "@/components/shared/RNButton";
 import { colors } from "@/theme/colors";
@@ -18,6 +18,10 @@ import { useActionSheet } from "@expo/react-native-action-sheet";
 
 function RecipeTitle() {
   const { showActionSheetWithOptions } = useActionSheet();
+
+  const [title, setTitle] = useState("");
+  const [servings, setServings] = useState("");
+  const [photo, setPhoto] = useState("");
 
   const router = useRouter();
   const navigation = useNavigation();
@@ -31,12 +35,6 @@ function RecipeTitle() {
 
   const cancel = () => {
     router.back();
-  };
-
-  const initialValues = {
-    title: "",
-    servings: undefined,
-    photo: "",
   };
 
   useLayoutEffect(() => {
@@ -58,7 +56,7 @@ function RecipeTitle() {
 
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Add Recipe</Text>,
     });
-  }, [navigation]);
+  }, [navigation, title, servings, photo]);
 
   const openGallery = async () => {
     const response = await ImagePicker.launchImageLibraryAsync({
@@ -74,11 +72,7 @@ function RecipeTitle() {
 
     const [image] = response.assets!;
 
-    if (formikRef.current) {
-      const { setFieldValue } = formikRef.current;
-
-      setFieldValue("photo", image.uri);
-    }
+    setPhoto(image.uri);
   };
 
   const removePhoto = () => {
@@ -89,21 +83,17 @@ function RecipeTitle() {
   };
 
   const goNext = () => {
-    if (formikRef.current) {
-      const { values } = formikRef.current;
-
-      if (!values.title) {
-        showEmptyTitleMessage();
-        return;
-      }
-
-      if (!values.servings) {
-        showEmptyServingsMessage();
-        return;
-      }
-
-      router.navigate("recipe_modal_stack/recipe_items");
+    if (!title) {
+      showEmptyTitleMessage();
+      return;
     }
+
+    if (!servings) {
+      showEmptyServingsMessage();
+      return;
+    }
+
+    router.navigate("recipe_modal_stack/recipe_items");
   };
 
   const showEmptyTitleMessage = () => {
@@ -155,69 +145,54 @@ function RecipeTitle() {
       showsVerticalScrollIndicator={false}
     >
       <StatusBar style="dark" />
-      <Formik
-        innerRef={formikRef}
-        initialValues={initialValues}
-        onSubmit={() => {}}
-      >
-        {({ values, touched, errors, handleChange, handleBlur }) => (
-          <>
-            <RnInput
-              onChangeText={handleChange("title")}
-              onBlur={handleBlur("title")}
-              value={values.title}
-              touched={touched.title}
-              error={errors.title}
-              label="Title"
-              placeholder="Title"
-              wrapperStyle={{ width: "100%" }}
+
+      <RnInput
+        value={title}
+        onChangeText={setTitle}
+        label="Title"
+        placeholder="Title"
+        wrapperStyle={{ width: "100%" }}
+      />
+      <RnInput
+        value={servings}
+        onChangeText={setServings}
+        keyboardType="numeric"
+        label="Servings"
+        placeholder="Servings"
+        wrapperStyle={{ width: "100%" }}
+      />
+      {!photo ? (
+        <RNButton
+          onPress={openGallery}
+          label="Add photo"
+          style={styles.$addPhotoBtnStye}
+          labelStyle={[{ color: colors.greyscale50 }, $sizeStyles.l]}
+          iconSource={() => (
+            <FontAwesome
+              name="photo"
+              size={20}
+              color={colors.greyscale50}
             />
-            <RnInput
-              keyboardType="numeric"
-              onChangeText={handleChange("servings")}
-              onBlur={handleBlur("servings")}
-              value={values.servings}
-              touched={touched.servings}
-              error={errors.servings}
-              label="Servings"
-              placeholder="Servings"
-              wrapperStyle={{ width: "100%" }}
+          )}
+        />
+      ) : (
+        <View style={{ width: "100%", height: 183 }}>
+          <Pressable
+            onPress={openSheet}
+            style={styles.$removePhotoBtnStyle}
+          >
+            <AntDesign
+              name="close"
+              size={24}
+              color={colors.greyscale50}
             />
-            {!values.photo ? (
-              <RNButton
-                onPress={openGallery}
-                label="Add photo"
-                style={styles.$addPhotoBtnStye}
-                labelStyle={[{ color: colors.greyscale50 }, $sizeStyles.l]}
-                iconSource={() => (
-                  <FontAwesome
-                    name="photo"
-                    size={20}
-                    color={colors.greyscale50}
-                  />
-                )}
-              />
-            ) : (
-              <View style={{ width: "100%", height: 183 }}>
-                <Pressable
-                  onPress={openSheet}
-                  style={styles.$removePhotoBtnStyle}
-                >
-                  <AntDesign
-                    name="close"
-                    size={24}
-                    color={colors.greyscale50}
-                  />
-                </Pressable>
-                <Image
-                  source={{ uri: values.photo }}
-                  style={styles.$imageStyle}
-                />
-              </View>
-            )}
-          </>
-        )}
-      </Formik>
+          </Pressable>
+          <Image
+            source={{ uri: photo }}
+            style={styles.$imageStyle}
+          />
+        </View>
+      )}
     </KeyboardAwareScrollView>
   );
 }

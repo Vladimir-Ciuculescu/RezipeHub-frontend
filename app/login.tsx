@@ -8,7 +8,7 @@ import { $sizeStyles } from "@/theme/typography";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { spacing } from "@/theme/spacing";
 import { StatusBar } from "expo-status-bar";
-import { Formik, FormikHelpers } from "formik";
+import { Formik } from "formik";
 import { loginSchema } from "@/yup/login.schema";
 import RnInput from "@/components/shared/RNInput";
 import { Feather } from "@expo/vector-icons";
@@ -32,7 +32,7 @@ enum Strategy {
 export default function Login() {
   useWarmUpBrowser();
 
-  const { signOut, isSignedIn, userId, isLoaded, sessionId } = useAuth();
+  const { isSignedIn } = useAuth();
 
   const { user } = useUser();
   const navigation = useNavigation();

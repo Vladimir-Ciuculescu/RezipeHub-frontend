@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { StyleSheet, Text, Pressable, Alert, ScrollView } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { GestureHandlerRootView, RectButton } from "react-native-gesture-handler";
+import { GestureHandlerRootView, RectButton, Swipeable } from "react-native-gesture-handler";
 import { spacing } from "@/theme/spacing";
 import { colors } from "@/theme/colors";
 import { View } from "react-native-ui-lib";
@@ -154,12 +154,18 @@ export default function RecipeItems() {
     >
       <View
         row
-        style={{ gap: spacing.spacing16, alignItems: "center" }}
+        style={styles.$stepContainerStyle}
       >
         <View style={styles.$stepInfoStyle}>
           <Text style={{ ...$sizeStyles.xl, color: colors.accent200 }}>{index + 1}</Text>
         </View>
-        <Text style={{ ...$sizeStyles.n, color: colors.greyscale400, fontFamily: "sofia800" }}>
+        <Text
+          style={{
+            ...$sizeStyles.n,
+            color: colors.greyscale400,
+            fontFamily: "sofia800",
+          }}
+        >
           {item.description}
         </Text>
       </View>
@@ -172,20 +178,23 @@ export default function RecipeItems() {
 
   return (
     <GestureHandlerRootView>
-      <ScrollView style={styles.$scrollVieContainerStyle}>
-        {ingredients.map((item) => (
-          <SwipeableItem
-            key={item.foodId}
-            isEditing={editIngredients}
-            onDelete={() => removeIngredientAction(item.foodId)}
-            rowStyle={styles.$ingredientRowStyle}
-            editButtonStyle={ingredientEditButtonStyle}
-          >
-            <IngredientRow ingredient={item} />
-          </SwipeableItem>
-        ))}
-
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.$scrollViewContentContaierStyle}
+        style={styles.$scrollVieContainerStyle}
+      >
         <View style={styles.$buttonsContainerstyle}>
+          {ingredients.map((item) => (
+            <SwipeableItem
+              key={item.foodId}
+              isEditing={editIngredients}
+              onDelete={() => removeIngredientAction(item.foodId)}
+              rowStyle={styles.$ingredientRowStyle}
+              editButtonStyle={ingredientEditButtonStyle}
+            >
+              <IngredientRow ingredient={item} />
+            </SwipeableItem>
+          ))}
           <View
             row
             style={styles.$buttonsRowContainerStyle}
@@ -207,6 +216,7 @@ export default function RecipeItems() {
           <View>
             {steps.map((item, index) => (
               <SwipeableItem
+                resizable
                 key={item.number}
                 isEditing={editSteps}
                 onDelete={() => removeStepAction(item.number)}
@@ -249,6 +259,10 @@ const styles = StyleSheet.create({
   $scrollVieContainerStyle: {
     paddingTop: spacing.spacing16,
   },
+
+  $scrollViewContentContaierStyle: {
+    paddingBottom: 50,
+  },
   $buttonsContainerstyle: {
     gap: spacing.spacing24,
   },
@@ -287,12 +301,19 @@ const styles = StyleSheet.create({
 
   $rectStepStyle: {
     flex: 1,
-    height: 80,
+    minHeight: 80,
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignItems: "center",
     flexDirection: "row",
     backgroundColor: "white",
+  },
+
+  $stepContainerStyle: {
+    gap: spacing.spacing16,
+    alignItems: "center",
+    width: "100%",
+    paddingRight: spacing.spacing64,
   },
 
   $stepInfoStyle: {
