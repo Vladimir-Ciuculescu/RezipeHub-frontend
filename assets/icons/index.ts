@@ -15,6 +15,11 @@ import Search_focused from "./search_focused.svg";
 import Chef from "./chef.svg";
 import Trash from "./trash.svg";
 import Cook from "./cook.svg";
+import Proteins from "./proteins.svg";
+import Fats from "./fats.svg";
+import Carbs from "./carbs.svg";
+import Calories from "./calories.svg";
+import Clock from "./clock.svg";
 
 export {
   Email,
@@ -34,4 +39,9 @@ export {
   Chef,
   Trash,
   Cook,
+  Proteins,
+  Fats,
+  Carbs,
+  Calories,
+  Clock,
 };

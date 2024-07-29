@@ -9,6 +9,19 @@ export interface IngredientItem {
   quantity: string;
   title: string;
   calories: number;
+  carbs?: number;
+  proteins?: number;
+  fats?: number;
+}
+
+export interface IngredientPayload {
+  name: string;
+  unit: string;
+  quantity: number;
+  calories: number;
+  carbs: number;
+  proteins: number;
+  fats: number;
 }
 
 interface Food {

@@ -176,10 +176,11 @@ export default function Login() {
           onSubmit={handleLogin}
           validationSchema={loginSchema}
         >
-          {({ values, errors, touched, handleChange, handleBlur, handleSubmit, resetForm }) => (
+          {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
             <>
               <RnInput
                 onChangeText={handleChange("email")}
+                autoCapitalize="none"
                 onBlur={handleBlur("email")}
                 value={values.email}
                 touched={touched.email}

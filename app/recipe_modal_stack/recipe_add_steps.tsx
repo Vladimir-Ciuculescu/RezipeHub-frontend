@@ -162,6 +162,7 @@ export default function RecipeAddSteps() {
         />
         <FlatList
           scrollEnabled={false}
+          // pagingEnabled
           ref={inputsFlatlListRef}
           data={steps}
           horizontal

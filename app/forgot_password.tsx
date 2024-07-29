@@ -90,6 +90,7 @@ export default function ForgotPassword() {
             <>
               <RnInput
                 onChangeText={handleChange("email")}
+                autoCapitalize="none"
                 onBlur={handleBlur("email")}
                 value={values.email}
                 touched={touched.email}

@@ -70,7 +70,7 @@ export default function RecipeItems() {
       ),
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Add ingredients</Text>,
     });
-  }, [navigation]);
+  }, [navigation, ingredients, steps]);
 
   useFocusEffect(
     useCallback(() => {
@@ -88,7 +88,15 @@ export default function RecipeItems() {
   const goNext = () => {
     if (!ingredients.length) {
       showNoIngredientsMessage();
+      return;
     }
+
+    if (!steps.length) {
+      showNoStepsMessage();
+      return;
+    }
+
+    router.navigate("recipe_modal_stack/recipe_submit");
   };
 
   const goToSearchIngredients = () => {
@@ -101,6 +109,12 @@ export default function RecipeItems() {
 
   const showNoIngredientsMessage = () => {
     Alert.alert("Cannot continue", "Please enter one or more ingredients", [{ text: "OK" }], {
+      cancelable: false,
+    });
+  };
+
+  const showNoStepsMessage = () => {
+    Alert.alert("Cannot continue", "Please enter one or more step", [{ text: "OK" }], {
       cancelable: false,
     });
   };
@@ -146,31 +160,33 @@ export default function RecipeItems() {
     );
   };
 
-  const StepRow: React.FC<StepRowProps> = ({ item, index }) => (
-    <RectButton
-      rippleColor="transparent"
-      activeOpacity={0}
-      style={styles.$rectStepStyle}
-    >
-      <View
-        row
-        style={styles.$stepContainerStyle}
+  const StepRow: React.FC<StepRowProps> = ({ item, index }) => {
+    return (
+      <RectButton
+        rippleColor="transparent"
+        activeOpacity={0}
+        style={styles.$rectStepStyle}
       >
-        <View style={styles.$stepInfoStyle}>
-          <Text style={{ ...$sizeStyles.xl, color: colors.accent200 }}>{index + 1}</Text>
-        </View>
-        <Text
-          style={{
-            ...$sizeStyles.n,
-            color: colors.greyscale400,
-            fontFamily: "sofia800",
-          }}
+        <View
+          row
+          style={styles.$stepContainerStyle}
         >
-          {item.description}
-        </Text>
-      </View>
-    </RectButton>
-  );
+          <View style={styles.$stepInfoStyle}>
+            <Text style={{ ...$sizeStyles.xl, color: colors.accent200 }}>{index + 1}</Text>
+          </View>
+          <Text
+            style={{
+              ...$sizeStyles.n,
+              color: colors.greyscale400,
+              fontFamily: "sofia800",
+            }}
+          >
+            {item.description}
+          </Text>
+        </View>
+      </RectButton>
+    );
+  };
 
   const isEditIngredientsDisabled = ingredients.length;
 
@@ -184,17 +200,19 @@ export default function RecipeItems() {
         style={styles.$scrollVieContainerStyle}
       >
         <View style={styles.$buttonsContainerstyle}>
-          {ingredients.map((item) => (
-            <SwipeableItem
-              key={item.foodId}
-              isEditing={editIngredients}
-              onDelete={() => removeIngredientAction(item.foodId)}
-              rowStyle={styles.$ingredientRowStyle}
-              editButtonStyle={ingredientEditButtonStyle}
-            >
-              <IngredientRow ingredient={item} />
-            </SwipeableItem>
-          ))}
+          <View>
+            {ingredients.map((item) => (
+              <SwipeableItem
+                key={item.foodId}
+                isEditing={editIngredients}
+                onDelete={() => removeIngredientAction(item.foodId)}
+                rowStyle={styles.$ingredientRowStyle}
+                editButtonStyle={ingredientEditButtonStyle}
+              >
+                <IngredientRow ingredient={item} />
+              </SwipeableItem>
+            ))}
+          </View>
           <View
             row
             style={styles.$buttonsRowContainerStyle}
@@ -216,7 +234,6 @@ export default function RecipeItems() {
           <View>
             {steps.map((item, index) => (
               <SwipeableItem
-                resizable
                 key={item.number}
                 isEditing={editSteps}
                 onDelete={() => removeStepAction(item.number)}

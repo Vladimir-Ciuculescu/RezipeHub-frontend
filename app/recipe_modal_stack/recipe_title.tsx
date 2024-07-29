@@ -7,7 +7,6 @@ import { $sizeStyles } from "@/theme/typography";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { spacing } from "@/theme/spacing";
 import { StatusBar } from "expo-status-bar";
-import { FormikProps } from "formik";
 import RnInput from "@/components/shared/RNInput";
 import RNButton from "@/components/shared/RNButton";
 import { colors } from "@/theme/colors";
@@ -15,9 +14,12 @@ import { View } from "react-native-ui-lib";
 import { FontAwesome } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useActionSheet } from "@expo/react-native-action-sheet";
+import useRecipeStore from "@/zustand/useRecipeStore";
 
 function RecipeTitle() {
   const { showActionSheetWithOptions } = useActionSheet();
+
+  const addInfoAction = useRecipeStore.use.addInfoAction();
 
   const [title, setTitle] = useState("");
   const [servings, setServings] = useState("");
@@ -25,13 +27,6 @@ function RecipeTitle() {
 
   const router = useRouter();
   const navigation = useNavigation();
-  const formikRef = useRef<
-    FormikProps<{
-      title: string | undefined;
-      servings: string | undefined;
-      photo: string | undefined;
-    }>
-  >(null);
 
   const cancel = () => {
     router.back();
@@ -76,10 +71,7 @@ function RecipeTitle() {
   };
 
   const removePhoto = () => {
-    if (formikRef.current) {
-      const { setFieldValue } = formikRef.current;
-      setFieldValue("photo", "");
-    }
+    setPhoto("");
   };
 
   const goNext = () => {
@@ -92,6 +84,14 @@ function RecipeTitle() {
       showEmptyServingsMessage();
       return;
     }
+
+    const payload = {
+      title,
+      servings: parseInt(servings),
+      photo: photo,
+    };
+
+    addInfoAction(payload);
 
     router.navigate("recipe_modal_stack/recipe_items");
   };

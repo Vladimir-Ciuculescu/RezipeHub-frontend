@@ -5,13 +5,13 @@ import {
   SocialLoginUserRequest,
   User,
 } from "@/types/user.types";
-import axiosInstance from "..";
 import { handleError } from "../handleError";
+import { axiosPublicInstance } from "..";
 
 const AuthService = {
   registerUser: async (payload: RegisterUserRequest): Promise<User> => {
     try {
-      const { data } = await axiosInstance.post("/auth/register", payload);
+      const { data } = await axiosPublicInstance.post("/auth/register", payload);
       return data;
     } catch (error) {
       throw handleError(error);
@@ -20,7 +20,7 @@ const AuthService = {
 
   loginUser: async (payload: LoginUserRequest) => {
     try {
-      const { data } = await axiosInstance.post("/auth/login", payload);
+      const { data } = await axiosPublicInstance.post("/auth/login", payload);
       return data;
     } catch (error) {
       throw handleError(error);
@@ -29,7 +29,7 @@ const AuthService = {
 
   socialLoginUser: async (payload: SocialLoginUserRequest) => {
     try {
-      const { data } = await axiosInstance.post("auth/social-login", payload);
+      const { data } = await axiosPublicInstance.post("auth/social-login", payload);
       return data;
     } catch (error) {
       throw handleError(error);
@@ -38,7 +38,7 @@ const AuthService = {
 
   resetPassword: async (payload: ResetPasswordRequest) => {
     try {
-      await axiosInstance.post("auth/reset-password", payload);
+      await axiosPublicInstance.post("auth/reset-password", payload);
     } catch (error) {
       throw handleError(error);
     }

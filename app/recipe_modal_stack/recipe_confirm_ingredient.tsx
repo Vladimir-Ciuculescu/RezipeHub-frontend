@@ -19,6 +19,7 @@ import RnInput from "@/components/shared/RNInput";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
 import RNPickerSelect from "react-native-picker-select";
 import useRecipeStore from "@/zustand/useRecipeStore";
+import RNSegmentedControl from "@/components/shared/RnSegmentedControl";
 
 const nutrientsLabelMapping: any = {
   ENERC_KCAL: "Calories",
@@ -72,6 +73,8 @@ interface NutrientItemProps {
   nutrient: [string, NutrientDetail];
 }
 
+const segments = [{ label: "Measures" }, { label: "Percentage" }];
+
 const NutrientItem: FC<NutrientItemProps> = ({ nutrient }) => {
   const label = nutrient[0];
   const quantity = nutrient[1].quantity;
@@ -103,6 +106,7 @@ export default function RecipeConfirmIngredient() {
   const addIngredientAction = useRecipeStore.use.addIngredientAction();
 
   const parsedIngredient: IngredientResponse = JSON.parse(ingredient);
+  console.log(5555, parsedIngredient);
 
   const defaultMeasurementObject = {
     foodId: parsedIngredient.food.foodId,
@@ -168,7 +172,10 @@ export default function RecipeConfirmIngredient() {
       title: parsedIngredient.food.label,
       measure: unitMeasure,
       quantity: quantity,
-      calories: nutrientsInfo?.totalNutrients.ENERC_KCAL!.quantity!,
+      calories: nutrientsInfo!.totalNutrients.ENERC_KCAL!.quantity!,
+      carbs: nutrientsInfo!.totalNutrients.CHOCDF!.quantity,
+      proteins: nutrientsInfo!.totalNutrients.PROCNT!.quantity,
+      fats: nutrientsInfo!.totalNutrients.FAT?.quantity,
     };
 
     addIngredientAction(payload);
@@ -246,17 +253,11 @@ export default function RecipeConfirmIngredient() {
           />
           <View style={styles.$baseWrapperStyle}>
             <Text style={[$sizeStyles.h3, styles.$labelStyle]}>Nutritional information</Text>
-            <SegmentedControl
+
+            <RNSegmentedControl
               initialIndex={segmentIndex}
-              segments={[{ label: "Measures" }, { label: "Percentage" }]}
-              activeColor={colors.greyscale50}
-              borderRadius={16}
+              segments={segments}
               onChangeIndex={setSegmentIndex}
-              backgroundColor={colors.greyscale150}
-              activeBackgroundColor={colors.brandPrimary}
-              inactiveColor={colors.brandPrimary}
-              segmentsStyle={styles.$segmentStyle}
-              segmentLabelStyle={styles.$segmentLabelstyle}
             />
 
             {nutrientsInfo &&
@@ -264,13 +265,12 @@ export default function RecipeConfirmIngredient() {
                 segmentIndex === 0 ? nutrientsInfo.totalNutrients : nutrientsInfo.totalDaily,
               ).map((nutrient, index, array) => {
                 return (
-                  <>
-                    <NutrientItem
-                      key={`${nutrient[0]} - ${index}`}
-                      nutrient={nutrient}
-                    />
+                  <React.Fragment
+                    key={`${nutrient[0]}-${nutrient[1].quantity}-${nutrient[1].unit}`}
+                  >
+                    <NutrientItem nutrient={nutrient} />
                     {index < array.length - 1 && <View style={styles.separator} />}
-                  </>
+                  </React.Fragment>
                 );
               })}
           </View>

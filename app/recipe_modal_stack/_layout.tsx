@@ -50,6 +50,15 @@ export default function Layout() {
         }}
         name="recipe_add_steps"
       />
+      <Stack.Screen
+        options={{
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerTitleAlign: "center",
+          //headerShown: false,
+        }}
+        name="recipe_submit"
+      />
     </Stack>
   );
 }

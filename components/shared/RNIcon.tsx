@@ -17,6 +17,11 @@ import {
   Arrow_right,
   Trash,
   Cook,
+  Proteins,
+  Fats,
+  Calories,
+  Carbs,
+  Clock,
 } from "@/assets/icons";
 import { colors } from "@/theme/colors";
 
@@ -40,6 +45,11 @@ enum Icons {
   chef = "chef",
   trash = "trash",
   cook = "cook",
+  proteins = "proteins",
+  carbs = "carbs",
+  fats = "fats",
+  calories = "calories",
+  clock = "clock",
 }
 
 type IconMap = {
@@ -64,6 +74,11 @@ const icons: IconMap = {
   chef: Chef,
   trash: Trash,
   cook: Cook,
+  proteins: Proteins,
+  fats: Fats,
+  calories: Calories,
+  carbs: Carbs,
+  clock: Clock,
 };
 
 interface RNIconProps {
