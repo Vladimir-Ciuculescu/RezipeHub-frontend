@@ -29,7 +29,6 @@ import StepsList from "@/components/StepsList";
 import { IngredientItem } from "@/types/ingredient";
 import RecipeService from "@/api/services/recipe.service";
 import useUserData from "@/hooks/useUserData";
-import { AddRecipeRequest } from "@/types/recipe.types";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -42,8 +41,6 @@ export default function RecipeSubmit() {
   const [segmentIndex, setSegmentIndex] = useState(0);
   const inputsFlatlListRef = useRef<FlatList>(null);
   const user = useUserData();
-
-  console.log(555, user);
 
   const title = useRecipeStore.use.title();
   const servings = useRecipeStore.use.servings();
@@ -121,7 +118,7 @@ export default function RecipeSubmit() {
     try {
       await RecipeService.addRecipe(payload);
     } catch (error) {
-      console.log(error);
+      console.log("error", error);
     }
   };
 

@@ -14,9 +14,7 @@ interface StepsListProps {
 
 const StepsList: React.FC<StepsListProps> = ({ steps }) => {
   return (
-    <View
-      style={{ width, padding: 10, gap: spacing.spacing12, paddingHorizontal: spacing.spacing16 }}
-    >
+    <View style={styles.$containerStyle}>
       <View
         row
         style={{ justifyContent: "space-between" }}
@@ -27,7 +25,7 @@ const StepsList: React.FC<StepsListProps> = ({ steps }) => {
       {steps.map((step, index) => (
         <View
           key={index}
-          style={styles.container}
+          style={styles.$innerContainerStyle}
         >
           <View style={styles.$stepInfoStyle}>
             <Text style={{ ...$sizeStyles.xl, color: colors.accent200 }}>{index + 1}</Text>
@@ -44,7 +42,14 @@ const StepsList: React.FC<StepsListProps> = ({ steps }) => {
 export default StepsList;
 
 const styles = StyleSheet.create({
-  container: {
+  $containerStyle: {
+    width,
+    padding: 10,
+    gap: spacing.spacing12,
+    paddingHorizontal: spacing.spacing16,
+  },
+
+  $innerContainerStyle: {
     minHeight: 80,
     display: "flex",
     gap: spacing.spacing16,

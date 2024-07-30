@@ -106,7 +106,6 @@ export default function RecipeConfirmIngredient() {
   const addIngredientAction = useRecipeStore.use.addIngredientAction();
 
   const parsedIngredient: IngredientResponse = JSON.parse(ingredient);
-  console.log(5555, parsedIngredient);
 
   const defaultMeasurementObject = {
     foodId: parsedIngredient.food.foodId,
@@ -172,10 +171,10 @@ export default function RecipeConfirmIngredient() {
       title: parsedIngredient.food.label,
       measure: unitMeasure,
       quantity: quantity,
-      calories: nutrientsInfo!.totalNutrients.ENERC_KCAL!.quantity!,
-      carbs: nutrientsInfo!.totalNutrients.CHOCDF!.quantity,
-      proteins: nutrientsInfo!.totalNutrients.PROCNT!.quantity,
-      fats: nutrientsInfo!.totalNutrients.FAT?.quantity,
+      calories: nutrientsInfo?.totalNutrients.ENERC_KCAL!.quantity!,
+      carbs: nutrientsInfo?.totalNutrients.CHOCDF!.quantity,
+      proteins: nutrientsInfo?.totalNutrients.PROCNT!.quantity,
+      fats: nutrientsInfo?.totalNutrients.FAT?.quantity,
     };
 
     addIngredientAction(payload);

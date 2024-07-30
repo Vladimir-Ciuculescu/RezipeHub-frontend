@@ -16,7 +16,7 @@ import { colors } from "@/theme/colors";
 import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import AuthService from "@/api/services/auth.service";
 import { LoginUserRequest, SocialLoginUserRequest, User } from "@/types/user.types";
-import { ACCESS_TOKEN, storage } from "@/storage";
+import { ACCESS_TOKEN, REFRESH_TOKEN, storage } from "@/storage";
 import * as WebBrowser from "expo-web-browser";
 import { useWarmUpBrowser } from "@/hooks/useWarmUpBrowser";
 import { useAuth, useOAuth, useUser } from "@clerk/clerk-expo";
@@ -115,14 +115,15 @@ export default function Login() {
     router.navigate("(tabs)");
   };
 
-  const storeUser = (accessToken: string) => {
+  const storeUser = (accessToken: string, refreshToken: string) => {
     storage.set(ACCESS_TOKEN, accessToken);
+    storage.set(REFRESH_TOKEN, refreshToken);
   };
 
   const handleSocialLogin = async (payload: SocialLoginUserRequest) => {
     try {
       const data = await AuthService.socialLoginUser(payload);
-      storeUser(data.access_token);
+      storeUser(data.access_token, data.refresh_token);
       goToApp();
     } catch (error: any) {
       Alert.alert(
@@ -131,7 +132,6 @@ export default function Login() {
         [
           {
             text: "OK",
-            onPress: () => console.log("OK Pressed"),
           },
         ],
         { cancelable: false },
@@ -143,7 +143,8 @@ export default function Login() {
     setIsLoading(true);
     try {
       const data = await AuthService.loginUser(payload);
-      storeUser(data.access_token);
+
+      storeUser(data.access_token, data.refresh_token);
       goToApp();
     } catch (error: any) {
       Alert.alert(

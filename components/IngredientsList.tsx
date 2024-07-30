@@ -14,9 +14,7 @@ interface IngredientsListProps {
 
 const IngredientsList: React.FC<IngredientsListProps> = ({ ingredients }) => {
   return (
-    <View
-      style={{ width, padding: 10, gap: spacing.spacing12, paddingHorizontal: spacing.spacing16 }}
-    >
+    <View style={styles.$containerStyle}>
       <View
         row
         style={{ justifyContent: "space-between" }}
@@ -27,7 +25,10 @@ const IngredientsList: React.FC<IngredientsListProps> = ({ ingredients }) => {
         </Text>
       </View>
       {ingredients.map((ingredient) => (
-        <View style={styles.container}>
+        <View
+          style={styles.$innerContainerStyle}
+          key={`${ingredient.foodId}-${ingredient.title}`}
+        >
           <Text style={[$sizeStyles.n, { fontFamily: "sofia700" }]}>{ingredient.title}</Text>
           <Text style={[$sizeStyles.n, { fontFamily: "sofia700" }]}>
             {ingredient.quantity} {ingredient.measure}
@@ -41,7 +42,14 @@ const IngredientsList: React.FC<IngredientsListProps> = ({ ingredients }) => {
 export default IngredientsList;
 
 const styles = StyleSheet.create({
-  container: {
+  $containerStyle: {
+    width,
+    padding: 10,
+    gap: spacing.spacing12,
+    paddingHorizontal: spacing.spacing16,
+  },
+
+  $innerContainerStyle: {
     height: 80,
     display: "flex",
     flexDirection: "row",
