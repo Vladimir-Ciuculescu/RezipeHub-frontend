@@ -5,7 +5,7 @@ export interface AddRecipeRequest {
   userId: number;
   title: string;
   servings: number;
-  photoUrl: string;
+  photoUrl?: string;
   ingredients: IngredientPayload[];
   steps: StepPayload[];
 }

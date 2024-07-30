@@ -29,6 +29,8 @@ import StepsList from "@/components/StepsList";
 import { IngredientItem } from "@/types/ingredient";
 import RecipeService from "@/api/services/recipe.service";
 import useUserData from "@/hooks/useUserData";
+import S3Service from "@/api/services/s3.service";
+import { AddRecipeRequest } from "@/types/recipe.types";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -106,19 +108,33 @@ export default function RecipeSubmit() {
       step: step.number,
     }));
 
-    const payload = {
+    const payload: AddRecipeRequest = {
       userId: user!.id,
       title: title,
       servings: servings,
-      photoUrl: photo,
       ingredients: ingredientsPayload,
       steps: stepsPayload,
     };
 
     try {
-      await RecipeService.addRecipe(payload);
+      if (photo) {
+        const formData = new FormData();
+
+        formData.append("file", {
+          uri: photo,
+          type: "image/jpeg",
+          name: `${user?.id}-${user?.firstName}-${user?.lastName}-${title}`,
+        } as any);
+
+        const { url } = await S3Service.uploadImage(formData);
+
+        payload.photoUrl = url;
+
+        await RecipeService.addRecipe(payload);
+      }
     } catch (error) {
-      console.log("error", error);
+      //TODO: Handle error with a pop up
+      console.log(error);
     }
   };
 
