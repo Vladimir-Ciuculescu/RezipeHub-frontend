@@ -32,6 +32,7 @@ import RecipeService from "@/api/services/recipe.service";
 import useUserData from "@/hooks/useUserData";
 import S3Service from "@/api/services/s3.service";
 import { AddRecipeRequest } from "@/types/recipe.types";
+import Entypo from "@expo/vector-icons/Entypo";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -224,12 +225,20 @@ export default function RecipeSubmit() {
     >
       <View style={styles.$headerContainerStyle}>
         <Animated.View style={[styles.$headerStyle, headerAnimatedStyle]}>
-          <Image
-            source={{
-              uri: photo,
-            }}
-            style={styles.$imageContainerstyle}
-          />
+          {photo ? (
+            <Image
+              source={{
+                uri: photo,
+              }}
+              style={styles.$imageContainerstyle}
+            />
+          ) : (
+            <Entypo
+              name="camera"
+              size={40}
+              color={colors.greyscale150}
+            />
+          )}
         </Animated.View>
       </View>
       <View style={styles.$contentStyle}>
@@ -309,6 +318,9 @@ const styles = StyleSheet.create({
   $headerStyle: {
     height: HEADER_HEIGHT,
     overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.greyscale300,
   },
 
   scrollView: {

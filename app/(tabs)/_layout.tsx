@@ -15,6 +15,7 @@ export default function TabLayout() {
       <StatusBar style="dark" />
 
       <Tabs
+        sceneContainerStyle={{ backgroundColor: colors.greyscale150 }}
         screenOptions={{
           tabBarActiveTintColor: "blue",
           tabBarShowLabel: false,
