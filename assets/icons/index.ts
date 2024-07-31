@@ -20,6 +20,7 @@ import Fats from "./fats.svg";
 import Carbs from "./carbs.svg";
 import Calories from "./calories.svg";
 import Clock from "./clock.svg";
+import Bowl from "./bowl.svg";
 
 export {
   Email,
@@ -44,4 +45,5 @@ export {
   Carbs,
   Calories,
   Clock,
+  Bowl,
 };

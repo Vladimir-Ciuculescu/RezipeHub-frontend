@@ -17,14 +17,19 @@ interface Action {
   addStepsAction: (steps: Step[]) => void;
   removeStepAction: (stepNumber: number) => void;
   addInfoAction: (info: Omit<State, "ingredients" | "steps">) => void;
+  reset: () => void;
 }
 
-const useRecipeStoreBase = create<State & Action>((set) => ({
+const initialState: State = {
   ingredients: [],
   steps: [],
   title: "",
   servings: 1,
   photo: "",
+};
+
+const useRecipeStoreBase = create<State & Action>()((set, get) => ({
+  ...initialState,
   addIngredientAction: (ingredient) =>
     set((state: State) => ({ ingredients: [...state.ingredients, ingredient] })),
   removeIngredientAction: (foodId: string) =>
@@ -35,6 +40,7 @@ const useRecipeStoreBase = create<State & Action>((set) => ({
   removeStepAction: (stepNumber) =>
     set((state: State) => ({ steps: state.steps.filter((step) => step.number !== stepNumber) })),
   addInfoAction: (info) => set((state: State) => ({ ...info })),
+  reset: () => set(initialState),
 }));
 
 const useRecipeStore = createSelectors(useRecipeStoreBase);

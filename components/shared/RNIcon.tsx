@@ -22,6 +22,7 @@ import {
   Calories,
   Carbs,
   Clock,
+  Bowl,
 } from "@/assets/icons";
 import { colors } from "@/theme/colors";
 
@@ -50,6 +51,7 @@ enum Icons {
   fats = "fats",
   calories = "calories",
   clock = "clock",
+  bowl = "bowl",
 }
 
 type IconMap = {
@@ -79,6 +81,7 @@ const icons: IconMap = {
   calories: Calories,
   carbs: Carbs,
   clock: Clock,
+  bowl: Bowl,
 };
 
 interface RNIconProps {

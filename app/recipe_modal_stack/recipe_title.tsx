@@ -20,6 +20,7 @@ function RecipeTitle() {
   const { showActionSheetWithOptions } = useActionSheet();
 
   const addInfoAction = useRecipeStore.use.addInfoAction();
+  const reset = useRecipeStore.use.reset();
 
   const [title, setTitle] = useState("");
   const [servings, setServings] = useState("");
@@ -29,6 +30,7 @@ function RecipeTitle() {
   const navigation = useNavigation();
 
   const cancel = () => {
+    reset();
     router.back();
   };
 

@@ -7,6 +7,7 @@ import {
   FlatList,
   ListRenderItem,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
@@ -41,6 +42,7 @@ export default function RecipeSubmit() {
   const navigation = useNavigation();
   const router = useRouter();
   const [segmentIndex, setSegmentIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
   const inputsFlatlListRef = useRef<FlatList>(null);
   const user = useUserData();
 
@@ -49,26 +51,33 @@ export default function RecipeSubmit() {
   const photo = useRecipeStore.use.photo();
   const ingredients = useRecipeStore.use.ingredients();
   const steps = useRecipeStore.use.steps();
+  const reset = useRecipeStore.use.reset();
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={goBack}>
+        <Pressable
+          onPress={goBack}
+          disabled={loading}
+          style={loading ? styles.$disabledBackBtnStyle : styles.$enabledBackBtnStyle}
+        >
           <RNIcon name="arrow_left" />
         </Pressable>
       ),
-      headerRight: () => (
-        <TouchableOpacity onPress={addRecipe}>
-          <AntDesign
-            name="checkcircle"
-            size={24}
-            color={colors.accent200}
-          />
-        </TouchableOpacity>
-      ),
+      headerRight: () =>
+        loading ? (
+          <ActivityIndicator color={colors.accent200} />
+        ) : (
+          <TouchableOpacity onPress={addRecipe}>
+            <RNIcon
+              name="bowl"
+              color={colors.accent200}
+            />
+          </TouchableOpacity>
+        ),
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Confirm recipe</Text>,
     });
-  }, [navigation, user]);
+  }, [navigation, user, loading]);
 
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
@@ -91,6 +100,8 @@ export default function RecipeSubmit() {
   });
 
   const addRecipe = async () => {
+    setLoading(true);
+
     const ingredientsPayload = ingredients.map((ingredient) => {
       return {
         name: ingredient.title,
@@ -129,13 +140,18 @@ export default function RecipeSubmit() {
         const { url } = await S3Service.uploadImage(formData);
 
         payload.photoUrl = url;
-
-        await RecipeService.addRecipe(payload);
       }
+      await RecipeService.addRecipe(payload);
+
+      reset();
+      router.dismissAll();
+      router.back();
     } catch (error) {
       //TODO: Handle error with a pop up
       console.log(error);
     }
+
+    setLoading(false);
   };
 
   const goBack = () => {
@@ -298,6 +314,15 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+
+  $disabledBackBtnStyle: {
+    opacity: 0.5,
+  },
+
+  $enabledBackBtnStyle: {
+    opacity: 1,
+  },
+
   scrollContent: {
     justifyContent: "center",
     alignItems: "center",
