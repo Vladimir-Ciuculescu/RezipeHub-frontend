@@ -15,6 +15,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import useRecipeStore from "@/zustand/useRecipeStore";
+import FastImage from "react-native-fast-image";
 
 function RecipeTitle() {
   const { showActionSheetWithOptions } = useActionSheet();
@@ -189,9 +190,13 @@ function RecipeTitle() {
               color={colors.greyscale50}
             />
           </Pressable>
-          <Image
-            source={{ uri: photo }}
+
+          <FastImage
             style={styles.$imageStyle}
+            source={{
+              uri: photo,
+              priority: FastImage.priority.normal,
+            }}
           />
         </View>
       )}

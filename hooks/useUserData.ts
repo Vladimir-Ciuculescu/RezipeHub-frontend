@@ -4,23 +4,21 @@ import { jwtDecode } from "jwt-decode";
 import { CurrentUser } from "@/types/user.types";
 
 const useUserData = () => {
-  const [userData, setUserData] = useState<CurrentUser>();
+  const accessToken = storage.getString(ACCESS_TOKEN);
 
-  useEffect(() => {
-    const accessToken = storage.getString(ACCESS_TOKEN);
+  let user: any = {};
 
-    if (accessToken) {
-      try {
-        const userData = jwtDecode(accessToken) as CurrentUser;
+  if (accessToken) {
+    try {
+      const userData = jwtDecode(accessToken) as CurrentUser;
 
-        setUserData(userData);
-      } catch (error) {
-        console.error("Failed to parse user data from token:", error);
-      }
+      user = userData;
+    } catch (error) {
+      console.error("Failed to parse user data from token:", error);
     }
-  }, []);
+  }
 
-  return userData;
+  return user;
 };
 
 export default useUserData;

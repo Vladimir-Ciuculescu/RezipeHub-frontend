@@ -2,11 +2,12 @@ import axios from "axios";
 import { handleError } from "../handleError";
 import { ConfirmTokenRequest, ResendTokenRequest } from "@/types/token.types";
 import { axiosPublicInstance } from "..";
+import { TOKEN } from "../constants";
 
 const TokenService = {
   resendToken: async (payload: ResendTokenRequest) => {
     try {
-      await axiosPublicInstance.post("/token/resend", { params: payload });
+      await axiosPublicInstance.post(`/${TOKEN}/resend`, { params: payload });
     } catch (error) {
       throw handleError(error);
     }
@@ -14,7 +15,7 @@ const TokenService = {
 
   validateToken: async (payload: ConfirmTokenRequest) => {
     try {
-      await axiosPublicInstance.post("/token/confirm", payload);
+      await axiosPublicInstance.post(`/${TOKEN}/confirm`, payload);
     } catch (error) {
       throw handleError(error);
     }
@@ -22,7 +23,7 @@ const TokenService = {
 
   sendResetPasswordToken: async (email: string) => {
     try {
-      await axiosPublicInstance.post("/token/send-reset-email", { email });
+      await axiosPublicInstance.post(`/${TOKEN}/send-reset-email`, { email });
     } catch (error) {
       throw handleError(error);
     }

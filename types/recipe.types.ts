@@ -9,3 +9,9 @@ export interface AddRecipeRequest {
   ingredients: IngredientPayload[];
   steps: StepPayload[];
 }
+
+export interface GetRecipesByUserRequest {
+  page: number;
+  limit: number;
+  userId: number;
+}
