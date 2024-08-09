@@ -1,7 +1,6 @@
 import {
   Text,
   Pressable,
-  Image,
   StyleSheet,
   Dimensions,
   FlatList,
@@ -13,7 +12,6 @@ import React, { useLayoutEffect, useRef, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import { $sizeStyles } from "@/theme/typography";
-import { AntDesign } from "@expo/vector-icons";
 import { colors } from "@/theme/colors";
 import Animated, {
   interpolate,
@@ -28,11 +26,11 @@ import RNSegmentedControl, { SegmentItem } from "@/components/shared/RnSegmented
 import IngredientsList from "@/components/IngredientsList";
 import StepsList from "@/components/StepsList";
 import { IngredientItem } from "@/types/ingredient";
-import RecipeService from "@/api/services/recipe.service";
 import useUserData from "@/hooks/useUserData";
-import S3Service from "@/api/services/s3.service";
-import { AddRecipeRequest } from "@/types/recipe.types";
 import Entypo from "@expo/vector-icons/Entypo";
+import FastImage from "react-native-fast-image";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAddRecipeMutation } from "@/hooks/recipes.hooks";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -40,10 +38,11 @@ const HEADER_HEIGHT = height / 4;
 const SEGMENTS: SegmentItem[] = [{ label: "Ingredients" }, { label: "Instructions" }];
 
 export default function RecipeSubmit() {
+  const queryClient = useQueryClient();
+
   const navigation = useNavigation();
   const router = useRouter();
   const [segmentIndex, setSegmentIndex] = useState(0);
-  const [loading, setLoading] = useState(false);
   const inputsFlatlListRef = useRef<FlatList>(null);
   const user = useUserData();
 
@@ -53,23 +52,24 @@ export default function RecipeSubmit() {
   const ingredients = useRecipeStore.use.ingredients();
   const steps = useRecipeStore.use.steps();
   const reset = useRecipeStore.use.reset();
+  const { mutate, isError, isPending } = useAddRecipeMutation();
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
         <Pressable
           onPress={goBack}
-          disabled={loading}
-          style={loading ? styles.$disabledBackBtnStyle : styles.$enabledBackBtnStyle}
+          disabled={isPending}
+          style={isPending ? styles.$disabledBackBtnStyle : styles.$enabledBackBtnStyle}
         >
           <RNIcon name="arrow_left" />
         </Pressable>
       ),
       headerRight: () =>
-        loading ? (
+        isPending ? (
           <ActivityIndicator color={colors.accent200} />
         ) : (
-          <TouchableOpacity onPress={addRecipe}>
+          <TouchableOpacity onPress={handleAddRecipe}>
             <RNIcon
               name="bowl"
               color={colors.accent200}
@@ -78,7 +78,7 @@ export default function RecipeSubmit() {
         ),
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Confirm recipe</Text>,
     });
-  }, [navigation, user, loading]);
+  }, [navigation, user, isPending]);
 
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
@@ -100,9 +100,7 @@ export default function RecipeSubmit() {
     };
   });
 
-  const addRecipe = async () => {
-    setLoading(true);
-
+  const handleAddRecipe = () => {
     const ingredientsPayload = ingredients.map((ingredient) => {
       return {
         name: ingredient.title,
@@ -120,39 +118,23 @@ export default function RecipeSubmit() {
       step: step.number,
     }));
 
-    const payload: AddRecipeRequest = {
+    const payload = {
       userId: user!.id,
-      title: title,
-      servings: servings,
+      title,
+      servings,
       ingredients: ingredientsPayload,
       steps: stepsPayload,
+      photoUrl: photo,
     };
 
-    try {
-      if (photo) {
-        const formData = new FormData();
-
-        formData.append("file", {
-          uri: photo,
-          type: "image/jpeg",
-          name: `${user?.id}-${user?.firstName}-${user?.lastName}-${title}`,
-        } as any);
-
-        const { url } = await S3Service.uploadImage(formData);
-
-        payload.photoUrl = url;
-      }
-      await RecipeService.addRecipe(payload);
-
-      reset();
-      router.dismissAll();
-      router.back();
-    } catch (error) {
-      //TODO: Handle error with a pop up
-      console.log(error);
-    }
-
-    setLoading(false);
+    mutate(payload, {
+      onSuccess: (data) => {
+        queryClient.setQueryData(["recipes-per-user"], (oldData: any) => [...oldData, data]);
+        reset();
+        router.dismissAll();
+        router.back();
+      },
+    });
   };
 
   const goBack = () => {
@@ -226,11 +208,12 @@ export default function RecipeSubmit() {
       <View style={styles.$headerContainerStyle}>
         <Animated.View style={[styles.$headerStyle, headerAnimatedStyle]}>
           {photo ? (
-            <Image
+            <FastImage
+              style={styles.$imageContainerstyle}
               source={{
                 uri: photo,
+                priority: FastImage.priority.normal,
               }}
-              style={styles.$imageContainerstyle}
             />
           ) : (
             <Entypo
