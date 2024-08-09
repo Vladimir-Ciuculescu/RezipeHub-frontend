@@ -36,7 +36,6 @@ axiosInstance.interceptors.request.use(
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
 
-    // config.params = config.data.params || {};
     config.params = config.params || config.data.params || {};
     return config;
   },
