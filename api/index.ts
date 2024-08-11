@@ -36,7 +36,11 @@ axiosInstance.interceptors.request.use(
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
 
-    config.params = config.params || config.data.params || {};
+    if (config.data) {
+      config.data.params = config.params || {};
+    }
+
+    // config.params = config.params || config.data.params || {};
     return config;
   },
   (error) => Promise.reject(error),
@@ -46,6 +50,8 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
+    console.log("interceptor", error);
 
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;

@@ -25,12 +25,14 @@ import { View } from "react-native-ui-lib";
 import RNSegmentedControl, { SegmentItem } from "@/components/shared/RnSegmentedControl";
 import IngredientsList from "@/components/IngredientsList";
 import StepsList from "@/components/StepsList";
-import { IngredientItem } from "@/types/ingredient";
 import useUserData from "@/hooks/useUserData";
 import Entypo from "@expo/vector-icons/Entypo";
 import FastImage from "react-native-fast-image";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAddRecipeMutation } from "@/hooks/recipes.hooks";
+import NutritionalInfo from "@/components/NutritionalInfo";
+import { IngredientItem } from "@/types/ingredient.types";
+import useNutritionalTotals from "@/hooks/useNutritionalTotals";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -53,6 +55,8 @@ export default function RecipeSubmit() {
   const steps = useRecipeStore.use.steps();
   const reset = useRecipeStore.use.reset();
   const { mutate, isError, isPending } = useAddRecipeMutation();
+
+  const { totalCalories, totalCarbs, totalFats, totalProteins } = useNutritionalTotals(ingredients);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -148,26 +152,6 @@ export default function RecipeSubmit() {
     type: string;
   }
 
-  const NutritionalItem: React.FC<NutritionalItemProps> = ({
-    icon,
-    quantity,
-    unitMeasure,
-    type,
-  }) => {
-    return (
-      <View
-        row
-        style={styles.$nutritionalItemContainerStyle}
-      >
-        <View style={styles.$nutritionalItemIconStyle}>{icon}</View>
-        <Text style={[$sizeStyles.l, { fontFamily: "sofia400" }]}>
-          {quantity}
-          {unitMeasure} {type}
-        </Text>
-      </View>
-    );
-  };
-
   const sections = [
     {
       section: <IngredientsList ingredients={ingredients} />,
@@ -186,17 +170,17 @@ export default function RecipeSubmit() {
     return <View style={{ width }}>{item.section}</View>;
   };
 
-  const calculateTotal = (
-    ingredients: IngredientItem[],
-    property: keyof Omit<IngredientItem, "foodId" | "measure" | "quantity" | "title">,
-  ): number => {
-    return ingredients.reduce((sum, ingredient) => sum + (ingredient[property] || 0), 0);
-  };
+  // const calculateTotal = (
+  //   ingredients: IngredientItem[],
+  //   property: keyof Omit<IngredientItem, "foodId" | "measure" | "quantity" | "title">,
+  // ): number => {
+  //   return ingredients.reduce((sum, ingredient) => sum + (ingredient[property] || 0), 0);
+  // };
 
-  const totalProteins = Math.floor(calculateTotal(ingredients, "proteins"));
-  const totalCarbs = Math.floor(calculateTotal(ingredients, "carbs"));
-  const totalCalories = Math.floor(calculateTotal(ingredients, "calories"));
-  const totalFats = Math.floor(calculateTotal(ingredients, "fats"));
+  // const totalProteins = Math.floor(calculateTotal(ingredients, "proteins"));
+  // const totalCarbs = Math.floor(calculateTotal(ingredients, "carbs"));
+  // const totalCalories = Math.floor(calculateTotal(ingredients, "calories"));
+  // const totalFats = Math.floor(calculateTotal(ingredients, "fats"));
 
   return (
     <Animated.ScrollView
@@ -233,40 +217,9 @@ export default function RecipeSubmit() {
         >
           <Text style={[$sizeStyles.h3]}>{title}</Text>
 
-          <View
-            row
-            style={{ justifyContent: "space-between" }}
-          >
-            <View style={{ gap: spacing.spacing16 }}>
-              <NutritionalItem
-                type="carbs"
-                quantity={totalCarbs}
-                unitMeasure="g"
-                icon={<RNIcon name="carbs" />}
-              />
-              <NutritionalItem
-                type="calories"
-                quantity={totalCalories}
-                unitMeasure="K"
-                icon={<RNIcon name="calories" />}
-              />
-            </View>
-            <View style={{ gap: spacing.spacing16 }}>
-              <NutritionalItem
-                type="proteins"
-                quantity={totalProteins}
-                unitMeasure="g"
-                icon={<RNIcon name="proteins" />}
-              />
-
-              <NutritionalItem
-                type="fats"
-                quantity={totalFats}
-                unitMeasure="g"
-                icon={<RNIcon name="fats" />}
-              />
-            </View>
-          </View>
+          <NutritionalInfo
+            nutritionInfo={{ totalCalories, totalCarbs, totalFats, totalProteins }}
+          />
 
           <RNSegmentedControl
             segments={SEGMENTS}
@@ -360,16 +313,5 @@ const styles = StyleSheet.create({
   $imageContainerstyle: {
     width: "100%",
     height: "100%",
-  },
-
-  $nutritionalItemContainerStyle: { alignItems: "center", gap: spacing.spacing8 },
-
-  $nutritionalItemIconStyle: {
-    width: 40,
-    height: 40,
-    borderRadius: spacing.spacing8,
-    backgroundColor: colors.greyscale150,
-    alignItems: "center",
-    justifyContent: "center",
   },
 });

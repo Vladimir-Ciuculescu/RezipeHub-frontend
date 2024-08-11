@@ -9,7 +9,7 @@ import {
   NutrientDetail,
   NutrientResponse,
   NutrientsRequestPayload,
-} from "@/types/ingredient";
+} from "@/types/ingredient.types";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { spacing } from "@/theme/spacing";
 import { SegmentedControl, View } from "react-native-ui-lib";

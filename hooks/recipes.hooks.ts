@@ -3,10 +3,17 @@ import S3Service from "@/api/services/s3.service";
 import { AddRecipeRequest, GetRecipesByUserRequest } from "@/types/recipe.types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-export const useRecipes = (params: GetRecipesByUserRequest) => {
+export const useUserRecipes = (params: GetRecipesByUserRequest) => {
   return useQuery({
     queryKey: ["recipes-per-user"],
     queryFn: async () => await RecipeService.getRecipesByUser(params),
+  });
+};
+
+export const useRecipe = (recipeId: number) => {
+  return useQuery({
+    queryKey: ["recipe", recipeId],
+    queryFn: async () => await RecipeService.getRecipe(recipeId),
   });
 };
 

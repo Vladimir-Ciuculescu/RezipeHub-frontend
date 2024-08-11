@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, Dimensions, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, View } from "react-native-ui-lib";
 import Feather from "@expo/vector-icons/Feather";
@@ -16,7 +16,7 @@ import RNShadowView from "@/components/shared/RNShadowView";
 
 import { Skeleton } from "moti/skeleton";
 import FastImage from "react-native-fast-image";
-import { useRecipes } from "@/hooks/recipes.hooks";
+import { useUserRecipes } from "@/hooks/recipes.hooks";
 
 const { width: screenWidth } = Dimensions.get("window");
 const numColumns = 2;
@@ -34,32 +34,39 @@ interface RecipeItemProps {
 }
 
 const RecipeItem: React.FC<RecipeItemProps> = ({ item }) => {
-  return (
-    <RNShadowView style={styles.$recipeItemStyle}>
-      <View
-        style={{
-          height: "100%",
-          width: "100%",
+  const router = useRouter();
 
-          gap: spacing.spacing8,
-        }}
-      >
-        <FastImage
+  const goToRecipe = () => {
+    router.navigate({ pathname: "/recipe_details", params: { id: item.id } });
+  };
+
+  return (
+    <Pressable onPress={goToRecipe}>
+      <RNShadowView style={styles.$recipeItemStyle}>
+        <View
           style={{
+            height: "100%",
             width: "100%",
 
-            height: "50%",
-            borderRadius: spacing.spacing16,
+            gap: spacing.spacing8,
           }}
-          source={{
-            uri: item.photoUrl,
-            priority: FastImage.priority.normal,
-          }}
-        />
-        <View style={{ flex: 1, justifyContent: "space-between" }}>
-          <Text style={[$sizeStyles.n, { fontFamily: "sofia800" }]}>{item.title}</Text>
-          {/* My recipes section do not require items to have image and user */}
-          {/* <View
+        >
+          <FastImage
+            style={{
+              width: "100%",
+
+              height: "50%",
+              borderRadius: spacing.spacing16,
+            }}
+            source={{
+              uri: item.photoUrl,
+              priority: FastImage.priority.normal,
+            }}
+          />
+          <View style={{ flex: 1, justifyContent: "space-between" }}>
+            <Text style={[$sizeStyles.n, { fontFamily: "sofia800" }]}>{item.title}</Text>
+            {/* My recipes section do not require items to have image and user */}
+            {/* <View
             row
             style={{ gap: spacing.spacing8 }}
           >
@@ -72,9 +79,10 @@ const RecipeItem: React.FC<RecipeItemProps> = ({ item }) => {
               {item.user}
             </Text>
           </View> */}
+          </View>
         </View>
-      </View>
-    </RNShadowView>
+      </RNShadowView>
+    </Pressable>
   );
 };
 
@@ -83,7 +91,7 @@ const Profile = () => {
   const user = useUserData();
   const { signOut } = useAuth();
 
-  const { data: recipes, isLoading } = useRecipes({ limit: 10, page: 0, userId: user!.id });
+  const { data: recipes, isLoading } = useUserRecipes({ limit: 10, page: 0, userId: user!.id });
 
   const logOut = () => {
     storage.delete(ACCESS_TOKEN);

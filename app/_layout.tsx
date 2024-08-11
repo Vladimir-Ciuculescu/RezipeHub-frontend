@@ -64,6 +64,7 @@ export default function Layout() {
               options={{ headerShown: false }}
               name="index"
             />
+
             <Stack.Screen
               name="home"
               options={{ headerShown: false }}
@@ -77,6 +78,7 @@ export default function Layout() {
                 headerTitleAlign: "center",
               }}
             />
+
             <Stack.Screen
               name="register"
               options={{
@@ -117,6 +119,10 @@ export default function Layout() {
             <Stack.Screen
               name="(tabs)"
               options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="recipe_details"
+              options={{ headerShown: true, headerTransparent: true }}
             />
           </Stack>
         </ClerkProvider>

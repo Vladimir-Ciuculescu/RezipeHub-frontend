@@ -4,14 +4,25 @@ export interface IngredientResponse {
 }
 
 export interface IngredientItem {
-  foodId: string;
+  foodId: string | number;
   measure: string;
-  quantity: string;
+  quantity: string | number;
   title: string;
+  calories: number | string;
+  carbs?: number | string;
+  proteins?: number | string;
+  fats?: number | string;
+}
+
+export interface IngredientItemResponse {
+  id: number;
+  name: string;
+  unit: string;
+  quantity: number;
   calories: number;
-  carbs?: number;
-  proteins?: number;
-  fats?: number;
+  carbs: number;
+  proteins: number;
+  fats: number;
 }
 
 export interface IngredientPayload {

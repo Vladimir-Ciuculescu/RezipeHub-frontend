@@ -4,7 +4,8 @@ import { View } from "react-native-ui-lib";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
 import { colors } from "@/theme/colors";
-import { IngredientItem } from "@/types/ingredient";
+import { IngredientItem } from "@/types/ingredient.types";
+import { Skeleton } from "moti/skeleton";
 
 const { width } = Dimensions.get("screen");
 
@@ -15,26 +16,52 @@ interface IngredientsListProps {
 const IngredientsList: React.FC<IngredientsListProps> = ({ ingredients }) => {
   return (
     <View style={styles.$containerStyle}>
-      <View
-        row
-        style={{ justifyContent: "space-between" }}
-      >
-        <Text style={[$sizeStyles.l]}>Ingredients</Text>
-        <Text style={[$sizeStyles.n, { color: colors.greyscale350 }]}>
-          {ingredients.length} items
-        </Text>
-      </View>
-      {ingredients.map((ingredient) => (
-        <View
-          style={styles.$innerContainerStyle}
-          key={`${ingredient.foodId}-${ingredient.title}`}
-        >
-          <Text style={[$sizeStyles.n, { fontFamily: "sofia700" }]}>{ingredient.title}</Text>
-          <Text style={[$sizeStyles.n, { fontFamily: "sofia700" }]}>
-            {ingredient.quantity} {ingredient.measure}
-          </Text>
-        </View>
-      ))}
+      {ingredients.length ? (
+        <>
+          <View
+            row
+            style={{ justifyContent: "space-between" }}
+          >
+            <Text style={[$sizeStyles.l]}>Ingredients</Text>
+            <Text style={[$sizeStyles.n, { color: colors.greyscale350 }]}>
+              {ingredients.length} items
+            </Text>
+          </View>
+          {ingredients.map((ingredient, key) => (
+            <View
+              style={styles.$innerContainerStyle}
+              key={`${ingredient.foodId}-${ingredient.title}`}
+            >
+              <Text style={[$sizeStyles.n, { fontFamily: "sofia700" }]}>{ingredient.title}</Text>
+              <Text style={[$sizeStyles.n, { fontFamily: "sofia700" }]}>
+                {ingredient.quantity} {ingredient.measure}
+              </Text>
+            </View>
+          ))}
+        </>
+      ) : (
+        <Skeleton.Group show>
+          <View
+            row
+            style={{ justifyContent: "space-between" }}
+          >
+            <Text style={[$sizeStyles.l]}>Ingredients</Text>
+          </View>
+
+          {Array(5)
+            .fill(null)
+            .map((_, key) => {
+              return (
+                <Skeleton
+                  key={key}
+                  colorMode="light"
+                  height={80}
+                  width="100%"
+                />
+              );
+            })}
+        </Skeleton.Group>
+      )}
     </View>
   );
 };

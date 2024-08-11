@@ -9,7 +9,7 @@ import Animated, {
 import { AntDesign } from "@expo/vector-icons";
 import { spacing } from "@/theme/spacing";
 import { useRouter } from "expo-router";
-import { IngredientResponse, Nutrient } from "@/types/ingredient";
+import { IngredientResponse, Nutrient } from "@/types/ingredient.types";
 import { $sizeStyles } from "@/theme/typography";
 import { colors } from "@/theme/colors";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";

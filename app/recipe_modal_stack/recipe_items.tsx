@@ -13,8 +13,8 @@ import useRecipeStore from "@/zustand/useRecipeStore";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
 import SwipeableItem from "@/components/SwipeableItem";
 import { AntDesign } from "@expo/vector-icons";
-import { IngredientItem } from "@/types/ingredient";
-import { Step } from "@/types/step";
+import { IngredientItem } from "@/types/ingredient.types";
+import { Step } from "@/types/step.types";
 
 interface IngredientRowProps {
   ingredient: IngredientItem;
