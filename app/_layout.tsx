@@ -124,6 +124,16 @@ export default function Layout() {
               name="recipe_details"
               options={{ headerShown: true, headerTransparent: true }}
             />
+            <Stack.Screen
+              name="all_personal_recipes"
+              options={{
+                headerBackVisible: false,
+                headerShadowVisible: false,
+                headerTitleAlign: "center",
+                headerStyle: { backgroundColor: colors.greyscale150 },
+                contentStyle: { backgroundColor: colors.greyscale150 },
+              }}
+            />
           </Stack>
         </ClerkProvider>
       </ActionSheetProvider>

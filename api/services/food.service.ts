@@ -1,6 +1,6 @@
 import axios from "axios";
 import { handleError } from "../handleError";
-import { NutrientsRequestPayload } from "@/types/ingredient";
+import { NutrientsRequestPayload } from "@/types/ingredient.types";
 
 const appkey = process.env.EXPO_PUBLIC_EDAMAM_APP_KEY;
 const appId = process.env.EXPO_PUBLIC_EDAMAN_APP_ID;

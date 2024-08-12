@@ -172,14 +172,17 @@ const RecipeDetails = () => {
                 }}
               >
                 {recipe ? (
-                  <NutritionalInfo
-                    nutritionInfo={{
-                      totalCalories,
-                      totalCarbs,
-                      totalFats,
-                      totalProteins,
-                    }}
-                  />
+                  <>
+                    <Text style={[$sizeStyles.h3]}>{recipe!.title}</Text>
+                    <NutritionalInfo
+                      nutritionInfo={{
+                        totalCalories,
+                        totalCarbs,
+                        totalFats,
+                        totalProteins,
+                      }}
+                    />
+                  </>
                 ) : (
                   <Skeleton.Group show>
                     <Skeleton
@@ -269,9 +272,9 @@ const RecipeDetails = () => {
                 )}
 
                 <RNSegmentedControl
+                  borderRadius={16}
                   segments={SEGMENTS}
                   initialIndex={segmentIndex}
-                  //@ts-ignore
                   onChangeIndex={handleSegmentIndex}
                 />
               </View>

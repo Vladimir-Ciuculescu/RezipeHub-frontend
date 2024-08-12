@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, Dimensions, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, View } from "react-native-ui-lib";
@@ -11,12 +11,13 @@ import { ACCESS_TOKEN, storage } from "@/storage";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
 import { useAuth } from "@clerk/clerk-expo";
-import { useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import RNShadowView from "@/components/shared/RNShadowView";
 
 import { Skeleton } from "moti/skeleton";
 import FastImage from "react-native-fast-image";
 import { useUserRecipes } from "@/hooks/recipes.hooks";
+import { AntDesign } from "@expo/vector-icons";
 
 const { width: screenWidth } = Dimensions.get("window");
 const numColumns = 2;
@@ -93,10 +94,52 @@ const Profile = () => {
 
   const { data: recipes, isLoading } = useUserRecipes({ limit: 10, page: 0, userId: user!.id });
 
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <RNButton
+          onPress={goBack}
+          iconSource={() => (
+            <AntDesign
+              name="close"
+              size={24}
+              color="black"
+            />
+          )}
+        />
+      ),
+      headerTitle: "",
+      headerRight: () => (
+        <RNButton
+          iconSource={() => (
+            <Feather
+              name="heart"
+              size={24}
+              color="black"
+            />
+          )}
+        />
+      ),
+    });
+  }, [navigation]);
+
+  const goToAllYourRecipes = () => {
+    router.navigate({
+      pathname: "/all_personal_recipes",
+      params: { recipes: JSON.stringify(recipes) },
+    });
+  };
+
   const logOut = () => {
     storage.delete(ACCESS_TOKEN);
     signOut();
     router.dismissAll();
+  };
+
+  const goBack = () => {
+    router.back();
   };
 
   return (
@@ -144,7 +187,14 @@ const Profile = () => {
         <View>
           <View style={styles.$recipesSectionStyle}>
             <Text style={styles.$sectionTitleStyle}>My Recipes</Text>
-            {recipes && recipes.length > 4 && <Text style={styles.$seeAllBtnStyle}>See All</Text>}
+            {recipes && recipes.length > 4 && (
+              <RNButton
+                onPress={goToAllYourRecipes}
+                link
+                label="See All"
+                labelStyle={styles.$seeAllBtnStyle}
+              />
+            )}
           </View>
 
           <View style={styles.$recipesContainerStyle}>
@@ -205,7 +255,7 @@ const styles = StyleSheet.create({
   },
 
   $userDetailsBtnStyle: {
-    backgroundColor: colors.accent400,
+    backgroundColor: colors.brandPrimary,
   },
 
   $userDescriptionStyle: {
@@ -250,6 +300,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: spacing.spacing12,
+    alignItems: "center",
   },
 
   $recipesContainerStyle: {

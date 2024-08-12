@@ -170,18 +170,6 @@ export default function RecipeSubmit() {
     return <View style={{ width }}>{item.section}</View>;
   };
 
-  // const calculateTotal = (
-  //   ingredients: IngredientItem[],
-  //   property: keyof Omit<IngredientItem, "foodId" | "measure" | "quantity" | "title">,
-  // ): number => {
-  //   return ingredients.reduce((sum, ingredient) => sum + (ingredient[property] || 0), 0);
-  // };
-
-  // const totalProteins = Math.floor(calculateTotal(ingredients, "proteins"));
-  // const totalCarbs = Math.floor(calculateTotal(ingredients, "carbs"));
-  // const totalCalories = Math.floor(calculateTotal(ingredients, "calories"));
-  // const totalFats = Math.floor(calculateTotal(ingredients, "fats"));
-
   return (
     <Animated.ScrollView
       contentContainerStyle={styles.$containerStyle}
@@ -224,7 +212,7 @@ export default function RecipeSubmit() {
           <RNSegmentedControl
             segments={SEGMENTS}
             initialIndex={segmentIndex}
-            //@ts-ignore
+            borderRadius={16}
             onChangeIndex={handleSegmentIndex}
           />
         </View>
