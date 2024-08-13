@@ -2,21 +2,17 @@
 import { colors } from "@/theme/colors";
 import { spacing } from "@/theme/spacing";
 import React from "react";
-import { View, StyleSheet, ViewStyle } from "react-native";
+import { View, StyleSheet, ViewStyle, StyleProp } from "react-native";
 
 interface RNShadowViewProps {
   children?: React.JSX.Element | React.JSX.Element[];
-  style: ViewStyle;
+  style: StyleProp<ViewStyle>;
 }
 
 const RNShadowView: React.FC<RNShadowViewProps> = ({ children, style }) => {
-  return (
-    <View
-      style={[{ backgroundColor: style.backgroundColor || colors.greyscale50 }, styles.card, style]}
-    >
-      {children}
-    </View>
-  );
+  const backgroundColor = ((style as ViewStyle)?.backgroundColor || colors.greyscale50) as string;
+
+  return <View style={[{ backgroundColor }, styles.card, style]}>{children}</View>;
 };
 
 const styles = StyleSheet.create({

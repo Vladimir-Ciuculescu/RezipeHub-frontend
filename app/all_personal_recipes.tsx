@@ -3,10 +3,10 @@ import {
   LayoutAnimation,
   Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   UIManager,
+  FlatList,
 } from "react-native";
 
 import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
@@ -26,6 +26,7 @@ import RNSegmentedControl from "@/components/shared/RnSegmentedControl";
 const { width } = Dimensions.get("screen");
 
 const GRID_CONTAINER_SIZE = width * 0.4;
+const GRID_COLUMNS = 2;
 
 const LayoutGridAnimation = () => {
   const { recipes } = useLocalSearchParams();
@@ -39,16 +40,12 @@ const LayoutGridAnimation = () => {
 
   const getItems = useMemo(() => {
     const cols = Math.floor(width / GRID_CONTAINER_SIZE);
-
     const rows = parsedRecipes.length / cols;
-
     const dividedRowsCols = rows / cols;
-
     const itemsToAdd = Math.ceil((dividedRowsCols - parseInt(`${dividedRowsCols}`)) * cols);
 
     if (layout === "GRID") {
       const newData = [...parsedRecipes, ..._.range(0, itemsToAdd + 1).map((i) => null)];
-
       return newData;
     }
 
@@ -137,87 +134,92 @@ const LayoutGridAnimation = () => {
     router.navigate({ pathname: "/recipe_details", params: { id: id } });
   };
 
+  const renderItem = ({ item, index }: { item: any; index: number }) => {
+    if (item === null && layout === "GRID") {
+      return (
+        <View
+          key={String(index)}
+          style={styles.$gridContainerStyle}
+        />
+      );
+    }
+
+    return (
+      <Pressable
+        onPress={() => goToRecipe(item.id)}
+        key={item.id}
+      >
+        <RNShadowView
+          style={[styles.$gridContainerStyle, layout === "LIST" && styles.$rowContainerStyle]}
+        >
+          <View
+            style={[
+              styles.$innerContainerStyle,
+              layout === "GRID" ? styles.$innerGridContainerStyle : styles.$innerRowContainerStyle,
+            ]}
+          >
+            {layout === "LIST" && (
+              <View style={styles.$innerRowInfoStyle}>
+                <View style={styles.$contentRowStyle}>
+                  <FastImage
+                    source={{ uri: item.photoUrl }}
+                    style={styles.$rowImageStyle}
+                  />
+                  <Text
+                    numberOfLines={2}
+                    style={styles.$rowTextStyle}
+                  >
+                    {item.title}
+                  </Text>
+                </View>
+                <RNButton
+                  style={styles.$userDetailsBtnStyle}
+                  iconSource={() => (
+                    <RNIcon
+                      name="arrow_right"
+                      color={colors.greyscale50}
+                      height={12}
+                      width={12}
+                    />
+                  )}
+                />
+              </View>
+            )}
+            {layout === "GRID" && (
+              <View style={styles.$innerGridInfoStyle}>
+                <FastImage
+                  source={{ uri: item.photoUrl }}
+                  style={styles.$gridImageStyle}
+                />
+                <Text
+                  numberOfLines={3}
+                  style={styles.$gridTextStyle}
+                >
+                  {item.title}
+                </Text>
+              </View>
+            )}
+          </View>
+        </RNShadowView>
+      </Pressable>
+    );
+  };
+
   return (
     <SafeAreaView
       edges={["left", "right"]}
       style={styles.$containerStyle}
     >
-      <ScrollView
+      <FlatList
         showsVerticalScrollIndicator={false}
+        key={layout === "GRID" ? GRID_COLUMNS : 1}
+        data={getItems}
+        renderItem={renderItem}
+        numColumns={layout === "GRID" ? GRID_COLUMNS : 1}
         contentContainerStyle={styles.$contentContainerStyle}
-      >
-        {getItems.map((item: any, index: Number) => {
-          if (item === null && layout === "GRID")
-            return (
-              <View
-                key={String(index)}
-                style={styles.$gridContainerStyle}
-              />
-            );
-
-          return (
-            <Pressable
-              onPress={() => goToRecipe(item.id)}
-              key={item.id}
-            >
-              <RNShadowView
-                style={[styles.$gridContainerStyle, layout === "LIST" && styles.$rowContainerStyle]}
-              >
-                <View
-                  style={[
-                    styles.$innerContainerStyle,
-                    layout === "GRID"
-                      ? styles.$innerGridContainerStyle
-                      : styles.$innerRowContainerStyle,
-                  ]}
-                >
-                  {layout === "LIST" && (
-                    <View style={styles.$innerRowInfoStyle}>
-                      <View style={styles.$contentRowStyle}>
-                        <FastImage
-                          source={{ uri: item.photoUrl }}
-                          style={styles.$rowImageStyle}
-                        />
-                        <Text
-                          numberOfLines={2}
-                          style={styles.$rowTextStyle}
-                        >
-                          {item.title}
-                        </Text>
-                      </View>
-                      <RNButton
-                        style={styles.$userDetailsBtnStyle}
-                        iconSource={() => (
-                          <RNIcon
-                            name="arrow_right"
-                            color={colors.greyscale50}
-                            height={12}
-                            width={12}
-                          />
-                        )}
-                      />
-                    </View>
-                  )}
-                  {layout === "GRID" && (
-                    <View style={styles.$innerGridInfoStyle}>
-                      <FastImage
-                        source={{ uri: item.photoUrl }}
-                        style={styles.$gridImageStyle}
-                      />
-                      <Text
-                        numberOfLines={3}
-                        style={styles.$gridTextStyle}
-                      >
-                        {item.title}
-                      </Text>
-                    </View>
-                  )}
-                </View>
-              </RNShadowView>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
+        ListEmptyComponent={<View style={styles.$emptyContainerStyle} />}
+        columnWrapperStyle={layout === "GRID" ? { gap: spacing.spacing16 } : undefined}
+      />
     </SafeAreaView>
   );
 };
@@ -226,28 +228,27 @@ export default LayoutGridAnimation;
 
 const styles = StyleSheet.create({
   $segmentLabelStyle: {
-    width: 25,
+    width: 20,
     textAlign: "center",
   },
   $segmentStyle: {
-    height: 44,
+    height: 34,
   },
 
   $containerStyle: {
     flex: 1,
   },
   $contentContainerStyle: {
-    flexGrow: 1,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: spacing.spacing24,
     paddingTop: spacing.spacing32,
   },
 
   $gridContainerStyle: {
     width: GRID_CONTAINER_SIZE,
-    marginBottom: 10,
+    // marginBottom: 10,
+    marginBottom: spacing.spacing16,
     overflow: "hidden",
   },
   $rowContainerStyle: {
@@ -328,5 +329,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brandPrimary,
     height: 24,
     width: 24,
+  },
+
+  $emptyContainerStyle: {
+    width: GRID_CONTAINER_SIZE * GRID_COLUMNS,
+    height: 198, // Adjust the height as needed
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

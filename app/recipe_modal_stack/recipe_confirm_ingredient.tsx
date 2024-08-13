@@ -254,6 +254,7 @@ export default function RecipeConfirmIngredient() {
             <Text style={[$sizeStyles.h3, styles.$labelStyle]}>Nutritional information</Text>
 
             <RNSegmentedControl
+              borderRadius={16}
               initialIndex={segmentIndex}
               segments={segments}
               onChangeIndex={setSegmentIndex}
