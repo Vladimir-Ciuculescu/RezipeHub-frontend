@@ -11,10 +11,10 @@ import { $sizeStyles } from "@/theme/typography";
 import RNButton from "@/components/shared/RNButton";
 import useRecipeStore from "@/zustand/useRecipeStore";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
-import SwipeableItem from "@/components/SwipeableItem";
 import { AntDesign } from "@expo/vector-icons";
 import { IngredientItem } from "@/types/ingredient.types";
 import { Step } from "@/types/step.types";
+import SwipeableListItem from "@/components/SwipeableItem";
 
 interface IngredientRowProps {
   ingredient: IngredientItem;
@@ -144,7 +144,7 @@ export default function RecipeItems() {
         <View>
           <Text style={styles.$ingredientLabelStyle}>{title}</Text>
           <Text style={styles.$ingredientInfoStyle}>
-            {quantity} {measure}, {formatFloatingValue(calories)} calories
+            {quantity} {measure}, {formatFloatingValue(calories as number)} calories
           </Text>
         </View>
         <Animated.View
@@ -202,7 +202,7 @@ export default function RecipeItems() {
         <View style={styles.$buttonsContainerstyle}>
           <View>
             {ingredients.map((item) => (
-              <SwipeableItem
+              <SwipeableListItem
                 key={item.foodId}
                 isEditing={editIngredients}
                 onDelete={() => removeIngredientAction(item.foodId)}
@@ -210,7 +210,7 @@ export default function RecipeItems() {
                 editButtonStyle={ingredientEditButtonStyle}
               >
                 <IngredientRow ingredient={item} />
-              </SwipeableItem>
+              </SwipeableListItem>
             ))}
           </View>
           <View
@@ -233,7 +233,7 @@ export default function RecipeItems() {
           </View>
           <View>
             {steps.map((item, index) => (
-              <SwipeableItem
+              <SwipeableListItem
                 key={item.number}
                 isEditing={editSteps}
                 onDelete={() => removeStepAction(item.number)}
@@ -244,7 +244,7 @@ export default function RecipeItems() {
                   item={item}
                   index={index}
                 />
-              </SwipeableItem>
+              </SwipeableListItem>
             ))}
           </View>
 

@@ -1,7 +1,7 @@
 import { ACCESS_TOKEN, REFRESH_TOKEN, storage } from "@/storage";
 import axios from "axios";
 
-const baseURL = "http://192.168.1.132:3000";
+const baseURL = "http://192.168.1.133:3000";
 
 const axiosPublicInstance = axios.create({
   //baseURL: 'http://localhost:3000', // Replace with your API base URL
@@ -51,7 +51,7 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    console.log("interceptor", error);
+    console.log("interceptor error: ", error);
 
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;

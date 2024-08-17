@@ -81,6 +81,11 @@ export default function Login() {
   };
 
   const onSelectAuth = async (strategy: Strategy) => {
+    //TODO : Keep in mind for the future
+    // if (isSignedIn) {
+    //   signOut();
+    // }
+
     const selectedAuth = {
       [Strategy.Google]: googleFlow,
       [Strategy.Facebook]: facebookFlow,
@@ -126,6 +131,7 @@ export default function Login() {
       storeUser(data.access_token, data.refresh_token);
       goToApp();
     } catch (error: any) {
+      console.log(error);
       Alert.alert(
         "Error",
         error.error,

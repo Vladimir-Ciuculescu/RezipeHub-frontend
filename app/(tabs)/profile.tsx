@@ -17,7 +17,7 @@ import RNShadowView from "@/components/shared/RNShadowView";
 import { Skeleton } from "moti/skeleton";
 import FastImage from "react-native-fast-image";
 import { useUserRecipes } from "@/hooks/recipes.hooks";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 
 const { width: screenWidth } = Dimensions.get("window");
 const numColumns = 2;
@@ -52,34 +52,35 @@ const RecipeItem: React.FC<RecipeItemProps> = ({ item }) => {
             gap: spacing.spacing8,
           }}
         >
-          <FastImage
-            style={{
-              width: "100%",
-
-              height: "50%",
-              borderRadius: spacing.spacing16,
-            }}
-            source={{
-              uri: item.photoUrl,
-              priority: FastImage.priority.normal,
-            }}
-          />
+          {item.photoUrl ? (
+            <FastImage
+              source={{ uri: item.photoUrl }}
+              style={{
+                width: "100%",
+                height: "50%",
+                borderRadius: spacing.spacing16,
+              }}
+            />
+          ) : (
+            <View
+              style={[
+                { width: "100%", height: "50%", borderRadius: spacing.spacing16 },
+                {
+                  backgroundColor: colors.greyscale200,
+                  justifyContent: "center",
+                  alignItems: "center",
+                },
+              ]}
+            >
+              <Ionicons
+                name="image-outline"
+                size={35}
+                color={colors.greyscale400}
+              />
+            </View>
+          )}
           <View style={{ flex: 1, justifyContent: "space-between" }}>
             <Text style={[$sizeStyles.n, { fontFamily: "sofia800" }]}>{item.title}</Text>
-            {/* My recipes section do not require items to have image and user */}
-            {/* <View
-            row
-            style={{ gap: spacing.spacing8 }}
-          >
-            Replace with fast image
-            <Image
-              source={{ uri: "https://reactnative.dev/img/tiny_logo.png" }}
-              style={{ width: 20, height: 20, borderRadius: spacing.spacing24 }}
-            />
-            <Text style={[$sizeStyles.s, { fontFamily: "sofia400", color: colors.greyscale300 }]}>
-              {item.user}
-            </Text>
-          </View> */}
           </View>
         </View>
       </RNShadowView>

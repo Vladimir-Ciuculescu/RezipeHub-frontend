@@ -154,7 +154,13 @@ export default function RecipeSubmit() {
 
   const sections = [
     {
-      section: <IngredientsList ingredients={ingredients} />,
+      section: (
+        <IngredientsList
+          loading={false}
+          swipeable={false}
+          ingredients={ingredients}
+        />
+      ),
     },
     {
       section: <StepsList steps={steps} />,

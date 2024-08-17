@@ -125,6 +125,14 @@ export default function Layout() {
               options={{ headerShown: true, headerTransparent: true }}
             />
             <Stack.Screen
+              name="recipe_edit_modal"
+              options={{
+                presentation: "modal",
+                headerBackVisible: false,
+                headerTitleAlign: "center",
+              }}
+            />
+            <Stack.Screen
               name="all_personal_recipes"
               options={{
                 headerBackVisible: false,

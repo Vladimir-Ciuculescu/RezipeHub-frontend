@@ -23,6 +23,20 @@ const RecipeService = {
     }
   },
 
+  getPaginatedRecipesPerUser: async (params: any) => {
+    try {
+      const payload = {
+        page: params.pageParam.page,
+        userId: params.pageParam.userId,
+        limit: 10,
+      };
+
+      const { data } = await axiosInstance.get(`/${RECIPES}/user-recipes`, { params: payload });
+      return data;
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
   getRecipe: async (recipeId: number): Promise<RecipeResponse> => {
     try {
       const { data } = await axiosInstance.get(`/${RECIPES}/${recipeId}`);

@@ -7,12 +7,13 @@ import {
   Text,
   UIManager,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 
 import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
-import { Feather, Octicons } from "@expo/vector-icons";
+import { Feather, Ionicons, Octicons } from "@expo/vector-icons";
 import _ from "lodash";
-import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import RNButton from "@/components/shared/RNButton";
 import { View } from "react-native-ui-lib";
 import RNIcon from "@/components/shared/RNIcon";
@@ -22,6 +23,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { spacing } from "@/theme/spacing";
 import FastImage from "react-native-fast-image";
 import RNSegmentedControl from "@/components/shared/RnSegmentedControl";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import RecipeService from "@/api/services/recipe.service";
+import useUserData from "@/hooks/useUserData";
 
 const { width } = Dimensions.get("screen");
 
@@ -29,28 +33,58 @@ const GRID_CONTAINER_SIZE = width * 0.4;
 const GRID_COLUMNS = 2;
 
 const LayoutGridAnimation = () => {
-  const { recipes } = useLocalSearchParams();
+  const user = useUserData();
+
   const [layoutIndex, setLayoutIndex] = useState(0);
   const [layout, setLayout] = useState<"LIST" | "GRID">("LIST");
-
-  const parsedRecipes = JSON.parse(recipes as string);
 
   const navigation = useNavigation();
   const router = useRouter();
 
-  const getItems = useMemo(() => {
-    const cols = Math.floor(width / GRID_CONTAINER_SIZE);
-    const rows = parsedRecipes.length / cols;
-    const dividedRowsCols = rows / cols;
-    const itemsToAdd = Math.ceil((dividedRowsCols - parseInt(`${dividedRowsCols}`)) * cols);
+  const {
+    data: recipes,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["all-personal-recipes"],
+    queryFn: RecipeService.getPaginatedRecipesPerUser,
+    initialPageParam: { page: 0, userId: user.id },
 
-    if (layout === "GRID") {
-      const newData = [...parsedRecipes, ..._.range(0, itemsToAdd + 1).map((i) => null)];
-      return newData;
+    getNextPageParam: (lastPage, allPages, lastPageParam) => {
+      return !lastPage || !lastPage.length
+        ? undefined
+        : { ...lastPageParam, page: lastPageParam.page + 1 };
+    },
+    //TODO : Keep for future
+    // getPreviousPageParam: (lastPage, allPages, lastPageParam) => {
+    //   return !lastPage || !lastPage.length
+    //     ? undefined
+    //     : { ...lastPageParam, page: lastPageParam.page - 1 };
+    // },
+  });
+
+  const getItems = useMemo(() => {
+    if (recipes && recipes.pages) {
+      const cols = Math.floor(width / GRID_CONTAINER_SIZE);
+
+      const allItems = recipes.pages.flatMap((page) => page);
+
+      const rows = allItems.length / cols;
+
+      const dividedRowsCols = rows / cols;
+      const itemsToAdd = Math.ceil((dividedRowsCols - parseInt(`${dividedRowsCols}`)) * cols);
+
+      if (layout === "GRID") {
+        const newData = [...allItems, ..._.range(0, itemsToAdd).map(() => null)];
+        return newData;
+      }
+
+      return allItems;
     }
 
-    return parsedRecipes;
-  }, [layout]);
+    return [];
+  }, [layout, recipes]);
 
   useEffect(() => {
     if (Platform.OS === "android") {
@@ -134,6 +168,12 @@ const LayoutGridAnimation = () => {
     router.navigate({ pathname: "/recipe_details", params: { id: id } });
   };
 
+  const loadNextPage = () => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  };
+
   const renderItem = ({ item, index }: { item: any; index: number }) => {
     if (item === null && layout === "GRID") {
       return (
@@ -161,10 +201,29 @@ const LayoutGridAnimation = () => {
             {layout === "LIST" && (
               <View style={styles.$innerRowInfoStyle}>
                 <View style={styles.$contentRowStyle}>
-                  <FastImage
-                    source={{ uri: item.photoUrl }}
-                    style={styles.$rowImageStyle}
-                  />
+                  {item.photoUrl ? (
+                    <FastImage
+                      source={{ uri: item.photoUrl }}
+                      style={styles.$rowImageStyle}
+                    />
+                  ) : (
+                    <View
+                      style={[
+                        styles.$rowImageStyle,
+                        {
+                          backgroundColor: colors.greyscale200,
+                          justifyContent: "center",
+                          alignItems: "center",
+                        },
+                      ]}
+                    >
+                      <Ionicons
+                        name="image-outline"
+                        size={35}
+                        color={colors.greyscale400}
+                      />
+                    </View>
+                  )}
                   <Text
                     numberOfLines={2}
                     style={styles.$rowTextStyle}
@@ -187,10 +246,29 @@ const LayoutGridAnimation = () => {
             )}
             {layout === "GRID" && (
               <View style={styles.$innerGridInfoStyle}>
-                <FastImage
-                  source={{ uri: item.photoUrl }}
-                  style={styles.$gridImageStyle}
-                />
+                {item.photoUrl ? (
+                  <FastImage
+                    source={{ uri: item.photoUrl }}
+                    style={styles.$gridImageStyle}
+                  />
+                ) : (
+                  <View
+                    style={[
+                      styles.$gridImageStyle,
+                      {
+                        backgroundColor: colors.greyscale200,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      },
+                    ]}
+                  >
+                    <Ionicons
+                      name="image-outline"
+                      size={35}
+                      color={colors.greyscale400}
+                    />
+                  </View>
+                )}
                 <Text
                   numberOfLines={3}
                   style={styles.$gridTextStyle}
@@ -205,21 +283,42 @@ const LayoutGridAnimation = () => {
     );
   };
 
+  //TODO : Keep in mind for future
+  // const getItemLayout = (data: any, index: number) => ({
+  //   length: 100,
+  //   offset: 100 * index,
+  //   index,
+  // });
+
   return (
     <SafeAreaView
       edges={["left", "right"]}
       style={styles.$containerStyle}
     >
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        key={layout === "GRID" ? GRID_COLUMNS : 1}
-        data={getItems}
-        renderItem={renderItem}
-        numColumns={layout === "GRID" ? GRID_COLUMNS : 1}
-        contentContainerStyle={styles.$contentContainerStyle}
-        ListEmptyComponent={<View style={styles.$emptyContainerStyle} />}
-        columnWrapperStyle={layout === "GRID" ? { gap: spacing.spacing16 } : undefined}
-      />
+      {recipes && (
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          key={layout === "GRID" ? GRID_COLUMNS : 1}
+          data={getItems}
+          renderItem={renderItem}
+          numColumns={layout === "GRID" ? GRID_COLUMNS : 1}
+          contentContainerStyle={styles.$contentContainerStyle}
+          ListEmptyComponent={<View style={styles.$emptyContainerStyle} />}
+          columnWrapperStyle={layout === "GRID" ? { gap: spacing.spacing16 } : undefined}
+          onEndReached={loadNextPage}
+          //TODO Keep in mind for the future
+          // getItemLayout={getItemLayout}
+          onEndReachedThreshold={0.5} // Trigger loadMore when 50% from the bottom
+          ListFooterComponent={
+            isFetchingNextPage ? (
+              <ActivityIndicator
+                size="large"
+                color={colors.brandPrimary}
+              /> // Show ActivityIndicator while fetching next page
+            ) : null
+          }
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -247,7 +346,6 @@ const styles = StyleSheet.create({
 
   $gridContainerStyle: {
     width: GRID_CONTAINER_SIZE,
-    // marginBottom: 10,
     marginBottom: spacing.spacing16,
     overflow: "hidden",
   },
@@ -333,7 +431,7 @@ const styles = StyleSheet.create({
 
   $emptyContainerStyle: {
     width: GRID_CONTAINER_SIZE * GRID_COLUMNS,
-    height: 198, // Adjust the height as needed
+    height: 198,
     justifyContent: "center",
     alignItems: "center",
   },

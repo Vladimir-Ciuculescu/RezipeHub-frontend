@@ -5,8 +5,9 @@ import {
   StyleSheet,
   FlatList,
   ListRenderItem,
+  Alert,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
@@ -21,45 +22,120 @@ import { $sizeStyles } from "@/theme/typography";
 import RNSegmentedControl, { SegmentItem } from "@/components/shared/RnSegmentedControl";
 import IngredientsList from "@/components/IngredientsList";
 import StepsList from "@/components/StepsList";
-import useRecipeStore from "@/zustand/useRecipeStore";
 import NutritionalInfo from "@/components/NutritionalInfo";
 import { useRecipe } from "@/hooks/recipes.hooks";
-import { axiosInstance } from "@/api";
-import { RECIPES } from "@/api/constants";
 import { Skeleton } from "moti/skeleton";
 import { MotiView } from "moti";
 import { StatusBar } from "expo-status-bar";
 import { IngredientItem, IngredientItemResponse } from "@/types/ingredient.types";
 import { Step, StepItemResponse } from "@/types/step.types";
 import useNutritionalTotals from "@/hooks/useNutritionalTotals";
+import { Ionicons } from "@expo/vector-icons";
+import * as DropdownMenu from "zeego/dropdown-menu";
 
 const { height, width } = Dimensions.get("screen");
-const HEADER_HEIGHT = height / 4;
 
 const SEGMENTS: SegmentItem[] = [{ label: "Ingredients" }, { label: "Instructions" }];
 
+interface MenuItem {
+  label: string;
+  key: string;
+  iosIcon: string;
+  onSelect: () => void;
+}
+
 const RecipeDetails = () => {
-  const [index, setIndex] = useState<number>(0);
+  const ITEMS: MenuItem[] = [
+    { label: "Edit", key: "edit", iosIcon: "pencil", onSelect: () => openEditModal() },
+    {
+      label: "Add to favorites",
+      key: "favorites",
+      iosIcon: "heart",
+      onSelect: () => openAddToFavoritesAlert(),
+    },
+    { label: "Delete", key: "trash", iosIcon: "trash", onSelect: () => openDeleteAlert() },
+  ];
+
+  const [index, setIndex] = useState(0);
   const [segmentIndex, setSegmentIndex] = useState(0);
 
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  const { data: recipe, isLoading, isError } = useRecipe(parseInt(id!));
-
-  const handleIndex = (index: number) => {
-    setIndex(index);
-  };
+  const { data: recipe, isLoading } = useRecipe(parseInt(id!));
 
   const navigation = useNavigation();
 
   const router = useRouter();
 
-  const heightValue = height / 2;
   const inputsFlatlListRef = useRef<FlatList>(null);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <RNButton
+          onPress={goBack}
+          style={styles.$headerBtnStyle}
+          iconSource={() => (
+            <AntDesign
+              name="close"
+              size={24}
+              color="black"
+            />
+          )}
+        />
+      ),
+      headerTitle: "",
+      headerRight: () => (
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger>
+            <RNButton
+              style={styles.$headerBtnStyle}
+              iconSource={() => (
+                <Feather
+                  name="menu"
+                  size={24}
+                  color="black"
+                />
+              )}
+            />
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content>
+            {ITEMS.map((item) => (
+              <DropdownMenu.Item
+                onSelect={item.onSelect}
+                key={item.key}
+              >
+                <DropdownMenu.ItemTitle>{item.label}</DropdownMenu.ItemTitle>
+                <DropdownMenu.ItemIcon ios={{ name: item.iosIcon }} />
+              </DropdownMenu.Item>
+            ))}
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+      ),
+    });
+  }, [navigation, recipe]);
+
+  const handleIndex = (index: number) => {
+    setIndex(index);
+  };
+
+  const heightValue = height / 2;
 
   const goBack = () => {
     router.back();
   };
+
+  const openAddToFavoritesAlert = () => {
+    Alert.alert("Feature under development", "", [
+      { text: "OK", onPress: () => console.log("OK Pressed") },
+    ]);
+  };
+
+  const openEditModal = () => {
+    router.navigate({ pathname: "/recipe_edit_modal", params: { recipe: JSON.stringify(recipe) } });
+  };
+
+  const openDeleteAlert = () => {};
 
   const ingredients: IngredientItem[] = recipe
     ? recipe.ingredients.map((ingredient: IngredientItemResponse) => ({
@@ -87,43 +163,18 @@ const RecipeDetails = () => {
 
   const sections = [
     {
-      section: <IngredientsList ingredients={ingredients} />,
+      section: (
+        <IngredientsList
+          loading={isLoading}
+          swipeable={false}
+          ingredients={ingredients}
+        />
+      ),
     },
     {
       section: <StepsList steps={steps} />,
     },
   ];
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <RNButton
-          onPress={goBack}
-          style={styles.$headerBtnStyle}
-          iconSource={() => (
-            <AntDesign
-              name="close"
-              size={24}
-              color="black"
-            />
-          )}
-        />
-      ),
-      headerTitle: "",
-      headerRight: () => (
-        <RNButton
-          style={styles.$headerBtnStyle}
-          iconSource={() => (
-            <Feather
-              name="heart"
-              size={24}
-              color="black"
-            />
-          )}
-        />
-      ),
-    });
-  }, [navigation]);
 
   const renderItem: ListRenderItem<any> = ({ item }) => {
     return <View style={{ width }}>{item.section}</View>;
@@ -138,17 +189,29 @@ const RecipeDetails = () => {
     <GestureHandlerRootView>
       <StatusBar style="light" />
       <View style={{ flex: 1 }}>
-        {recipe ? (
+        {isLoading || !recipe || !recipe.photoUrl ? (
+          <View
+            style={[
+              { height: heightValue },
+              styles.$imageBackgroundStyle,
+              {
+                backgroundColor: colors.greyscale200,
+                justifyContent: "center",
+                alignItems: "center",
+              },
+            ]}
+          >
+            <Ionicons
+              name="image-outline"
+              size={120}
+              color={colors.greyscale400}
+            />
+          </View>
+        ) : (
           <ImageBackground
             source={{ uri: recipe ? recipe.photoUrl : "" }}
             resizeMode="cover"
             style={[{ height: heightValue }, styles.$imageBackgroundStyle]}
-          ></ImageBackground>
-        ) : (
-          <Skeleton
-            colorMode="light"
-            height={heightValue}
-            width="100%"
           />
         )}
         <BottomSheet
@@ -310,7 +373,6 @@ const styles = StyleSheet.create({
   },
 
   $imageBackgroundStyle: {
-    // height: heightValue,
     width: "100%",
     alignSelf: "center",
     position: "absolute",
