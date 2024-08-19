@@ -172,7 +172,13 @@ const RecipeDetails = () => {
       ),
     },
     {
-      section: <StepsList steps={steps} />,
+      section: (
+        <StepsList
+          loading={isLoading}
+          swipeable={false}
+          steps={steps}
+        />
+      ),
     },
   ];
 

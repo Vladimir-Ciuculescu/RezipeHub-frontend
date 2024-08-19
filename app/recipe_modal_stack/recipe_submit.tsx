@@ -163,7 +163,13 @@ export default function RecipeSubmit() {
       ),
     },
     {
-      section: <StepsList steps={steps} />,
+      section: (
+        <StepsList
+          loading={false}
+          swipeable={false}
+          steps={steps}
+        />
+      ),
     },
   ];
 

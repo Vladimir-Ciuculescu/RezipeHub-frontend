@@ -8,10 +8,10 @@ import {
   Platform,
   TouchableOpacity,
 } from "react-native";
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { $sizeStyles } from "@/theme/typography";
-import { KeyboardAwareScrollView, View } from "react-native-ui-lib";
+import { View } from "react-native-ui-lib";
 import RnInput from "@/components/shared/RNInput";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import { spacing } from "@/theme/spacing";
@@ -30,6 +30,7 @@ import { IngredientItem, IngredientItemResponse } from "@/types/ingredient.types
 import { Step, StepItemResponse } from "@/types/step.types";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const { width } = Dimensions.get("screen");
 
@@ -80,6 +81,14 @@ export default function RecipeEditModal() {
     setIngredients((oldValue) => oldValue.filter((ingredient) => ingredient.foodId !== id));
   }, []);
 
+  const deleteStep = useCallback((id: number) => {
+    setSteps((oldValue) => oldValue.filter((ingredient) => ingredient.id !== id));
+  }, []);
+
+  useEffect(() => {
+    console.log(steps);
+  }, [steps]);
+
   const sections = [
     {
       section: (
@@ -92,7 +101,14 @@ export default function RecipeEditModal() {
       ),
     },
     {
-      section: <StepsList steps={steps} />,
+      section: (
+        <StepsList
+          onLeftSwipe={deleteStep}
+          swipeable
+          loading={false}
+          steps={steps}
+        />
+      ),
     },
   ];
 
@@ -189,7 +205,7 @@ export default function RecipeEditModal() {
   return (
     <GestureHandlerRootView>
       <KeyboardAwareScrollView
-        extraScrollHeight={40}
+        extraScrollHeight={80}
         enableAutomaticScroll
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.$containerStyle}
