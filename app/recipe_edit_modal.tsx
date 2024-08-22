@@ -8,7 +8,7 @@ import {
   Platform,
   TouchableOpacity,
 } from "react-native";
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { $sizeStyles } from "@/theme/typography";
 import { View } from "react-native-ui-lib";
@@ -85,17 +85,13 @@ export default function RecipeEditModal() {
     setSteps((oldValue) => oldValue.filter((ingredient) => ingredient.id !== id));
   }, []);
 
-  useEffect(() => {
-    console.log(steps);
-  }, [steps]);
-
   const sections = [
     {
       section: (
         <IngredientsList
+          editable
           loading={false}
-          onLeftSwipe={deleteIngredient}
-          swipeable
+          onDelete={deleteIngredient}
           ingredients={ingredients}
         />
       ),
@@ -103,7 +99,7 @@ export default function RecipeEditModal() {
     {
       section: (
         <StepsList
-          onLeftSwipe={deleteStep}
+          onDelete={deleteStep}
           swipeable
           loading={false}
           steps={steps}
@@ -148,6 +144,7 @@ export default function RecipeEditModal() {
     title,
     servings: servings.toString(),
     photoUrl,
+    steps: steps,
   };
 
   const handleSegmentIndex = (index: number) => {
@@ -205,96 +202,108 @@ export default function RecipeEditModal() {
   return (
     <GestureHandlerRootView>
       <KeyboardAwareScrollView
-        extraScrollHeight={80}
+        extraScrollHeight={160}
         enableAutomaticScroll
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.$containerStyle}
       >
         {Platform.OS === "android" && <StatusBar style="dark" />}
+
         <Formik
           initialValues={initialValues}
           onSubmit={() => {}}
           validationSchema={recipeEditSchema}
         >
-          {({ values, touched, errors, handleSubmit, handleChange, handleBlur, setFieldValue }) => (
-            <View style={{ width: "100%", gap: spacing.spacing32 }}>
-              <View
-                style={{
-                  width: "100%",
-                  gap: spacing.spacing32,
-                  paddingHorizontal: spacing.spacing24,
-                }}
-              >
-                <RnInput
-                  value={values.title}
-                  onChangeText={handleChange("title")}
-                  label="Title"
-                  placeholder="Title"
-                  wrapperStyle={{ width: "100%" }}
-                />
-                <RnInput
-                  value={values.servings}
-                  onChangeText={handleChange("servings")}
-                  keyboardType="numeric"
-                  label="Servings"
-                  placeholder="Servings"
-                  wrapperStyle={{ width: "100%" }}
-                />
-
-                {!values.photoUrl ? (
-                  <RNButton
-                    onPress={() => openGallery(setFieldValue)}
-                    label="Add photo"
-                    style={styles.$addPhotoBtnStye}
-                    labelStyle={[{ color: colors.greyscale50 }, $sizeStyles.l]}
-                    iconSource={() => (
-                      <FontAwesome
-                        name="photo"
-                        size={20}
-                        color={colors.greyscale50}
-                      />
-                    )}
+          {({
+            values,
+            setValues,
+            touched,
+            errors,
+            handleSubmit,
+            handleChange,
+            handleBlur,
+            setFieldValue,
+          }) => {
+            return (
+              <View style={{ width: "100%", gap: spacing.spacing32 }}>
+                <View
+                  style={{
+                    width: "100%",
+                    gap: spacing.spacing32,
+                    paddingHorizontal: spacing.spacing24,
+                  }}
+                >
+                  <RnInput
+                    value={values.title}
+                    onChangeText={handleChange("title")}
+                    label="Title"
+                    placeholder="Title"
+                    wrapperStyle={{ width: "100%" }}
                   />
-                ) : (
-                  <View style={{ width: "100%", height: 183 }}>
-                    <Pressable
-                      onPress={() => openSheet(setFieldValue)}
-                      style={styles.$removePhotoBtnStyle}
-                    >
-                      <AntDesign
-                        name="close"
-                        size={24}
-                        color={colors.greyscale50}
-                      />
-                    </Pressable>
+                  <RnInput
+                    value={values.servings}
+                    onChangeText={handleChange("servings")}
+                    keyboardType="numeric"
+                    label="Servings"
+                    placeholder="Servings"
+                    wrapperStyle={{ width: "100%" }}
+                  />
 
-                    <FastImage
-                      style={styles.$imageStyle}
-                      source={{
-                        uri: values.photoUrl,
-                        priority: FastImage.priority.normal,
-                      }}
+                  {!values.photoUrl ? (
+                    <RNButton
+                      onPress={() => openGallery(setFieldValue)}
+                      label="Add photo"
+                      style={styles.$addPhotoBtnStye}
+                      labelStyle={[{ color: colors.greyscale50 }, $sizeStyles.l]}
+                      iconSource={() => (
+                        <FontAwesome
+                          name="photo"
+                          size={20}
+                          color={colors.greyscale50}
+                        />
+                      )}
                     />
-                  </View>
-                )}
-                <RNSegmentedControl
-                  borderRadius={16}
-                  segments={SEGMENTS}
-                  initialIndex={segmentIndex}
-                  onChangeIndex={handleSegmentIndex}
+                  ) : (
+                    <View style={{ width: "100%", height: 183 }}>
+                      <Pressable
+                        onPress={() => openSheet(setFieldValue)}
+                        style={styles.$removePhotoBtnStyle}
+                      >
+                        <AntDesign
+                          name="close"
+                          size={24}
+                          color={colors.greyscale50}
+                        />
+                      </Pressable>
+
+                      <FastImage
+                        style={styles.$imageStyle}
+                        source={{
+                          uri: values.photoUrl,
+                          priority: FastImage.priority.normal,
+                        }}
+                      />
+                    </View>
+                  )}
+                  <RNSegmentedControl
+                    borderRadius={16}
+                    segments={SEGMENTS}
+                    initialIndex={segmentIndex}
+                    onChangeIndex={handleSegmentIndex}
+                  />
+                </View>
+                <FlatList
+                  scrollEnabled={false}
+                  ref={inputsFlatlListRef}
+                  data={sections}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  keyExtractor={(_, index) => index.toString()}
+                  renderItem={renderItem}
                 />
               </View>
-              <FlatList
-                scrollEnabled={false}
-                ref={inputsFlatlListRef}
-                data={sections}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(_, index) => index.toString()}
-                renderItem={renderItem}
-              />
-            </View>
-          )}
+            );
+          }}
         </Formik>
       </KeyboardAwareScrollView>
     </GestureHandlerRootView>

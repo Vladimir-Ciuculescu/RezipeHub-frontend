@@ -99,7 +99,9 @@ const RecipeDetails = () => {
               )}
             />
           </DropdownMenu.Trigger>
+          {/* @ts-ignore */}
           <DropdownMenu.Content>
+            <DropdownMenu.Label>awd</DropdownMenu.Label>
             {ITEMS.map((item) => (
               <DropdownMenu.Item
                 onSelect={item.onSelect}
@@ -126,9 +128,7 @@ const RecipeDetails = () => {
   };
 
   const openAddToFavoritesAlert = () => {
-    Alert.alert("Feature under development", "", [
-      { text: "OK", onPress: () => console.log("OK Pressed") },
-    ]);
+    Alert.alert("Feature under development", "", [{ text: "OK" }]);
   };
 
   const openEditModal = () => {
@@ -165,8 +165,8 @@ const RecipeDetails = () => {
     {
       section: (
         <IngredientsList
+          editable={false}
           loading={isLoading}
-          swipeable={false}
           ingredients={ingredients}
         />
       ),

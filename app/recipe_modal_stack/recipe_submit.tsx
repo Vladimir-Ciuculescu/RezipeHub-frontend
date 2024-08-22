@@ -31,7 +31,6 @@ import FastImage from "react-native-fast-image";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAddRecipeMutation } from "@/hooks/recipes.hooks";
 import NutritionalInfo from "@/components/NutritionalInfo";
-import { IngredientItem } from "@/types/ingredient.types";
 import useNutritionalTotals from "@/hooks/useNutritionalTotals";
 
 const { height, width } = Dimensions.get("screen");
@@ -54,7 +53,7 @@ export default function RecipeSubmit() {
   const ingredients = useRecipeStore.use.ingredients();
   const steps = useRecipeStore.use.steps();
   const reset = useRecipeStore.use.reset();
-  const { mutate, isError, isPending } = useAddRecipeMutation();
+  const { mutate, isPending } = useAddRecipeMutation();
 
   const { totalCalories, totalCarbs, totalFats, totalProteins } = useNutritionalTotals(ingredients);
 
@@ -109,7 +108,7 @@ export default function RecipeSubmit() {
       return {
         name: ingredient.title,
         unit: ingredient.measure,
-        quantity: parseInt(ingredient.quantity),
+        quantity: parseInt(ingredient.quantity as string),
         calories: ingredient.calories!,
         carbs: ingredient.carbs!,
         proteins: ingredient.proteins!,
@@ -145,19 +144,12 @@ export default function RecipeSubmit() {
     router.back();
   };
 
-  interface NutritionalItemProps {
-    icon: React.JSX.Element;
-    quantity: number;
-    unitMeasure: string;
-    type: string;
-  }
-
   const sections = [
     {
       section: (
         <IngredientsList
           loading={false}
-          swipeable={false}
+          editable={false}
           ingredients={ingredients}
         />
       ),

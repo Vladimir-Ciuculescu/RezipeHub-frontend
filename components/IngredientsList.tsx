@@ -1,129 +1,60 @@
-import { Text, Dimensions, StyleSheet, LayoutChangeEvent, DimensionValue } from "react-native";
-import React, { useState } from "react";
+import { Text, Dimensions, StyleSheet } from "react-native";
+import React from "react";
 import { View } from "react-native-ui-lib";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
 import { colors } from "@/theme/colors";
 import { IngredientItem } from "@/types/ingredient.types";
 import { Skeleton } from "moti/skeleton";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, {
-  Extrapolation,
-  interpolate,
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
-import RNIcon from "./shared/RNIcon";
+import Animated from "react-native-reanimated";
+import SwipeableListItem from "./SwipeableItem";
+import { formatFloatingValue } from "@/utils/formatFloatingValue";
+import { AntDesign } from "@expo/vector-icons";
 
 const { width } = Dimensions.get("screen");
 
-const TRANSLATE_X_THRESHOLD = -width * 0.4;
-
 interface IngredientListItemProps {
   ingredient: IngredientItem;
-  swipeable: boolean;
-  onLeftSwipe?: (id: number) => void;
+  editable: boolean;
+  onDelete?: (id: number) => void;
 }
 
 const IngredientListItem: React.FC<IngredientListItemProps> = ({
   ingredient,
-  swipeable,
-  onLeftSwipe,
+  editable,
+  onDelete,
 }) => {
-  const translateX = useSharedValue(0);
-  const opacity = useSharedValue(1);
-  const itemHeight = useSharedValue<undefined | DimensionValue>(80);
-  const [containerWidth, setContainerWidth] = useState(0);
-
-  const containerStyle = useAnimatedStyle(() => ({
-    height: itemHeight.value,
-  }));
-
-  const animatedItemStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
-  }));
-
-  const animatedIconStyle = useAnimatedStyle(() => {
-    opacity.value =
-      translateX.value < -width * 0.6
-        ? withTiming(0, { duration: 200 })
-        : interpolate(
-            translateX.value,
-            [-containerWidth / 2, -containerWidth / 7.5],
-            [1, 0],
-            Extrapolation.EXTEND,
-          );
-
-    return {
-      opacity: opacity.value,
-    };
-  });
-
-  const tap = Gesture.Pan()
-    .onChange((event) => {
-      if (event.translationX > 0) return;
-      translateX.value = event.translationX;
-    })
-    .onFinalize((event) => {
-      const shouldBeDismissed = event.translationX < TRANSLATE_X_THRESHOLD;
-      if (shouldBeDismissed) {
-        translateX.value = withTiming(-width, undefined, (isFinished) => {
-          if (isFinished) {
-            itemHeight.value = withTiming(0, undefined, () => {
-              runOnJS(onLeftSwipe!)(ingredient.foodId as number);
-            });
-          }
-        });
-        opacity.value = withTiming(0);
-      } else {
-        translateX.value = withTiming(0);
-      }
-    });
-
-  const handleLayout = (event: LayoutChangeEvent) => {
-    const { height } = event.nativeEvent.layout;
-    setContainerWidth(width);
-
-    if (itemHeight.value === "auto") {
-      itemHeight.value = height;
-    }
-  };
-
-  return swipeable ? (
-    <Animated.View
-      onLayout={handleLayout}
-      style={[{ justifyContent: "center" }, containerStyle]}
+  return editable ? (
+    <SwipeableListItem
+      actions={["delete", "edit"]}
+      onDelete={() => onDelete!(ingredient.foodId as number)}
     >
       <View
         style={{
-          height: 30,
-          width: 30,
-          position: "absolute",
-          right: "5%",
-          zIndex: 0,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flex: 1,
+          paddingVertical: 10,
+          paddingHorizontal: 20,
         }}
       >
-        <Animated.View style={animatedIconStyle}>
-          <RNIcon
-            name="trash"
-            color={colors.red500}
+        <View>
+          <Text style={styles.$ingredientLabelStyle}>{ingredient.title}</Text>
+          <Text style={styles.$ingredientInfoStyle}>
+            {ingredient.quantity} {ingredient.measure},{" "}
+            {formatFloatingValue(ingredient.calories as number)} calories
+          </Text>
+        </View>
+        <Animated.View>
+          <AntDesign
+            name="right"
+            color={colors.accent200}
+            size={24}
           />
         </Animated.View>
       </View>
-      <GestureDetector gesture={tap}>
-        <Animated.View
-          style={[animatedItemStyle, styles.$innerContainerStyle]}
-          key={`${ingredient.foodId}-${ingredient.title}`}
-        >
-          <Text style={[$sizeStyles.n, { fontFamily: "sofia700" }]}>{ingredient.title}</Text>
-          <Text style={[$sizeStyles.n, { fontFamily: "sofia700" }]}>
-            {ingredient.quantity} {ingredient.measure}
-          </Text>
-        </Animated.View>
-      </GestureDetector>
-    </Animated.View>
+    </SwipeableListItem>
   ) : (
     <View
       style={styles.$innerContainerStyle}
@@ -139,38 +70,47 @@ const IngredientListItem: React.FC<IngredientListItemProps> = ({
 
 interface IngredientsListProps {
   ingredients: IngredientItem[];
-  swipeable: boolean;
-  onLeftSwipe?: (id: number) => void;
+  editable: boolean;
+  onDelete?: (id: number) => void;
   loading: boolean;
 }
 
 const IngredientsList: React.FC<IngredientsListProps> = ({
   loading,
   ingredients,
-  swipeable,
-  onLeftSwipe,
+  editable,
+  onDelete,
 }) => {
+  const isNotEditable = !editable;
   return (
-    <View style={styles.$containerStyle}>
+    <View style={[styles.$containerStyle, isNotEditable && styles.$notEditableContainerStyle]}>
       {ingredients.length ? (
         <>
           <View
             row
-            style={{ justifyContent: "space-between" }}
+            style={[
+              {
+                justifyContent: "space-between",
+                paddingHorizontal: spacing.spacing16,
+                marginBottom: spacing.spacing16,
+              },
+            ]}
           >
             <Text style={[$sizeStyles.l]}>Ingredients</Text>
             <Text style={[$sizeStyles.n, { color: colors.greyscale350 }]}>
               {ingredients.length} items
             </Text>
           </View>
-          {ingredients.map((ingredient) => (
-            <IngredientListItem
-              onLeftSwipe={onLeftSwipe}
-              swipeable={swipeable}
-              ingredient={ingredient}
-              key={ingredient.foodId}
-            />
-          ))}
+          <React.Fragment>
+            {ingredients.map((ingredient, key) => (
+              <IngredientListItem
+                onDelete={onDelete}
+                editable={editable}
+                ingredient={ingredient}
+                key={`${ingredient.foodId}-${key}`}
+              />
+            ))}
+          </React.Fragment>
         </>
       ) : loading ? (
         <Skeleton.Group show>
@@ -204,9 +144,12 @@ export default IngredientsList;
 const styles = StyleSheet.create({
   $containerStyle: {
     width,
+  },
+
+  $notEditableContainerStyle: {
     padding: 10,
-    gap: spacing.spacing12,
     paddingHorizontal: spacing.spacing16,
+    gap: spacing.spacing12,
   },
 
   $innerContainerStyle: {
@@ -229,5 +172,38 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     // Shadow for Android
     elevation: 5,
+  },
+
+  $stepContainerStyle: {
+    gap: spacing.spacing16,
+    alignItems: "flex-start",
+    width: "100%",
+    paddingRight: spacing.spacing64,
+  },
+  $stepInfoStyle: {
+    height: 28,
+    width: 28,
+    borderRadius: spacing.spacing8,
+    backgroundColor: colors.greyscale150,
+    alignItems: "center",
+  },
+
+  $ingredientLabelStyle: {
+    ...$sizeStyles.l,
+    fontFamily: "sofia800",
+  },
+  $ingredientInfoStyle: {
+    ...$sizeStyles.n,
+    fontFamily: "sofia800",
+    color: colors.greyscale300,
+  },
+  ///
+  leftAction: { width: 50, height: 50, backgroundColor: "crimson" },
+  rightAction: { width: 64, height: 64 },
+
+  swipeable: {
+    height: 50,
+    backgroundColor: "papayawhip",
+    alignItems: "center",
   },
 });

@@ -1,7 +1,7 @@
-import { IngredientItem } from "@/types/ingredient";
+import { IngredientItem } from "@/types/ingredient.types";
 import { create } from "zustand";
 import { createSelectors } from "./createSelectors";
-import { Step } from "@/types/step";
+import { Step } from "@/types/step.types";
 
 interface State {
   ingredients: IngredientItem[];

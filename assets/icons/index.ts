@@ -21,6 +21,7 @@ import Carbs from "./carbs.svg";
 import Calories from "./calories.svg";
 import Clock from "./clock.svg";
 import Bowl from "./bowl.svg";
+import Edit from "./edit.svg";
 
 export {
   Email,
@@ -46,4 +47,5 @@ export {
   Calories,
   Clock,
   Bowl,
+  Edit,
 };

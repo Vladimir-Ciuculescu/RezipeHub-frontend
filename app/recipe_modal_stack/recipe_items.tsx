@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect } from "react";
 import { StyleSheet, Text, Pressable, Alert, ScrollView } from "react-native";
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { GestureHandlerRootView, RectButton, Swipeable } from "react-native-gesture-handler";
+import Animated from "react-native-reanimated";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { spacing } from "@/theme/spacing";
 import { colors } from "@/theme/colors";
 import { View } from "react-native-ui-lib";
-import { useFocusEffect, useNavigation, useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import { $sizeStyles } from "@/theme/typography";
 import RNButton from "@/components/shared/RNButton";
@@ -29,32 +29,10 @@ export default function RecipeItems() {
   const router = useRouter();
   const navigation = useNavigation();
 
-  //Shared values for ingredient row animated style
-  const ingredientPaddingLeft = useSharedValue(0);
-  const ingredientOpacity = useSharedValue(0);
-  const ingredientArrowOpacity = useSharedValue(1);
-
-  //Shared values for step animated style
-  const stepPaddingLeft = useSharedValue(0);
-  const stepOpacity = useSharedValue(0);
-
-  const [editIngredients, setEditIngredients] = useState(false);
-  const [editSteps, setEditSteps] = useState(false);
-
   const ingredients = useRecipeStore.use.ingredients();
   const steps = useRecipeStore.use.steps();
   const removeIngredientAction = useRecipeStore.use.removeIngredientAction();
   const removeStepAction = useRecipeStore.use.removeStepAction();
-
-  const ingredientEditButtonStyle = useAnimatedStyle(() => ({
-    paddingLeft: withTiming(ingredientPaddingLeft.value),
-    opacity: withTiming(ingredientOpacity.value),
-  }));
-
-  const stepEditButtonStyle = useAnimatedStyle(() => ({
-    paddingLeft: withTiming(stepPaddingLeft.value),
-    opacity: withTiming(stepOpacity.value),
-  }));
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -71,15 +49,6 @@ export default function RecipeItems() {
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Add ingredients</Text>,
     });
   }, [navigation, ingredients, steps]);
-
-  useFocusEffect(
-    useCallback(() => {
-      return () => {
-        switchIngredientsEdit(true);
-        switchStepsEdit(true);
-      };
-    }, []),
-  );
 
   const cancel = () => {
     router.back();
@@ -119,27 +88,19 @@ export default function RecipeItems() {
     });
   };
 
-  const switchIngredientsEdit = (value: boolean) => {
-    ingredientPaddingLeft.value = !value ? 16 : 0;
-    ingredientOpacity.value = !value ? 1 : 0;
-    ingredientArrowOpacity.value = !value ? 0 : 1;
-    setEditIngredients(!value);
-  };
-
-  const switchStepsEdit = (value: boolean) => {
-    stepPaddingLeft.value = !value ? spacing.spacing16 : 10;
-    stepOpacity.value = !value ? 1 : 0;
-    setEditSteps(!value);
-  };
-
   const IngredientRow: React.FC<IngredientRowProps> = ({ ingredient }) => {
     const { title, quantity, measure, calories } = ingredient;
 
     return (
-      <RectButton
-        rippleColor="transparent"
-        activeOpacity={0}
-        style={styles.$rectButtonStyle}
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flex: 1,
+          paddingVertical: 10,
+          paddingHorizontal: 20,
+        }}
       >
         <View>
           <Text style={styles.$ingredientLabelStyle}>{title}</Text>
@@ -147,25 +108,25 @@ export default function RecipeItems() {
             {quantity} {measure}, {formatFloatingValue(calories as number)} calories
           </Text>
         </View>
-        <Animated.View
-          style={useAnimatedStyle(() => ({ opacity: withTiming(ingredientArrowOpacity.value) }))}
-        >
+        <Animated.View>
           <AntDesign
             name="right"
             color={colors.accent200}
             size={24}
           />
         </Animated.View>
-      </RectButton>
+      </View>
     );
   };
 
   const StepRow: React.FC<StepRowProps> = ({ item, index }) => {
     return (
-      <RectButton
-        rippleColor="transparent"
-        activeOpacity={0}
-        style={styles.$rectStepStyle}
+      <View
+        style={{
+          width: "100%",
+          paddingVertical: 10,
+          paddingHorizontal: 20,
+        }}
       >
         <View
           row
@@ -184,13 +145,9 @@ export default function RecipeItems() {
             {item.description}
           </Text>
         </View>
-      </RectButton>
+      </View>
     );
   };
-
-  const isEditIngredientsDisabled = ingredients.length;
-
-  const isEditStepsDisabled = steps.length;
 
   return (
     <GestureHandlerRootView>
@@ -203,11 +160,9 @@ export default function RecipeItems() {
           <View>
             {ingredients.map((item) => (
               <SwipeableListItem
+                actions={["delete"]}
                 key={item.foodId}
-                isEditing={editIngredients}
-                onDelete={() => removeIngredientAction(item.foodId)}
-                rowStyle={styles.$ingredientRowStyle}
-                editButtonStyle={ingredientEditButtonStyle}
+                onDelete={() => removeIngredientAction(item.foodId as string)}
               >
                 <IngredientRow ingredient={item} />
               </SwipeableListItem>
@@ -223,22 +178,13 @@ export default function RecipeItems() {
               style={styles.$btnStyle}
               labelStyle={styles.$btnLabelStyle}
             />
-            <RNButton
-              disabled={!isEditIngredientsDisabled}
-              onPress={() => switchIngredientsEdit(editIngredients)}
-              label="Edit ingredients"
-              style={styles.$btnStyle}
-              labelStyle={styles.$btnLabelStyle}
-            />
           </View>
           <View>
             {steps.map((item, index) => (
               <SwipeableListItem
+                actions={["delete"]}
                 key={item.number}
-                isEditing={editSteps}
                 onDelete={() => removeStepAction(item.number)}
-                rowStyle={styles.$ingredientRowStyle}
-                editButtonStyle={stepEditButtonStyle}
               >
                 <StepRow
                   item={item}
@@ -255,13 +201,6 @@ export default function RecipeItems() {
             <RNButton
               onPress={gotToAddSteps}
               label="Add steps"
-              style={styles.$btnStyle}
-              labelStyle={styles.$btnLabelStyle}
-            />
-            <RNButton
-              disabled={!isEditStepsDisabled}
-              onPress={() => switchStepsEdit(editSteps)}
-              label="Edit steps"
               style={styles.$btnStyle}
               labelStyle={styles.$btnLabelStyle}
             />
@@ -320,7 +259,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 80,
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 30,
     alignItems: "center",
     flexDirection: "row",
     backgroundColor: "white",
@@ -328,7 +267,7 @@ const styles = StyleSheet.create({
 
   $stepContainerStyle: {
     gap: spacing.spacing16,
-    alignItems: "center",
+    alignItems: "flex-start",
     width: "100%",
     paddingRight: spacing.spacing64,
   },
