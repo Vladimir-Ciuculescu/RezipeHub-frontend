@@ -16,6 +16,7 @@ const { width } = Dimensions.get("screen");
 interface IngredientListItemProps {
   ingredient: IngredientItem;
   editable: boolean;
+  onEdit: (ingredient: IngredientItem) => void;
   onDelete?: (id: number) => void;
 }
 
@@ -23,22 +24,15 @@ const IngredientListItem: React.FC<IngredientListItemProps> = ({
   ingredient,
   editable,
   onDelete,
+  onEdit,
 }) => {
   return editable ? (
     <SwipeableListItem
+      onEdit={() => onEdit!(ingredient)}
       actions={["delete", "edit"]}
       onDelete={() => onDelete!(ingredient.foodId as number)}
     >
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flex: 1,
-          paddingVertical: 10,
-          paddingHorizontal: 20,
-        }}
-      >
+      <View style={styles.$ingredientContainerStyle}>
         <View>
           <Text style={styles.$ingredientLabelStyle}>{ingredient.title}</Text>
           <Text style={styles.$ingredientInfoStyle}>
@@ -72,6 +66,7 @@ interface IngredientsListProps {
   ingredients: IngredientItem[];
   editable: boolean;
   onDelete?: (id: number) => void;
+  onEdit?: (ingreidient: IngredientItem) => void;
   loading: boolean;
 }
 
@@ -80,6 +75,7 @@ const IngredientsList: React.FC<IngredientsListProps> = ({
   ingredients,
   editable,
   onDelete,
+  onEdit,
 }) => {
   const isNotEditable = !editable;
   return (
@@ -88,13 +84,7 @@ const IngredientsList: React.FC<IngredientsListProps> = ({
         <>
           <View
             row
-            style={[
-              {
-                justifyContent: "space-between",
-                paddingHorizontal: spacing.spacing16,
-                marginBottom: spacing.spacing16,
-              },
-            ]}
+            style={styles.$ingredientsContainerStyle}
           >
             <Text style={[$sizeStyles.l]}>Ingredients</Text>
             <Text style={[$sizeStyles.n, { color: colors.greyscale350 }]}>
@@ -105,6 +95,8 @@ const IngredientsList: React.FC<IngredientsListProps> = ({
             {ingredients.map((ingredient, key) => (
               <IngredientListItem
                 onDelete={onDelete}
+                //@ts-ignore
+                onEdit={onEdit}
                 editable={editable}
                 ingredient={ingredient}
                 key={`${ingredient.foodId}-${key}`}
@@ -197,13 +189,19 @@ const styles = StyleSheet.create({
     fontFamily: "sofia800",
     color: colors.greyscale300,
   },
-  ///
-  leftAction: { width: 50, height: 50, backgroundColor: "crimson" },
-  rightAction: { width: 64, height: 64 },
 
-  swipeable: {
-    height: 50,
-    backgroundColor: "papayawhip",
+  $ingredientsContainerStyle: {
+    justifyContent: "space-between",
+    paddingHorizontal: spacing.spacing16,
+    marginBottom: spacing.spacing16,
+  },
+
+  $ingredientContainerStyle: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
 });

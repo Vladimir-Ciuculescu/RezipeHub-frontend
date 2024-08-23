@@ -101,7 +101,6 @@ const RecipeDetails = () => {
           </DropdownMenu.Trigger>
           {/* @ts-ignore */}
           <DropdownMenu.Content>
-            <DropdownMenu.Label>awd</DropdownMenu.Label>
             {ITEMS.map((item) => (
               <DropdownMenu.Item
                 onSelect={item.onSelect}
@@ -132,7 +131,10 @@ const RecipeDetails = () => {
   };
 
   const openEditModal = () => {
-    router.navigate({ pathname: "/recipe_edit_modal", params: { recipe: JSON.stringify(recipe) } });
+    router.navigate({
+      pathname: "edit_recipe/recipe_edit_summary",
+      params: { recipe: JSON.stringify(recipe) },
+    });
   };
 
   const openDeleteAlert = () => {};

@@ -16,24 +16,24 @@ interface StepListItemProps {
   step: Step;
   swipeable: boolean;
   onDelete?: (id: number) => void;
+  onEdit?: (step: Step) => void;
   number: number;
-  value: string;
-  setFieldValue: any;
 }
 
-const StepListItem: React.FC<StepListItemProps> = ({ step, swipeable, onDelete, number }) => {
+const StepListItem: React.FC<StepListItemProps> = ({
+  step,
+  swipeable,
+  onDelete,
+  onEdit,
+  number,
+}) => {
   return swipeable ? (
     <SwipeableListItem
       actions={["delete", "edit"]}
+      onEdit={() => onEdit!(step)}
       onDelete={() => onDelete!(step.id as number)}
     >
-      <View
-        style={{
-          width: "100%",
-          paddingVertical: 10,
-          paddingHorizontal: 20,
-        }}
-      >
+      <View style={styles.$swipeableStepContainerStyle}>
         <View
           row
           style={styles.$stepContainerStyle}
@@ -69,24 +69,11 @@ interface StepsListProps {
   steps: Step[];
   swipeable: boolean;
   onDelete?: (id: number) => void;
+  onEdit?: (step: Step) => void;
   loading: boolean;
 }
 
-const StepsList: React.FC<StepsListProps> = ({ steps, swipeable, loading, onDelete }) => {
-  let formikValues: any = {};
-  let formikSetFieldValue: (
-    field: string,
-    value: any,
-    shouldValidate?: boolean | undefined,
-  ) => Promise<void | FormikErrors<unknown>>;
-
-  if (swipeable) {
-    const { values, setFieldValue } = useFormikContext();
-
-    formikValues = values;
-    formikSetFieldValue = setFieldValue;
-  }
-
+const StepsList: React.FC<StepsListProps> = ({ steps, swipeable, loading, onDelete, onEdit }) => {
   const isNotEditable = !swipeable;
 
   return (
@@ -95,11 +82,7 @@ const StepsList: React.FC<StepsListProps> = ({ steps, swipeable, loading, onDele
         <>
           <View
             row
-            style={{
-              justifyContent: "space-between",
-              paddingHorizontal: spacing.spacing16,
-              marginBottom: spacing.spacing16,
-            }}
+            style={styles.$stepContainer}
           >
             <Text style={[$sizeStyles.l]}>Steps</Text>
             <Text style={[$sizeStyles.n, { color: colors.greyscale350 }]}>
@@ -112,12 +95,11 @@ const StepsList: React.FC<StepsListProps> = ({ steps, swipeable, loading, onDele
               return (
                 <StepListItem
                   onDelete={onDelete}
+                  onEdit={onEdit}
                   swipeable={swipeable}
                   step={step}
                   key={swipeable ? step.id : index}
                   number={index}
-                  value=""
-                  setFieldValue={swipeable ? formikSetFieldValue : undefined}
                 />
               );
             })}
@@ -197,5 +179,17 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     width: "100%",
     paddingRight: spacing.spacing64,
+  },
+
+  $swipeableStepContainerStyle: {
+    width: "100%",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+
+  $stepContainer: {
+    justifyContent: "space-between",
+    paddingHorizontal: spacing.spacing16,
+    marginBottom: spacing.spacing16,
   },
 });

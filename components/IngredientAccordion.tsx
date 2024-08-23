@@ -71,7 +71,7 @@ const IngredientAccordion: FC<IngredientAccordionProps> = ({ ingredient }) => {
 
   const gotToConfirmIngredient = () => {
     router.navigate({
-      pathname: "recipe_modal_stack/recipe_confirm_ingredient",
+      pathname: "add_recipe/recipe_confirm_ingredient",
       params: { ingredient: JSON.stringify(ingredient) },
     });
   };

@@ -15,40 +15,9 @@ export default function Layout() {
           headerBackVisible: false,
           headerShadowVisible: false,
           headerTitleAlign: "center",
+          //headerShown: false,
         }}
-        name="recipe_title"
-      />
-      <Stack.Screen
-        options={{
-          headerBackVisible: false,
-          headerShadowVisible: false,
-          headerTitleAlign: "center",
-        }}
-        name="recipe_items"
-      />
-      <Stack.Screen
-        options={{
-          headerBackVisible: false,
-          headerShadowVisible: false,
-          headerTitleAlign: "center",
-        }}
-        name="recipe_search_ingredients"
-      />
-      <Stack.Screen
-        options={{
-          headerBackVisible: false,
-          headerShadowVisible: false,
-          headerTitleAlign: "center",
-        }}
-        name="recipe_confirm_ingredient"
-      />
-      <Stack.Screen
-        options={{
-          headerBackVisible: false,
-          headerShadowVisible: false,
-          headerTitleAlign: "center",
-        }}
-        name="recipe_add_steps"
+        name="recipe_edit_summary"
       />
       <Stack.Screen
         options={{
@@ -57,7 +26,16 @@ export default function Layout() {
           headerTitleAlign: "center",
           //headerShown: false,
         }}
-        name="recipe_submit"
+        name="recipe_edit_step"
+      />
+      <Stack.Screen
+        options={{
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerTitleAlign: "center",
+          //headerShown: false,
+        }}
+        name="recipe_edit_ingredient"
       />
     </Stack>
   );

@@ -113,8 +113,12 @@ export default function Layout() {
             />
 
             <Stack.Screen
-              name="recipe_modal_stack"
+              name="add_recipe"
               options={{ presentation: "fullScreenModal", headerShown: false }}
+            />
+            <Stack.Screen
+              name="edit_recipe"
+              options={{ presentation: "modal", headerShown: false }}
             />
             <Stack.Screen
               name="(tabs)"
@@ -124,14 +128,7 @@ export default function Layout() {
               name="recipe_details"
               options={{ headerShown: true, headerTransparent: true }}
             />
-            <Stack.Screen
-              name="recipe_edit_modal"
-              options={{
-                presentation: "modal",
-                headerBackVisible: false,
-                headerTitleAlign: "center",
-              }}
-            />
+
             <Stack.Screen
               name="all_personal_recipes"
               options={{

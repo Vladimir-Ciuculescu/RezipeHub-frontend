@@ -41,7 +41,7 @@ interface SearchParams {
   recipe: string;
 }
 
-export default function RecipeEditModal() {
+export default function RecipeEditSummary() {
   const { recipe } = useLocalSearchParams<SearchParams>();
 
   const router = useRouter();
@@ -50,6 +50,7 @@ export default function RecipeEditModal() {
   const { showActionSheetWithOptions } = useActionSheet();
   const [segmentIndex, setSegmentIndex] = useState(0);
   const inputsFlatlListRef = useRef<FlatList>(null);
+
   const parsedRecipe: RecipeResponse = JSON.parse(recipe!);
 
   const { title, servings, photoUrl } = parsedRecipe;
@@ -77,13 +78,21 @@ export default function RecipeEditModal() {
   const [ingredients, setIngredients] = useState(parsedIngredients);
   const [steps, setSteps] = useState(parsedSteps);
 
-  const deleteIngredient = useCallback((id: number) => {
+  const onDeleteIngredient = useCallback((id: number) => {
     setIngredients((oldValue) => oldValue.filter((ingredient) => ingredient.foodId !== id));
   }, []);
 
-  const deleteStep = useCallback((id: number) => {
+  const onDeleteStep = useCallback((id: number) => {
     setSteps((oldValue) => oldValue.filter((ingredient) => ingredient.id !== id));
   }, []);
+
+  const onEditIngreidient = (ingredient: IngredientItem) => {
+    router.navigate("edit_recipe/recipe_edit_ingredient");
+  };
+
+  const onEditStep = (step: Step) => {
+    router.navigate("edit_recipe/recipe_edit_step");
+  };
 
   const sections = [
     {
@@ -91,7 +100,8 @@ export default function RecipeEditModal() {
         <IngredientsList
           editable
           loading={false}
-          onDelete={deleteIngredient}
+          onDelete={onDeleteIngredient}
+          onEdit={onEditIngreidient}
           ingredients={ingredients}
         />
       ),
@@ -99,7 +109,8 @@ export default function RecipeEditModal() {
     {
       section: (
         <StepsList
-          onDelete={deleteStep}
+          onDelete={onDeleteStep}
+          onEdit={onEditStep}
           swipeable
           loading={false}
           steps={steps}
@@ -111,30 +122,6 @@ export default function RecipeEditModal() {
   const renderItem: ListRenderItem<any> = ({ item }) => {
     return <View style={{ width: width }}>{item.section}</View>;
   };
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity onPress={() => {}}>
-          <Text style={{ ...$sizeStyles.l }}>Save</Text>
-        </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <RNButton
-          onPress={cancel}
-          link
-          iconSource={() => (
-            <AntDesign
-              name="close"
-              size={24}
-              color="black"
-            />
-          )}
-        />
-      ),
-      headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit recipe</Text>,
-    });
-  }, [navigation]);
 
   const cancel = () => {
     router.back();
@@ -223,7 +210,37 @@ export default function RecipeEditModal() {
             handleChange,
             handleBlur,
             setFieldValue,
+            dirty,
+            isValid,
           }) => {
+            useLayoutEffect(() => {
+              navigation.setOptions({
+                headerLeft: () => (
+                  <TouchableOpacity
+                    disabled={!dirty || !isValid}
+                    style={!dirty || !isValid ? { opacity: 0.3 } : { opacity: 1 }}
+                    onPress={() => {}}
+                  >
+                    <Text style={{ ...$sizeStyles.l }}>Save</Text>
+                  </TouchableOpacity>
+                ),
+                headerRight: () => (
+                  <RNButton
+                    onPress={cancel}
+                    link
+                    iconSource={() => (
+                      <AntDesign
+                        name="close"
+                        size={24}
+                        color="black"
+                      />
+                    )}
+                  />
+                ),
+                headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit recipe</Text>,
+              });
+            }, [navigation, dirty, isValid]);
+
             return (
               <View style={{ width: "100%", gap: spacing.spacing32 }}>
                 <View

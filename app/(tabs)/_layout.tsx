@@ -7,7 +7,7 @@ export default function TabLayout() {
   const router = useRouter();
 
   const openAddRecipeModal = () => {
-    router.navigate("recipe_modal_stack");
+    router.navigate("add_recipe");
   };
 
   return (

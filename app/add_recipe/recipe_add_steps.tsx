@@ -150,8 +150,8 @@ export default function RecipeAddSteps() {
                   style={[
                     styles.$paginationItemTextStyle,
                     activeIndex === index
-                      ? styles.activePaginationText
-                      : styles.inactivePaginationText,
+                      ? styles.$activePaginationTextStyle
+                      : styles.$inactivePaginationTextstyle,
                   ]}
                 >
                   {index + 1}
@@ -197,14 +197,7 @@ export default function RecipeAddSteps() {
           )}
         />
       </View>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          gap: spacing.spacing16,
-          paddingHorizontal: spacing.spacing16,
-        }}
-      >
+      <View style={styles.$buttonsContainerstyle}>
         <RNButton
           onPress={addStep}
           label="Add step"
@@ -260,10 +253,17 @@ const styles = StyleSheet.create({
     fontFamily: "sofia800",
   },
 
-  activePaginationText: {
+  $activePaginationTextStyle: {
     color: "#fff",
   },
-  inactivePaginationText: {
+  $inactivePaginationTextstyle: {
     color: colors.accent200,
+  },
+
+  $buttonsContainerstyle: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.spacing16,
+    paddingHorizontal: spacing.spacing16,
   },
 });

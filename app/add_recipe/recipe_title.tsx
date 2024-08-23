@@ -96,7 +96,7 @@ function RecipeTitle() {
 
     addInfoAction(payload);
 
-    router.navigate("recipe_modal_stack/recipe_items");
+    router.navigate("add_recipe/recipe_items");
   };
 
   const showEmptyTitleMessage = () => {

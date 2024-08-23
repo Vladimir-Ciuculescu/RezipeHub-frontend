@@ -121,14 +121,18 @@ export default function RecipeSubmit() {
       step: step.number,
     }));
 
-    const payload = {
+    const payload: any = {
       userId: user!.id,
       title,
       servings,
       ingredients: ingredientsPayload,
       steps: stepsPayload,
-      photoUrl: photo,
+      // photoUrl: photo,
     };
+
+    if (photo) {
+      payload.photoUrl = photo;
+    }
 
     mutate(payload, {
       onSuccess: (data) => {

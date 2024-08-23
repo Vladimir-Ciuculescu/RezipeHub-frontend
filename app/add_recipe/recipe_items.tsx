@@ -65,15 +65,15 @@ export default function RecipeItems() {
       return;
     }
 
-    router.navigate("recipe_modal_stack/recipe_submit");
+    router.navigate("add_recipe/recipe_submit");
   };
 
   const goToSearchIngredients = () => {
-    router.navigate("recipe_modal_stack/recipe_search_ingredients");
+    router.navigate("add_recipe/recipe_search_ingredients");
   };
 
   const gotToAddSteps = () => {
-    router.navigate("recipe_modal_stack/recipe_add_steps");
+    router.navigate("add_recipe/recipe_add_steps");
   };
 
   const showNoIngredientsMessage = () => {
@@ -92,16 +92,7 @@ export default function RecipeItems() {
     const { title, quantity, measure, calories } = ingredient;
 
     return (
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flex: 1,
-          paddingVertical: 10,
-          paddingHorizontal: 20,
-        }}
-      >
+      <View style={styles.$ingredientRowContainerStyle}>
         <View>
           <Text style={styles.$ingredientLabelStyle}>{title}</Text>
           <Text style={styles.$ingredientInfoStyle}>
@@ -121,13 +112,7 @@ export default function RecipeItems() {
 
   const StepRow: React.FC<StepRowProps> = ({ item, index }) => {
     return (
-      <View
-        style={{
-          width: "100%",
-          paddingVertical: 10,
-          paddingHorizontal: 20,
-        }}
-      >
+      <View style={styles.$stepRowContainerStyle}>
         <View
           row
           style={styles.$stepContainerStyle}
@@ -135,15 +120,7 @@ export default function RecipeItems() {
           <View style={styles.$stepInfoStyle}>
             <Text style={{ ...$sizeStyles.xl, color: colors.accent200 }}>{index + 1}</Text>
           </View>
-          <Text
-            style={{
-              ...$sizeStyles.n,
-              color: colors.greyscale400,
-              fontFamily: "sofia800",
-            }}
-          >
-            {item.description}
-          </Text>
+          <Text style={styles.$stepDescriptionStyle}>{item.description}</Text>
         </View>
       </View>
     );
@@ -158,10 +135,10 @@ export default function RecipeItems() {
       >
         <View style={styles.$buttonsContainerstyle}>
           <View>
-            {ingredients.map((item) => (
+            {ingredients.map((item, key: number) => (
               <SwipeableListItem
                 actions={["delete"]}
-                key={item.foodId}
+                key={`${item.foodId}-${key}`}
                 onDelete={() => removeIngredientAction(item.foodId as string)}
               >
                 <IngredientRow ingredient={item} />
@@ -180,15 +157,15 @@ export default function RecipeItems() {
             />
           </View>
           <View>
-            {steps.map((item, index) => (
+            {steps.map((item, key: number) => (
               <SwipeableListItem
                 actions={["delete"]}
-                key={item.number}
+                key={`${item.id}-${key}`}
                 onDelete={() => removeStepAction(item.number)}
               >
                 <StepRow
                   item={item}
-                  index={index}
+                  index={key}
                 />
               </SwipeableListItem>
             ))}
@@ -212,6 +189,27 @@ export default function RecipeItems() {
 }
 
 const styles = StyleSheet.create({
+  $ingredientRowContainerStyle: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+
+  $stepRowContainerStyle: {
+    width: "100%",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+
+  $stepDescriptionStyle: {
+    ...$sizeStyles.n,
+    color: colors.greyscale400,
+    fontFamily: "sofia800",
+  },
+
   $scrollVieContainerStyle: {
     paddingTop: spacing.spacing16,
   },

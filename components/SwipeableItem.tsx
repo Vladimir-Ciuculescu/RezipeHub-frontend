@@ -1,5 +1,5 @@
 import React from "react";
-import { LayoutChangeEvent, DimensionValue, Pressable } from "react-native";
+import { LayoutChangeEvent, DimensionValue, Pressable, StyleSheet } from "react-native";
 import Animated, {
   runOnJS,
   SharedValue,
@@ -17,13 +17,14 @@ type action = "delete" | "edit";
 const ITEM_OFFSET = 64;
 
 interface SwipeableListItemProps {
-  onDelete: () => void;
+  onDelete?: () => void;
+  onEdit?: () => void;
   children: React.ReactNode;
   actions: action[];
 }
 
 const SwipeableListItem: React.FC<SwipeableListItemProps> = (props) => {
-  const { onDelete, children, actions } = props;
+  const { onDelete, onEdit, children, actions } = props;
 
   const heightValue = useSharedValue<undefined | DimensionValue>("auto");
 
@@ -34,9 +35,13 @@ const SwipeableListItem: React.FC<SwipeableListItemProps> = (props) => {
   const deleteItem = () => {
     heightValue.value = withTiming(0, { duration: 300 }, (isFinished) => {
       if (isFinished) {
-        runOnJS(onDelete)();
+        runOnJS(onDelete!)();
       }
     });
+  };
+
+  const editItem = () => {
+    onEdit!();
   };
 
   const handleLayout = (event: LayoutChangeEvent) => {
@@ -55,7 +60,7 @@ const SwipeableListItem: React.FC<SwipeableListItemProps> = (props) => {
 
     return (
       <View style={{ width: ITEM_OFFSET * actions.length, flexDirection: "row" }}>
-        {actions.map((action, index) => {
+        {actions.map((action, key) => {
           let icon;
           let backgroundColor;
 
@@ -63,12 +68,7 @@ const SwipeableListItem: React.FC<SwipeableListItemProps> = (props) => {
             case "delete":
               icon = (
                 <Pressable
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
+                  style={styles.$actionContainerStyle}
                   onPress={deleteItem}
                 >
                   <RNIcon
@@ -83,12 +83,8 @@ const SwipeableListItem: React.FC<SwipeableListItemProps> = (props) => {
             case "edit":
               icon = (
                 <Pressable
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
+                  style={styles.$actionContainerStyle}
+                  onPress={editItem}
                 >
                   <RNIcon
                     name="edit"
@@ -100,7 +96,10 @@ const SwipeableListItem: React.FC<SwipeableListItemProps> = (props) => {
           }
 
           return (
-            <Animated.View style={[{ flex: 1 }, animatedStyle]}>
+            <Animated.View
+              key={`${action}-${key}`}
+              style={[{ flex: 1 }, animatedStyle]}
+            >
               <Pressable
                 style={[
                   {
@@ -141,3 +140,12 @@ const SwipeableListItem: React.FC<SwipeableListItemProps> = (props) => {
 };
 
 export default SwipeableListItem;
+
+const styles = StyleSheet.create({
+  $actionContainerStyle: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
