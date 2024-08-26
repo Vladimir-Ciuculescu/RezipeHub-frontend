@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
-import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import { $sizeStyles } from "@/theme/typography";
 import { View } from "react-native-ui-lib";
 import RnInput from "@/components/shared/RNInput";
@@ -19,71 +19,46 @@ import { colors } from "@/theme/colors";
 import FastImage from "react-native-fast-image";
 import RNButton from "@/components/shared/RNButton";
 import { Formik } from "formik";
-import { RecipeResponse } from "@/types/recipe.types";
 import { recipeEditSchema } from "@/yup/recipe-edit.schema";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import * as ImagePicker from "expo-image-picker";
 import RNSegmentedControl, { SegmentItem } from "@/components/shared/RnSegmentedControl";
 import IngredientsList from "@/components/IngredientsList";
 import StepsList from "@/components/StepsList";
-import { IngredientItem, IngredientItemResponse } from "@/types/ingredient.types";
-import { Step, StepItemResponse } from "@/types/step.types";
+import { IngredientItem } from "@/types/ingredient.types";
+import { Step } from "@/types/step.types";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import useRecipeStore from "@/zustand/useRecipeStore";
 
 const { width } = Dimensions.get("screen");
 
 const SEGMENTS: SegmentItem[] = [{ label: "Ingredients" }, { label: "Instructions" }];
 
-interface SearchParams {
-  [key: string]: string;
-  recipe: string;
-}
-
 export default function RecipeEditSummary() {
-  const { recipe } = useLocalSearchParams<SearchParams>();
-
   const router = useRouter();
+
+  const title = useRecipeStore.use.title();
+  const servings = useRecipeStore.use.servings();
+  const photo = useRecipeStore.use.photo();
+  const ingredientsFromStore = useRecipeStore.use.ingredients();
+  const stepsFromStore = useRecipeStore.use.steps();
+  const removeStepAction = useRecipeStore.use.removeStepAction();
 
   const navigation = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
   const [segmentIndex, setSegmentIndex] = useState(0);
   const inputsFlatlListRef = useRef<FlatList>(null);
 
-  const parsedRecipe: RecipeResponse = JSON.parse(recipe!);
-
-  const { title, servings, photoUrl } = parsedRecipe;
-
-  const parsedIngredients: IngredientItem[] = parsedRecipe.ingredients.map(
-    (ingredient: IngredientItemResponse) => ({
-      foodId: ingredient.id,
-      measure: ingredient.unit,
-      quantity: ingredient.quantity,
-      title: ingredient.name,
-      calories: ingredient.calories,
-      carbs: ingredient.carbs,
-      proteins: ingredient.proteins,
-      fats: ingredient.fats,
-    }),
-  );
-
-  const parsedSteps: Step[] = parsedRecipe.steps.map((step: StepItemResponse) => ({
-    id: step.id,
-    step: step.step,
-    number: step.step,
-    description: step.text,
-  }));
-
-  const [ingredients, setIngredients] = useState(parsedIngredients);
-  const [steps, setSteps] = useState(parsedSteps);
+  const [ingredients, setIngredients] = useState(ingredientsFromStore);
 
   const onDeleteIngredient = useCallback((id: number) => {
     setIngredients((oldValue) => oldValue.filter((ingredient) => ingredient.foodId !== id));
   }, []);
 
-  const onDeleteStep = useCallback((id: number) => {
-    setSteps((oldValue) => oldValue.filter((ingredient) => ingredient.id !== id));
+  const onDeleteStep = useCallback((step: Step) => {
+    removeStepAction(step);
   }, []);
 
   const onEditIngreidient = (ingredient: IngredientItem) => {
@@ -91,7 +66,10 @@ export default function RecipeEditSummary() {
   };
 
   const onEditStep = (step: Step) => {
-    router.navigate("edit_recipe/recipe_edit_step");
+    router.navigate({
+      pathname: "edit_recipe/recipe_edit_step",
+      params: { step: JSON.stringify(step) },
+    });
   };
 
   const sections = [
@@ -113,7 +91,8 @@ export default function RecipeEditSummary() {
           onEdit={onEditStep}
           swipeable
           loading={false}
-          steps={steps}
+          // steps={steps}
+          steps={stepsFromStore}
         />
       ),
     },
@@ -130,8 +109,7 @@ export default function RecipeEditSummary() {
   const initialValues = {
     title,
     servings: servings.toString(),
-    photoUrl,
-    steps: steps,
+    photoUrl: photo,
   };
 
   const handleSegmentIndex = (index: number) => {

@@ -32,6 +32,7 @@ import { Step, StepItemResponse } from "@/types/step.types";
 import useNutritionalTotals from "@/hooks/useNutritionalTotals";
 import { Ionicons } from "@expo/vector-icons";
 import * as DropdownMenu from "zeego/dropdown-menu";
+import useRecipeStore from "@/zustand/useRecipeStore";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -58,6 +59,9 @@ const RecipeDetails = () => {
 
   const [index, setIndex] = useState(0);
   const [segmentIndex, setSegmentIndex] = useState(0);
+  const addInfoAction = useRecipeStore.use.addInfoAction();
+  const setIngredientsAction = useRecipeStore.use.setIngredientsAction();
+  const setStepsAction = useRecipeStore.use.addStepsAction();
 
   const { id } = useLocalSearchParams<{ id: string }>();
 
@@ -131,10 +135,37 @@ const RecipeDetails = () => {
   };
 
   const openEditModal = () => {
-    router.navigate({
-      pathname: "edit_recipe/recipe_edit_summary",
-      params: { recipe: JSON.stringify(recipe) },
-    });
+    const payload = {
+      title: recipe!.title,
+      servings: recipe!.servings,
+      photo: recipe!.photoUrl || "",
+    };
+
+    const parsedIngredients: IngredientItem[] = recipe!.ingredients.map(
+      (ingredient: IngredientItemResponse) => ({
+        foodId: ingredient.id,
+        measure: ingredient.unit,
+        quantity: ingredient.quantity,
+        title: ingredient.name,
+        calories: ingredient.calories,
+        carbs: ingredient.carbs,
+        proteins: ingredient.proteins,
+        fats: ingredient.fats,
+      }),
+    );
+
+    const parsedSteps: Step[] = recipe!.steps.map((step: StepItemResponse) => ({
+      id: step.id,
+      step: step.step,
+      number: step.step,
+      description: step.text,
+    }));
+
+    addInfoAction(payload);
+    setIngredientsAction(parsedIngredients);
+    setStepsAction(parsedSteps);
+
+    router.navigate("edit_recipe/recipe_edit_summary");
   };
 
   const openDeleteAlert = () => {};

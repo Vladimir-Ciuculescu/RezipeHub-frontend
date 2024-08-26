@@ -48,6 +48,7 @@ export default function RnInput(props: RNInputProps) {
         <TextField
           {...rest}
           multiline={multiline}
+          selectionColor={colors.accent300}
           value={value}
           placeholder={placeholder}
           onFocus={() => setIsFocused(true)}
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
 
   $focusedStyle: {
     borderWidth: 2.5,
-    borderColor: colors.accent400,
+    borderColor: colors.accent200,
   },
   $unfocusedStyle: {
     borderWidth: 2,

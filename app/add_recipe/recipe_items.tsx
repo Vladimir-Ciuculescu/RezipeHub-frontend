@@ -31,6 +31,7 @@ export default function RecipeItems() {
 
   const ingredients = useRecipeStore.use.ingredients();
   const steps = useRecipeStore.use.steps();
+
   const removeIngredientAction = useRecipeStore.use.removeIngredientAction();
   const removeStepAction = useRecipeStore.use.removeStepAction();
 
@@ -161,7 +162,7 @@ export default function RecipeItems() {
               <SwipeableListItem
                 actions={["delete"]}
                 key={`${item.id}-${key}`}
-                onDelete={() => removeStepAction(item.number)}
+                onDelete={() => removeStepAction(item)}
               >
                 <StepRow
                   item={item}

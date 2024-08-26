@@ -7,7 +7,6 @@ import { colors } from "@/theme/colors";
 import { Step } from "@/types/step.types";
 import { Skeleton } from "moti/skeleton";
 
-import { FormikErrors, useFormikContext } from "formik";
 import SwipeableListItem from "./SwipeableItem";
 
 const { width } = Dimensions.get("screen");
@@ -15,7 +14,7 @@ const { width } = Dimensions.get("screen");
 interface StepListItemProps {
   step: Step;
   swipeable: boolean;
-  onDelete?: (id: number) => void;
+  onDelete?: (step: Step) => void;
   onEdit?: (step: Step) => void;
   number: number;
 }
@@ -31,7 +30,7 @@ const StepListItem: React.FC<StepListItemProps> = ({
     <SwipeableListItem
       actions={["delete", "edit"]}
       onEdit={() => onEdit!(step)}
-      onDelete={() => onDelete!(step.id as number)}
+      onDelete={() => onDelete!(step)}
     >
       <View style={styles.$swipeableStepContainerStyle}>
         <View
@@ -68,7 +67,7 @@ const StepListItem: React.FC<StepListItemProps> = ({
 interface StepsListProps {
   steps: Step[];
   swipeable: boolean;
-  onDelete?: (id: number) => void;
+  onDelete?: (step: Step) => void;
   onEdit?: (step: Step) => void;
   loading: boolean;
 }

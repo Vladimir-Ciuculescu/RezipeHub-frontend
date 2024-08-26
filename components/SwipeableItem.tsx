@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useRef } from "react";
 import { LayoutChangeEvent, DimensionValue, Pressable, StyleSheet } from "react-native";
 import Animated, {
   runOnJS,
@@ -9,8 +9,11 @@ import Animated, {
 } from "react-native-reanimated";
 import { View } from "react-native-ui-lib";
 import { colors } from "@/theme/colors";
-import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import ReanimatedSwipeable, {
+  SwipeableMethods,
+} from "react-native-gesture-handler/ReanimatedSwipeable";
 import RNIcon from "./shared/RNIcon";
+import { useFocusEffect } from "expo-router";
 
 type action = "delete" | "edit";
 
@@ -26,11 +29,21 @@ interface SwipeableListItemProps {
 const SwipeableListItem: React.FC<SwipeableListItemProps> = (props) => {
   const { onDelete, onEdit, children, actions } = props;
 
+  const swipeabeRef = useRef<SwipeableMethods>(null);
+
   const heightValue = useSharedValue<undefined | DimensionValue>("auto");
 
   const containerStyle = useAnimatedStyle(() => ({
     height: heightValue.value,
   }));
+
+  useFocusEffect(
+    useCallback(() => {
+      if (swipeabeRef) {
+        swipeabeRef.current!.reset();
+      }
+    }, []),
+  );
 
   const deleteItem = () => {
     heightValue.value = withTiming(0, { duration: 300 }, (isFinished) => {
@@ -122,6 +135,7 @@ const SwipeableListItem: React.FC<SwipeableListItemProps> = (props) => {
 
   return (
     <ReanimatedSwipeable
+      ref={swipeabeRef}
       overshootRight={false}
       friction={2}
       leftThreshold={80}

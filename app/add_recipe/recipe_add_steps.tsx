@@ -70,7 +70,7 @@ export default function RecipeAddSteps() {
   }, [activeIndex]);
 
   const confirmSteps = () => {
-    const newSteps = steps.map((step, index) => ({ ...step, number: index + 1 }));
+    const newSteps = steps.map((step, index) => ({ ...step, number: index + 1, id: index + 1 }));
     addStepsAction(newSteps);
 
     router.dismiss(1);
