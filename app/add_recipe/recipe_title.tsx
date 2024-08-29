@@ -1,5 +1,5 @@
-import { Text, StyleSheet, Pressable, Alert, Image } from "react-native";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import { Text, StyleSheet, Pressable, Alert } from "react-native";
+import React, { useLayoutEffect, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import { AntDesign } from "@expo/vector-icons";

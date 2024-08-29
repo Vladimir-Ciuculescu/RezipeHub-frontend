@@ -42,19 +42,18 @@ export default function RecipeEditSummary() {
   const title = useRecipeStore.use.title();
   const servings = useRecipeStore.use.servings();
   const photo = useRecipeStore.use.photo();
-  const ingredientsFromStore = useRecipeStore.use.ingredients();
-  const stepsFromStore = useRecipeStore.use.steps();
+  const ingredients = useRecipeStore.use.ingredients();
+  const steps = useRecipeStore.use.steps();
   const removeStepAction = useRecipeStore.use.removeStepAction();
+  const removeIngredientAction = useRecipeStore.use.removeIngredientAction();
 
   const navigation = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
   const [segmentIndex, setSegmentIndex] = useState(0);
   const inputsFlatlListRef = useRef<FlatList>(null);
 
-  const [ingredients, setIngredients] = useState(ingredientsFromStore);
-
-  const onDeleteIngredient = useCallback((id: number) => {
-    setIngredients((oldValue) => oldValue.filter((ingredient) => ingredient.foodId !== id));
+  const onDeleteIngredient = useCallback((ingredient: IngredientItem) => {
+    removeIngredientAction(ingredient);
   }, []);
 
   const onDeleteStep = useCallback((step: Step) => {
@@ -62,7 +61,10 @@ export default function RecipeEditSummary() {
   }, []);
 
   const onEditIngreidient = (ingredient: IngredientItem) => {
-    router.navigate("edit_recipe/recipe_edit_ingredient");
+    router.navigate({
+      pathname: "edit_recipe/recipe_edit_ingredient",
+      params: { ingredient: JSON.stringify(ingredient) },
+    });
   };
 
   const onEditStep = (step: Step) => {
@@ -91,8 +93,7 @@ export default function RecipeEditSummary() {
           onEdit={onEditStep}
           swipeable
           loading={false}
-          // steps={steps}
-          steps={stepsFromStore}
+          steps={steps}
         />
       ),
     },

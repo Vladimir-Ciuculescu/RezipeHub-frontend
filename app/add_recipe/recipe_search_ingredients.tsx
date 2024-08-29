@@ -40,6 +40,7 @@ export default function RecipeSearchIngredients() {
   const fetchResults = async () => {
     setResults([]);
     const data = await FoodService.searchFood(text);
+
     setResults(data.hints);
   };
 

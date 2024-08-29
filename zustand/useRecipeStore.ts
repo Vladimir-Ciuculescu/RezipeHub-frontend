@@ -13,11 +13,12 @@ interface State {
 
 interface Action {
   addIngredientAction: (ingredient: IngredientItem) => void;
+  editIngredientAction: (ingredient: IngredientItem) => void;
   setIngredientsAction: (ingredients: IngredientItem[]) => void;
-  removeIngredientAction: (foodId: string) => void;
+  removeIngredientAction: (ingredient: IngredientItem) => void;
+
   addStepsAction: (steps: Step[]) => void;
   editStepAction: (ste: Step) => void;
-  // removeStepAction: (stepNumber: number) => void;
   removeStepAction: (step: Step) => void;
 
   addInfoAction: (info: Omit<State, "ingredients" | "steps">) => void;
@@ -37,14 +38,36 @@ const useRecipeStoreBase = create<State & Action>()((set, get) => ({
   // * Add one ingredient at a time
   addIngredientAction: (ingredient) =>
     set((state: State) => ({ ingredients: [...state.ingredients, ingredient] })),
+  // * Edit one ingredient at a time
+  editIngredientAction: (ingredient) =>
+    set((state: State) => ({
+      ingredients: state.ingredients.map((item) => {
+        const { measure, quantity, calories, carbs, proteins, fats } = ingredient;
+
+        return item.foodId === ingredient.foodId
+          ? {
+              ...item,
+              measure,
+              quantity,
+              proteins,
+              fats,
+              calories,
+              carbs,
+            }
+          : item;
+      }),
+    })),
   // * Overwrite the entire ingredients array
   setIngredientsAction: (ingredients) => set((state: State) => ({ ingredients })),
-  removeIngredientAction: (foodId: string) =>
+  // * Remove one ingredient at a time
+  removeIngredientAction: (ingredient: IngredientItem) =>
     set((state: State) => ({
-      ingredients: state.ingredients.filter((ingredient) => ingredient.foodId !== foodId),
+      ingredients: state.ingredients.filter((item) => item.foodId !== ingredient.foodId),
     })),
-  // * Add one step at a time
+  // * Add all steps
   addStepsAction: (steps) => set((state: State) => ({ steps: steps })),
+
+  // * Edit one step at a time
   editStepAction: (step) =>
     set((state: State) => ({
       steps: state.steps.map((item) => {
@@ -56,8 +79,7 @@ const useRecipeStoreBase = create<State & Action>()((set, get) => ({
           : item;
       }),
     })),
-  // removeStepAction: (stepNumber) =>
-  //   set((state: State) => ({ steps: state.steps.filter((step) => step.number !== stepNumber) })),
+  // * Remove one step at a time
   removeStepAction: (step) =>
     set((state: State) => ({ steps: state.steps.filter((item) => item.id !== step.id) })),
   addInfoAction: (info) => set((state: State) => ({ ...info })),

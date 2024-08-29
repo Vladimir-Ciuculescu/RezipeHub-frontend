@@ -104,7 +104,12 @@ export default function RecipeSubmit() {
   });
 
   const handleAddRecipe = () => {
+    // return;
+
     const ingredientsPayload = ingredients.map((ingredient) => {
+      //@ts-ignore
+      const measures = ingredient.measures?.filter((measure) => measure.label);
+
       return {
         name: ingredient.title,
         unit: ingredient.measure,
@@ -113,6 +118,9 @@ export default function RecipeSubmit() {
         carbs: ingredient.carbs!,
         proteins: ingredient.proteins!,
         fats: ingredient.fats!,
+
+        foodId: ingredient.foodId,
+        measures,
       };
     });
 
@@ -127,7 +135,6 @@ export default function RecipeSubmit() {
       servings,
       ingredients: ingredientsPayload,
       steps: stepsPayload,
-      // photoUrl: photo,
     };
 
     if (photo) {
@@ -136,7 +143,9 @@ export default function RecipeSubmit() {
 
     mutate(payload, {
       onSuccess: (data) => {
-        queryClient.setQueryData(["recipes-per-user"], (oldData: any) => [...oldData, data]);
+        queryClient.setQueryData(["recipes-per-user"], (oldData: any) => {
+          return oldData ? [data, ...oldData] : [data];
+        });
         reset();
         router.dismissAll();
         router.back();

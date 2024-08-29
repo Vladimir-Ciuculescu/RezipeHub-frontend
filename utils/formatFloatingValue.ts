@@ -1,4 +1,8 @@
 export function formatFloatingValue(num: number) {
+  if (!num) {
+    return "0";
+  }
+
   const numStr = num.toString();
 
   if (numStr.includes(".")) {

@@ -114,4 +114,12 @@ const styles = StyleSheet.create({
     ...$sizeStyles.n,
     fontFamily: "sofia800",
   },
+  $stepInfoStyle: {
+    height: 28,
+    width: 28,
+    borderRadius: spacing.spacing8,
+    backgroundColor: colors.greyscale150,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });

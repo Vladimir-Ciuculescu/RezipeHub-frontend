@@ -12,6 +12,7 @@ export interface IngredientItem {
   carbs?: number | string;
   proteins?: number | string;
   fats?: number | string;
+  allMeasures?: Measure[];
 }
 
 export interface IngredientItemResponse {
@@ -23,6 +24,8 @@ export interface IngredientItemResponse {
   carbs: number;
   proteins: number;
   fats: number;
+  foodId: string;
+  allUnits: Measure[];
 }
 
 export interface IngredientPayload {
@@ -47,9 +50,8 @@ interface Food {
 
 export interface Measure {
   uri: string;
-  //Unit measure
   label: string;
-  weight: number;
+  weight?: number;
 }
 
 export interface Nutrient {

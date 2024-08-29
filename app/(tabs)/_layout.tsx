@@ -1,12 +1,16 @@
 import RNIcon from "@/components/shared/RNIcon";
 import { colors } from "@/theme/colors";
+import useRecipeStore from "@/zustand/useRecipeStore";
 import { Tabs, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Platform, Pressable, StyleSheet } from "react-native";
 export default function TabLayout() {
   const router = useRouter();
 
+  const reset = useRecipeStore.use.reset();
+
   const openAddRecipeModal = () => {
+    reset();
     router.navigate("add_recipe");
   };
 

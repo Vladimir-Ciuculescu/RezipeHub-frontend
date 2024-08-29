@@ -10,9 +10,9 @@ import {
   NutrientResponse,
   NutrientsRequestPayload,
 } from "@/types/ingredient.types";
-import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import { spacing } from "@/theme/spacing";
-import { SegmentedControl, View } from "react-native-ui-lib";
+import { View } from "react-native-ui-lib";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { colors } from "@/theme/colors";
 import RnInput from "@/components/shared/RNInput";
@@ -166,6 +166,12 @@ export default function RecipeConfirmIngredient() {
   }, [pickerDismissed, unitMeasure]);
 
   const addIngredient = () => {
+    const measures = parsedIngredient.measures.map((measure) => ({
+      uri: measure.uri,
+      label: measure.label,
+      weight: measure.weight,
+    }));
+
     const payload = {
       foodId: parsedIngredient.food.foodId,
       title: parsedIngredient.food.label,
@@ -175,6 +181,7 @@ export default function RecipeConfirmIngredient() {
       carbs: nutrientsInfo?.totalNutrients.CHOCDF!.quantity,
       proteins: nutrientsInfo?.totalNutrients.PROCNT!.quantity,
       fats: nutrientsInfo?.totalNutrients.FAT?.quantity,
+      measures,
     };
 
     addIngredientAction(payload);

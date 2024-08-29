@@ -39,9 +39,13 @@ const SwipeableListItem: React.FC<SwipeableListItemProps> = (props) => {
 
   useFocusEffect(
     useCallback(() => {
-      if (swipeabeRef) {
-        swipeabeRef.current!.reset();
-      }
+      return () => {
+        setTimeout(() => {
+          if (swipeabeRef && swipeabeRef.current) {
+            swipeabeRef.current!.reset();
+          }
+        }, 100);
+      };
     }, []),
   );
 
@@ -64,7 +68,7 @@ const SwipeableListItem: React.FC<SwipeableListItemProps> = (props) => {
     }
   };
 
-  const renderRightActions = (prog: SharedValue<number>, drag: SharedValue<number>) => {
+  const renderRightActions = (_: SharedValue<number>, drag: SharedValue<number>) => {
     const animatedStyle = useAnimatedStyle(() => {
       return {
         transform: [{ translateX: drag.value + ITEM_OFFSET * actions.length }],

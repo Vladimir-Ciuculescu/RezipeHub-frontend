@@ -140,7 +140,7 @@ export default function RecipeItems() {
               <SwipeableListItem
                 actions={["delete"]}
                 key={`${item.foodId}-${key}`}
-                onDelete={() => removeIngredientAction(item.foodId as string)}
+                onDelete={() => removeIngredientAction(item)}
               >
                 <IngredientRow ingredient={item} />
               </SwipeableListItem>

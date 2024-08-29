@@ -143,8 +143,9 @@ const RecipeDetails = () => {
 
     const parsedIngredients: IngredientItem[] = recipe!.ingredients.map(
       (ingredient: IngredientItemResponse) => ({
-        foodId: ingredient.id,
+        foodId: ingredient.foodId,
         measure: ingredient.unit,
+        allMeasures: ingredient.allUnits,
         quantity: ingredient.quantity,
         title: ingredient.name,
         calories: ingredient.calories,
@@ -172,7 +173,7 @@ const RecipeDetails = () => {
 
   const ingredients: IngredientItem[] = recipe
     ? recipe.ingredients.map((ingredient: IngredientItemResponse) => ({
-        foodId: ingredient.id,
+        foodId: ingredient.foodId,
         measure: ingredient.unit,
         quantity: ingredient.quantity,
         title: ingredient.name,

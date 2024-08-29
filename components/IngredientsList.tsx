@@ -17,7 +17,7 @@ interface IngredientListItemProps {
   ingredient: IngredientItem;
   editable: boolean;
   onEdit: (ingredient: IngredientItem) => void;
-  onDelete?: (id: number) => void;
+  onDelete?: (ingredient: IngredientItem) => void;
 }
 
 const IngredientListItem: React.FC<IngredientListItemProps> = ({
@@ -30,7 +30,7 @@ const IngredientListItem: React.FC<IngredientListItemProps> = ({
     <SwipeableListItem
       onEdit={() => onEdit!(ingredient)}
       actions={["delete", "edit"]}
-      onDelete={() => onDelete!(ingredient.foodId as number)}
+      onDelete={() => onDelete!(ingredient)}
     >
       <View style={styles.$ingredientContainerStyle}>
         <View>
@@ -65,7 +65,8 @@ const IngredientListItem: React.FC<IngredientListItemProps> = ({
 interface IngredientsListProps {
   ingredients: IngredientItem[];
   editable: boolean;
-  onDelete?: (id: number) => void;
+  onDelete?: (ingredient: IngredientItem) => void;
+
   onEdit?: (ingreidient: IngredientItem) => void;
   loading: boolean;
 }

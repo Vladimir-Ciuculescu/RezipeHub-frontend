@@ -38,7 +38,7 @@ const StepListItem: React.FC<StepListItemProps> = ({
           style={styles.$stepContainerStyle}
         >
           <View style={styles.$stepInfoStyle}>
-            <Text style={{ ...$sizeStyles.xl, color: colors.accent200 }}>{step.number}</Text>
+            <Text style={{ ...$sizeStyles.xl, color: colors.accent200 }}>{number + 1}</Text>
           </View>
           <Text
             style={{
