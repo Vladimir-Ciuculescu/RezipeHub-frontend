@@ -33,6 +33,8 @@ import useNutritionalTotals from "@/hooks/useNutritionalTotals";
 import { Ionicons } from "@expo/vector-icons";
 import * as DropdownMenu from "zeego/dropdown-menu";
 import useRecipeStore from "@/zustand/useRecipeStore";
+import FastImage from "react-native-fast-image";
+import Toast from "react-native-toast-message";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -136,6 +138,7 @@ const RecipeDetails = () => {
 
   const openEditModal = () => {
     const payload = {
+      id: recipe?.id,
       title: recipe!.title,
       servings: recipe!.servings,
       photo: recipe!.photoUrl || "",
@@ -143,6 +146,8 @@ const RecipeDetails = () => {
 
     const parsedIngredients: IngredientItem[] = recipe!.ingredients.map(
       (ingredient: IngredientItemResponse) => ({
+        nutritionalInfoId: ingredient.nutritionalInfoId,
+        id: ingredient.id,
         foodId: ingredient.foodId,
         measure: ingredient.unit,
         allMeasures: ingredient.allUnits,
@@ -248,9 +253,14 @@ const RecipeDetails = () => {
             />
           </View>
         ) : (
-          <ImageBackground
-            source={{ uri: recipe ? recipe.photoUrl : "" }}
+          // <ImageBackground
+          //   source={{ uri: recipe ? recipe.photoUrl : "" }}
+          //   resizeMode="cover"
+          //   style={[{ height: heightValue }, styles.$imageBackgroundStyle]}
+          // />
+          <FastImage
             resizeMode="cover"
+            source={{ uri: recipe ? recipe.photoUrl : "" }}
             style={[{ height: heightValue }, styles.$imageBackgroundStyle]}
           />
         )}

@@ -7,6 +7,7 @@ import {
   Dimensions,
   Platform,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
@@ -18,7 +19,7 @@ import { spacing } from "@/theme/spacing";
 import { colors } from "@/theme/colors";
 import FastImage from "react-native-fast-image";
 import RNButton from "@/components/shared/RNButton";
-import { Formik } from "formik";
+import { Formik, FormikProps, FormikValues } from "formik";
 import { recipeEditSchema } from "@/yup/recipe-edit.schema";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import * as ImagePicker from "expo-image-picker";
@@ -31,14 +32,34 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import useRecipeStore from "@/zustand/useRecipeStore";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  useDeleteRecipeImageMutation,
+  useEditRecipeMutation,
+  useUploadToS3Mutation,
+} from "@/hooks/recipes.hooks";
+import useUserData from "@/hooks/useUserData";
+import { AddPhotoRequest } from "@/types/s3.types";
+import { EditRecipeRequest, RecipeBriefResponse } from "@/types/recipe.types";
+import Toast from "react-native-toast-message";
+import toastConfig from "@/components/Toast/ToastConfing";
+import RNIcon from "@/components/shared/RNIcon";
 
 const { width } = Dimensions.get("screen");
 
 const SEGMENTS: SegmentItem[] = [{ label: "Ingredients" }, { label: "Instructions" }];
+export const getImageUrlWithCacheBuster = (url: string) => {
+  const timestamp = new Date().getTime();
+  return `${url}?t=${timestamp}`;
+};
 
 export default function RecipeEditSummary() {
   const router = useRouter();
+  const navigation = useNavigation();
+  const queryClient = useQueryClient();
+  const user = useUserData();
 
+  const recipedId = useRecipeStore.use.id!();
   const title = useRecipeStore.use.title();
   const servings = useRecipeStore.use.servings();
   const photo = useRecipeStore.use.photo();
@@ -46,17 +67,65 @@ export default function RecipeEditSummary() {
   const steps = useRecipeStore.use.steps();
   const removeStepAction = useRecipeStore.use.removeStepAction();
   const removeIngredientAction = useRecipeStore.use.removeIngredientAction();
-
-  const navigation = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
   const [segmentIndex, setSegmentIndex] = useState(0);
   const inputsFlatlListRef = useRef<FlatList>(null);
 
+  //List of ids that needs to be deleted from DB if ingredients are deleted from FE
+  const [ingredientIds, setingredientIds] = useState<number[]>([]);
+  const [nutritionalInfoIds, setNutritionalInfoIds] = useState<number[]>([]);
+  const [stepsIds, setStepsIds] = useState<number[]>([]);
+
+  const { mutateAsync: editRecipeMutation, isPending: editRecipePending } = useEditRecipeMutation();
+  const { mutateAsync: uploadToS3Mutation, isPending: uploadToS3Pending } = useUploadToS3Mutation();
+  const { mutateAsync: deleteRecipeImageMutation, isPending: deleteRecipeImagePending } =
+    useDeleteRecipeImageMutation();
+
+  const isLoading = editRecipePending || uploadToS3Pending || deleteRecipeImagePending;
+
+  const formikRef = useRef<FormikProps<any>>(null);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () =>
+        isLoading ? (
+          <ActivityIndicator color={colors.accent200} />
+        ) : (
+          <Pressable
+            onPress={() => {
+              if (formikRef.current) {
+                formikRef.current.submitForm();
+              }
+            }}
+          >
+            <Text style={[{ ...$sizeStyles.l }, { color: colors.accent200 }]}>Save</Text>
+          </Pressable>
+        ),
+      headerRight: () => (
+        <RNButton
+          onPress={cancel}
+          link
+          iconSource={() => (
+            <AntDesign
+              name="close"
+              size={24}
+              color="black"
+            />
+          )}
+        />
+      ),
+      headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit recipe</Text>,
+    });
+  }, [navigation, isLoading]);
+
   const onDeleteIngredient = useCallback((ingredient: IngredientItem) => {
     removeIngredientAction(ingredient);
+    setingredientIds((oldValue) => [...oldValue, ingredient.id!]);
+    setNutritionalInfoIds((oldValue) => [...oldValue, ingredient.nutritionalInfoId!]);
   }, []);
 
   const onDeleteStep = useCallback((step: Step) => {
+    setStepsIds((oldValue) => [...oldValue, step.id!]);
     removeStepAction(step);
   }, []);
 
@@ -165,6 +234,115 @@ export default function RecipeEditSummary() {
     );
   };
 
+  const handleSave = async (values: FormikValues) => {
+    if (!ingredients.length || !steps.length) {
+      Toast.show({
+        type: "error",
+        props: {
+          msg: "Each recipe must have at least one ingredient and one step",
+          icon: (
+            <RNIcon
+              name="cook"
+              color={colors.greyscale50}
+            />
+          ),
+        },
+      });
+
+      return;
+    }
+
+    const { title, servings, photoUrl } = values;
+
+    try {
+      let photo = "";
+
+      if (photoUrl) {
+        const uploadToS3Payload: AddPhotoRequest = {
+          userId: user.id,
+          id: recipedId!,
+          photoUrl,
+        };
+        const url = await uploadToS3Mutation(uploadToS3Payload);
+        photo = url;
+      } else {
+        const removeRecipeImageFromS3Payload = {
+          userId: user.id,
+          recipeId: recipedId!,
+        };
+
+        await deleteRecipeImageMutation(removeRecipeImageFromS3Payload);
+      }
+
+      const recipe = {
+        id: recipedId!,
+        title,
+        servings: parseInt(servings),
+        photoUrl: photo,
+        ingredients,
+        steps,
+      };
+
+      let payload: EditRecipeRequest = { recipe };
+
+      //If ingredients were deleted from FE, append to payload the list of ids that needs to be deleted
+      if (ingredientIds.length) {
+        payload.ingredientsIds = ingredientIds;
+      }
+
+      if (nutritionalInfoIds.length) {
+        payload.nutritionalInfoIds = nutritionalInfoIds;
+      }
+
+      //If steps were deleted from FE, append to payload the list of ids that needs to be deleted
+      if (stepsIds.length) {
+        payload.stepsIds = stepsIds;
+      }
+
+      await editRecipeMutation(payload);
+
+      //Update the recipe details screen with the new data
+      queryClient.setQueryData(["recipe"], (oldData: any) => {
+        const updatedRecipe = {
+          ...oldData.recipe,
+          photoUrl: getImageUrlWithCacheBuster(oldData.photoUrl),
+          title: payload.recipe.title,
+          ingredients: payload.recipe.ingredients?.map((ingredient) => ({
+            ...ingredient,
+            allUnits: ingredient.allMeasures,
+            name: ingredient.title,
+            unit: ingredient.measure,
+          })),
+          steps: payload.recipe.steps?.map((step) => ({
+            id: step.id,
+            step: step.step,
+            text: step.description,
+          })),
+        };
+
+        return { ...oldData, ...updatedRecipe };
+      });
+
+      //Update the my recipes request
+      queryClient.setQueryData(["recipes-per-user"], (oldData: RecipeBriefResponse[]) => {
+        return oldData.map((recipe) =>
+          recipe.id === recipedId
+            ? {
+                ...recipe,
+                title: payload.recipe.title,
+                servings: payload.recipe.servings,
+                photoUrl: getImageUrlWithCacheBuster(payload.recipe.photoUrl),
+              }
+            : recipe,
+        );
+      });
+
+      router.back();
+    } catch (error) {
+      console.error("Could not edit recipe !:", error);
+    }
+  };
+
   return (
     <GestureHandlerRootView>
       <KeyboardAwareScrollView
@@ -176,50 +354,12 @@ export default function RecipeEditSummary() {
         {Platform.OS === "android" && <StatusBar style="dark" />}
 
         <Formik
+          innerRef={formikRef}
           initialValues={initialValues}
-          onSubmit={() => {}}
+          onSubmit={handleSave}
           validationSchema={recipeEditSchema}
         >
-          {({
-            values,
-            setValues,
-            touched,
-            errors,
-            handleSubmit,
-            handleChange,
-            handleBlur,
-            setFieldValue,
-            dirty,
-            isValid,
-          }) => {
-            useLayoutEffect(() => {
-              navigation.setOptions({
-                headerLeft: () => (
-                  <TouchableOpacity
-                    disabled={!dirty || !isValid}
-                    style={!dirty || !isValid ? { opacity: 0.3 } : { opacity: 1 }}
-                    onPress={() => {}}
-                  >
-                    <Text style={{ ...$sizeStyles.l }}>Save</Text>
-                  </TouchableOpacity>
-                ),
-                headerRight: () => (
-                  <RNButton
-                    onPress={cancel}
-                    link
-                    iconSource={() => (
-                      <AntDesign
-                        name="close"
-                        size={24}
-                        color="black"
-                      />
-                    )}
-                  />
-                ),
-                headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit recipe</Text>,
-              });
-            }, [navigation, dirty, isValid]);
-
+          {({ values, handleSubmit, handleChange, setFieldValue, dirty, isValid }) => {
             return (
               <View style={{ width: "100%", gap: spacing.spacing32 }}>
                 <View
@@ -302,6 +442,12 @@ export default function RecipeEditSummary() {
           }}
         </Formik>
       </KeyboardAwareScrollView>
+      <Toast
+        config={toastConfig}
+        visibilityTime={3000}
+        position="bottom"
+        bottomOffset={-50}
+      />
     </GestureHandlerRootView>
   );
 }

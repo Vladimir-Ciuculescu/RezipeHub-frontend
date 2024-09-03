@@ -4,6 +4,7 @@ export interface IngredientResponse {
 }
 
 export interface IngredientItem {
+  id?: number;
   foodId: string | number;
   measure: string;
   quantity: string | number;
@@ -13,6 +14,7 @@ export interface IngredientItem {
   proteins?: number | string;
   fats?: number | string;
   allMeasures?: Measure[];
+  nutritionalInfoId?: number;
 }
 
 export interface IngredientItemResponse {
@@ -26,6 +28,7 @@ export interface IngredientItemResponse {
   fats: number;
   foodId: string;
   allUnits: Measure[];
+  nutritionalInfoId?: number;
 }
 
 export interface IngredientPayload {

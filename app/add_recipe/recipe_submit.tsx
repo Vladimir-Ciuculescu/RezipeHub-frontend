@@ -29,9 +29,13 @@ import useUserData from "@/hooks/useUserData";
 import Entypo from "@expo/vector-icons/Entypo";
 import FastImage from "react-native-fast-image";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAddRecipeMutation } from "@/hooks/recipes.hooks";
 import NutritionalInfo from "@/components/NutritionalInfo";
 import useNutritionalTotals from "@/hooks/useNutritionalTotals";
+import {
+  useAddRecipeMutation,
+  useEditRecipePhotoMutation,
+  useUploadToS3Mutation,
+} from "@/hooks/recipes.hooks";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -53,23 +57,29 @@ export default function RecipeSubmit() {
   const ingredients = useRecipeStore.use.ingredients();
   const steps = useRecipeStore.use.steps();
   const reset = useRecipeStore.use.reset();
-  const { mutate, isPending } = useAddRecipeMutation();
+
+  const { mutateAsync: addRecipeMutation, isPending: addRecipePending } = useAddRecipeMutation();
+  const { mutateAsync: uploadToS3Mutation, isPending: uploadToS3Pending } = useUploadToS3Mutation();
+  const { mutateAsync: editRecipePhotoMutation, isPending: editRecipePhotoPending } =
+    useEditRecipePhotoMutation();
 
   const { totalCalories, totalCarbs, totalFats, totalProteins } = useNutritionalTotals(ingredients);
+
+  const isLoading = addRecipePending || uploadToS3Pending || editRecipePhotoPending;
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
         <Pressable
           onPress={goBack}
-          disabled={isPending}
-          style={isPending ? styles.$disabledBackBtnStyle : styles.$enabledBackBtnStyle}
+          disabled={isLoading}
+          style={isLoading ? styles.$disabledBackBtnStyle : styles.$enabledBackBtnStyle}
         >
           <RNIcon name="arrow_left" />
         </Pressable>
       ),
       headerRight: () =>
-        isPending ? (
+        isLoading ? (
           <ActivityIndicator color={colors.accent200} />
         ) : (
           <TouchableOpacity onPress={handleAddRecipe}>
@@ -81,7 +91,7 @@ export default function RecipeSubmit() {
         ),
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Confirm recipe</Text>,
     });
-  }, [navigation, user, isPending]);
+  }, [navigation, user, isLoading]);
 
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
@@ -103,54 +113,79 @@ export default function RecipeSubmit() {
     };
   });
 
-  const handleAddRecipe = () => {
-    // return;
+  const handleAddRecipe = async () => {
+    try {
+      const ingredientsPayload = ingredients.map((ingredient) => {
+        //@ts-ignore
+        const measures = ingredient.measures?.filter((measure) => measure.label);
 
-    const ingredientsPayload = ingredients.map((ingredient) => {
-      //@ts-ignore
-      const measures = ingredient.measures?.filter((measure) => measure.label);
+        return {
+          name: ingredient.title,
+          unit: ingredient.measure,
+          quantity: parseInt(ingredient.quantity as string),
+          calories: ingredient.calories!,
+          carbs: ingredient.carbs!,
+          proteins: ingredient.proteins!,
+          fats: ingredient.fats!,
 
-      return {
-        name: ingredient.title,
-        unit: ingredient.measure,
-        quantity: parseInt(ingredient.quantity as string),
-        calories: ingredient.calories!,
-        carbs: ingredient.carbs!,
-        proteins: ingredient.proteins!,
-        fats: ingredient.fats!,
+          foodId: ingredient.foodId,
+          measures,
+        };
+      });
 
-        foodId: ingredient.foodId,
-        measures,
+      const stepsPayload = steps.map((step) => ({
+        text: step.description,
+        step: step.number,
+      }));
+
+      const payload: any = {
+        userId: user!.id,
+        title,
+        servings,
+        ingredients: ingredientsPayload,
+        steps: stepsPayload,
       };
-    });
 
-    const stepsPayload = steps.map((step) => ({
-      text: step.description,
-      step: step.number,
-    }));
+      if (photo) {
+        payload.photoUrl = photo;
+      }
 
-    const payload: any = {
-      userId: user!.id,
-      title,
-      servings,
-      ingredients: ingredientsPayload,
-      steps: stepsPayload,
-    };
+      const recipe = await addRecipeMutation(payload);
 
-    if (photo) {
-      payload.photoUrl = photo;
-    }
+      if (photo) {
+        const s3Payload = { id: recipe.id, userId: user.id, photoUrl: payload.photoUrl };
+        const url = await uploadToS3Mutation(s3Payload);
 
-    mutate(payload, {
-      onSuccess: (data) => {
+        await editRecipePhotoMutation({ id: recipe.id, photoUrl: url });
+
+        const newRecipe = {
+          title: recipe.title,
+          servings: recipe.servings,
+          id: recipe.id,
+          photoUrl: url,
+        };
+
         queryClient.setQueryData(["recipes-per-user"], (oldData: any) => {
-          return oldData ? [data, ...oldData] : [data];
+          return oldData ? [newRecipe, ...oldData] : [newRecipe];
         });
-        reset();
-        router.dismissAll();
-        router.back();
-      },
-    });
+      } else {
+        const newRecipe = {
+          title: recipe.title,
+          servings: recipe.servings,
+          id: recipe.id,
+        };
+
+        queryClient.setQueryData(["recipes-per-user"], (oldData: any) => {
+          return oldData ? [newRecipe, ...oldData] : [newRecipe];
+        });
+      }
+
+      reset();
+      router.dismissAll();
+      router.back();
+    } catch (error) {
+      console.error("Could not add recipe !:", error);
+    }
   };
 
   const goBack = () => {

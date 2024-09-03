@@ -1,4 +1,10 @@
-import { AddRecipeRequest, GetRecipesByUserRequest, RecipeResponse } from "@/types/recipe.types";
+import {
+  AddRecipeRequest,
+  EditRecipePhotoRequest,
+  EditRecipeRequest,
+  GetRecipesByUserRequest,
+  RecipeResponse,
+} from "@/types/recipe.types";
 import { handleError } from "../handleError";
 import { axiosInstance } from "..";
 import { RECIPES } from "../constants";
@@ -9,6 +15,14 @@ const RecipeService = {
       const { data } = await axiosInstance.post(`/${RECIPES}/add`, payload);
 
       return data;
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+
+  editRecipePhoto: async (payload: EditRecipePhotoRequest) => {
+    try {
+      await axiosInstance.put(`/${RECIPES}/edit-photo`, payload);
     } catch (error) {
       throw handleError(error);
     }
@@ -41,6 +55,14 @@ const RecipeService = {
     try {
       const { data } = await axiosInstance.get(`/${RECIPES}/${recipeId}`);
       return data;
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+
+  editRecipe: async (payload: EditRecipeRequest) => {
+    try {
+      await axiosInstance.put(`/${RECIPES}/edit`, payload);
     } catch (error) {
       throw handleError(error);
     }

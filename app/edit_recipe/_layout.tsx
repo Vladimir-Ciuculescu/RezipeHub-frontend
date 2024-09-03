@@ -1,6 +1,5 @@
 import { colors } from "@/theme/colors";
 import { Stack } from "expo-router/stack";
-import { StatusBar } from "expo-status-bar";
 import { StyleSheet } from "react-native";
 
 export default function Layout() {
@@ -15,7 +14,6 @@ export default function Layout() {
           headerBackVisible: false,
           headerShadowVisible: false,
           headerTitleAlign: "center",
-          //headerShown: false,
         }}
         name="recipe_edit_summary"
       />
@@ -24,7 +22,6 @@ export default function Layout() {
           headerBackVisible: false,
           headerShadowVisible: false,
           headerTitleAlign: "center",
-          //headerShown: false,
         }}
         name="recipe_edit_step"
       />
@@ -33,7 +30,6 @@ export default function Layout() {
           headerBackVisible: false,
           headerShadowVisible: false,
           headerTitleAlign: "center",
-          //headerShown: false,
         }}
         name="recipe_edit_ingredient"
       />

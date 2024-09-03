@@ -1,5 +1,12 @@
-import React, { useLayoutEffect } from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, Dimensions, Pressable } from "react-native";
+import React, { useLayoutEffect, useState } from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  Pressable,
+  Image,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, View } from "react-native-ui-lib";
 import Feather from "@expo/vector-icons/Feather";
@@ -18,6 +25,7 @@ import { Skeleton } from "moti/skeleton";
 import FastImage from "react-native-fast-image";
 import { useUserRecipes } from "@/hooks/recipes.hooks";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { getImageUrlWithCacheBuster } from "../edit_recipe/recipe_edit_summary";
 
 const { width: screenWidth } = Dimensions.get("window");
 const numColumns = 2;
@@ -37,10 +45,15 @@ interface RecipeItemProps {
 const RecipeItem: React.FC<RecipeItemProps> = ({ item }) => {
   const router = useRouter();
 
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
   const goToRecipe = () => {
     router.navigate({ pathname: "/recipe_details", params: { id: item.id } });
   };
-
   return (
     <Pressable onPress={goToRecipe}>
       <RNShadowView style={styles.$recipeItemStyle}>
@@ -52,9 +65,14 @@ const RecipeItem: React.FC<RecipeItemProps> = ({ item }) => {
             gap: spacing.spacing8,
           }}
         >
-          {item.photoUrl ? (
+          {item.photoUrl || imageLoaded ? (
             <FastImage
-              source={{ uri: item.photoUrl }}
+              source={{
+                uri: item.photoUrl,
+                priority: FastImage.priority.high,
+                cache: FastImage.cacheControl.web,
+              }}
+              onLoad={handleImageLoad}
               style={{
                 width: "100%",
                 height: "50%",
@@ -171,6 +189,7 @@ const Profile = () => {
             />
             <View>
               <Text style={styles.$userNameStyle}>{user?.firstName + " " + user?.lastName}</Text>
+
               <Text style={styles.$userDescriptionStyle}>Recipe Developer</Text>
             </View>
           </View>

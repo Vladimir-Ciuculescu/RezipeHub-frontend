@@ -13,6 +13,8 @@ import { ClerkProvider } from "@clerk/clerk-expo";
 import * as SecureStore from "expo-secure-store";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Toast from "react-native-toast-message";
+import toastConfig from "@/components/Toast/ToastConfing";
 
 LogBox.ignoreLogs([
   "Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead.",
@@ -140,6 +142,11 @@ export default function Layout() {
               }}
             />
           </Stack>
+          <Toast
+            config={toastConfig}
+            position="bottom"
+            bottomOffset={50}
+          />
         </ClerkProvider>
       </ActionSheetProvider>
     </QueryClientProvider>

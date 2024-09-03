@@ -4,6 +4,7 @@ import { createSelectors } from "./createSelectors";
 import { Step } from "@/types/step.types";
 
 interface State {
+  id?: number;
   ingredients: IngredientItem[];
   steps: Step[];
   title: string;
@@ -16,7 +17,6 @@ interface Action {
   editIngredientAction: (ingredient: IngredientItem) => void;
   setIngredientsAction: (ingredients: IngredientItem[]) => void;
   removeIngredientAction: (ingredient: IngredientItem) => void;
-
   addStepsAction: (steps: Step[]) => void;
   editStepAction: (ste: Step) => void;
   removeStepAction: (step: Step) => void;
@@ -26,6 +26,7 @@ interface Action {
 }
 
 const initialState: State = {
+  id: 0,
   ingredients: [],
   steps: [],
   title: "",
