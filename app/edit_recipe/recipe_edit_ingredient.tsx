@@ -192,7 +192,7 @@ export default function RecipeEditIngredient() {
             <Text style={[$sizeStyles.n, styles.$labelStyle]}>Unit measure</Text>
             <RNPickerSelect
               placeholder={{}}
-              doneText="Search"
+              doneText="Done"
               onOpen={() => setPickerDismissed(false)}
               onClose={() => setPickerDismissed(true)}
               value={measure}

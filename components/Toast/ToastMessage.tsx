@@ -9,12 +9,24 @@ import { $sizeStyles } from "@/theme/typography";
 interface Props {
   msg: string;
   icon: React.ReactNode;
+  type: "error" | "success";
 }
 
-const RNToast = ({ msg, icon }: Props) => {
+const RNToast = ({ msg, icon, type }: Props) => {
+  let backgroundColor;
+
+  switch (type) {
+    case "error":
+      backgroundColor = colors.red500;
+      break;
+    case "success":
+      backgroundColor = colors.accent200;
+      break;
+  }
+
   return (
     <Animated.View style={[styles.modal]}>
-      <View style={styles.subContainer}>
+      <View style={[styles.subContainer, { backgroundColor }]}>
         {icon}
 
         <View>
@@ -31,7 +43,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: spacing.spacing16,
 
-    backgroundColor: colors.red500,
     width: "100%",
     height: "100%",
     paddingLeft: spacing.spacing16,

@@ -305,7 +305,10 @@ export default function RecipeEditSummary() {
       queryClient.setQueryData(["recipe"], (oldData: any) => {
         const updatedRecipe = {
           ...oldData.recipe,
-          photoUrl: getImageUrlWithCacheBuster(oldData.photoUrl),
+          photoUrl: payload.recipe.photoUrl
+            ? getImageUrlWithCacheBuster(payload.recipe.photoUrl)
+            : "",
+
           title: payload.recipe.title,
           ingredients: payload.recipe.ingredients?.map((ingredient) => ({
             ...ingredient,
@@ -331,7 +334,9 @@ export default function RecipeEditSummary() {
                 ...recipe,
                 title: payload.recipe.title,
                 servings: payload.recipe.servings,
-                photoUrl: getImageUrlWithCacheBuster(payload.recipe.photoUrl),
+                photoUrl: payload.recipe.photoUrl
+                  ? getImageUrlWithCacheBuster(payload.recipe.photoUrl)
+                  : "",
               }
             : recipe,
         );
@@ -359,7 +364,7 @@ export default function RecipeEditSummary() {
           onSubmit={handleSave}
           validationSchema={recipeEditSchema}
         >
-          {({ values, handleSubmit, handleChange, setFieldValue, dirty, isValid }) => {
+          {({ values, touched, errors, handleChange, setFieldValue }) => {
             return (
               <View style={{ width: "100%", gap: spacing.spacing32 }}>
                 <View
@@ -375,6 +380,8 @@ export default function RecipeEditSummary() {
                     label="Title"
                     placeholder="Title"
                     wrapperStyle={{ width: "100%" }}
+                    touched={touched.title as boolean}
+                    error={errors.title as string}
                   />
                   <RnInput
                     value={values.servings}
@@ -383,6 +390,8 @@ export default function RecipeEditSummary() {
                     label="Servings"
                     placeholder="Servings"
                     wrapperStyle={{ width: "100%" }}
+                    touched={touched.servings as boolean}
+                    error={errors.servings as string}
                   />
 
                   {!values.photoUrl ? (

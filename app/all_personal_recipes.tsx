@@ -10,10 +10,10 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { Feather, Ionicons, Octicons } from "@expo/vector-icons";
 import _ from "lodash";
-import { useNavigation, useRouter } from "expo-router";
+import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import RNButton from "@/components/shared/RNButton";
 import { View } from "react-native-ui-lib";
 import RNIcon from "@/components/shared/RNIcon";
@@ -43,6 +43,7 @@ const LayoutGridAnimation = () => {
 
   const {
     data: recipes,
+
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,

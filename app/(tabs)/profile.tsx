@@ -25,7 +25,6 @@ import { Skeleton } from "moti/skeleton";
 import FastImage from "react-native-fast-image";
 import { useUserRecipes } from "@/hooks/recipes.hooks";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
-import { getImageUrlWithCacheBuster } from "../edit_recipe/recipe_edit_summary";
 
 const { width: screenWidth } = Dimensions.get("window");
 const numColumns = 2;
@@ -54,6 +53,7 @@ const RecipeItem: React.FC<RecipeItemProps> = ({ item }) => {
   const goToRecipe = () => {
     router.navigate({ pathname: "/recipe_details", params: { id: item.id } });
   };
+
   return (
     <Pressable onPress={goToRecipe}>
       <RNShadowView style={styles.$recipeItemStyle}>
@@ -65,7 +65,7 @@ const RecipeItem: React.FC<RecipeItemProps> = ({ item }) => {
             gap: spacing.spacing8,
           }}
         >
-          {item.photoUrl || imageLoaded ? (
+          {item.photoUrl ? (
             <FastImage
               source={{
                 uri: item.photoUrl,
