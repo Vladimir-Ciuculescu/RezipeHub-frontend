@@ -24,6 +24,8 @@ import {
   Clock,
   Bowl,
   Edit,
+  Fire,
+  Separator,
 } from "@/assets/icons";
 import { colors } from "@/theme/colors";
 
@@ -54,6 +56,8 @@ enum Icons {
   clock = "clock",
   bowl = "bowl",
   eidt = "edit",
+  fire = "fire",
+  separator = "separator",
 }
 
 type IconMap = {
@@ -85,6 +89,8 @@ const icons: IconMap = {
   clock: Clock,
   bowl: Bowl,
   edit: Edit,
+  fire: Fire,
+  separator: Separator,
 };
 
 interface RNIconProps {

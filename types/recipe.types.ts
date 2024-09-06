@@ -1,3 +1,4 @@
+import { RecipeType } from "./enums";
 import { IngredientItem, IngredientItemResponse, IngredientPayload } from "./ingredient.types";
 import { Step, StepItemResponse, StepPayload } from "./step.types";
 
@@ -8,6 +9,8 @@ export interface AddRecipeRequest {
   photoUrl?: string;
   ingredients: IngredientPayload[];
   steps: StepPayload[];
+  type: RecipeType;
+  preparationTime: number;
 }
 
 export interface EditRecipePhotoRequest {
@@ -21,6 +24,8 @@ export interface EditRecipeRequest {
     title: string;
     servings: number;
     photoUrl: string;
+    type: RecipeType;
+    preparationTime: number;
     ingredients?: IngredientItem[];
     steps?: Step[];
   };
@@ -48,6 +53,17 @@ export interface RecipeResponse {
   title: string;
   servings: number;
   photoUrl: string;
+  preparationTime: number;
+  type: RecipeType;
   ingredients: IngredientItemResponse[];
   steps: StepItemResponse[];
+}
+export interface PaginatedRecipeItem {
+  id: number;
+  title: string;
+  photoUrl: string;
+  servings: number;
+  type: RecipeType;
+  totalCalories: number;
+  preparationTime: number;
 }

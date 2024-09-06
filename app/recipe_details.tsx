@@ -35,6 +35,7 @@ import * as DropdownMenu from "zeego/dropdown-menu";
 import useRecipeStore from "@/zustand/useRecipeStore";
 import FastImage from "react-native-fast-image";
 import Toast from "react-native-toast-message";
+import RNIcon from "@/components/shared/RNIcon";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -142,6 +143,8 @@ const RecipeDetails = () => {
       title: recipe!.title,
       servings: recipe!.servings,
       photo: recipe!.photoUrl || "",
+      preparationTime: recipe!.preparationTime,
+      type: recipe!.type,
     };
 
     const parsedIngredients: IngredientItem[] = recipe!.ingredients.map(
@@ -253,14 +256,9 @@ const RecipeDetails = () => {
             />
           </View>
         ) : (
-          // <ImageBackground
-          //   source={{ uri: recipe ? recipe.photoUrl : "" }}
-          //   resizeMode="cover"
-          //   style={[{ height: heightValue }, styles.$imageBackgroundStyle]}
-          // />
           <FastImage
             resizeMode="cover"
-            source={{ uri: recipe ? recipe.photoUrl : "" }}
+            source={{ uri: recipe ? recipe.photoUrl : "", cache: FastImage.cacheControl.web }}
             style={[{ height: heightValue }, styles.$imageBackgroundStyle]}
           />
         )}
@@ -286,7 +284,35 @@ const RecipeDetails = () => {
               >
                 {recipe ? (
                   <>
-                    <Text style={[$sizeStyles.h3]}>{recipe!.title}</Text>
+                    {/* <Text style={[$sizeStyles.h3]}>{recipe!.title}</Text> */}
+                    <View
+                      row
+                      style={{
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={[$sizeStyles.h3]}>{recipe!.title}</Text>
+
+                      <View
+                        row
+                        style={{ gap: spacing.spacing8, alignItems: "center" }}
+                      >
+                        <RNIcon
+                          name="clock"
+                          color={colors.greyscale350}
+                        />
+                        <Text
+                          style={{
+                            ...$sizeStyles.n,
+                            fontFamily: "sofia400",
+                            color: colors.greyscale350,
+                          }}
+                        >
+                          {recipe.preparationTime} Min
+                        </Text>
+                      </View>
+                    </View>
                     <NutritionalInfo
                       nutritionInfo={{
                         totalCalories,

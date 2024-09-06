@@ -7,7 +7,7 @@ import {
   GetRecipesByUserRequest,
 } from "@/types/recipe.types";
 import { AddPhotoRequest, DeleteRecipePhotoRequest } from "@/types/s3.types";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useUserRecipes = (params: GetRecipesByUserRequest) => {
   return useQuery({
@@ -40,12 +40,15 @@ export const useAddRecipeMutation = () => {
 };
 
 export const useEditRecipeMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (payload: EditRecipeRequest) => {
       try {
         await RecipeService.editRecipe(payload);
       } catch (error) {}
     },
+
     onError: (error) => {
       console.error("Error during mutation:", error);
     },

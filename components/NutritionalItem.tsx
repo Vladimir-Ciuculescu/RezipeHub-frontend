@@ -13,16 +13,21 @@ interface NutritionalItemProps {
 }
 
 const NutritionalItem: React.FC<NutritionalItemProps> = ({ icon, quantity, unitMeasure, type }) => {
+  let text;
+
+  if (type === "calories") {
+    text = `${quantity} ${unitMeasure}${type}`;
+  } else {
+    text = `${quantity}${unitMeasure} ${type}`;
+  }
+
   return (
     <View
       row
       style={styles.$nutritionalItemContainerStyle}
     >
       <View style={styles.$nutritionalItemIconStyle}>{icon}</View>
-      <Text style={styles.$nutrientTextStyle}>
-        {quantity}
-        {unitMeasure} {type}
-      </Text>
+      <Text style={styles.$nutrientTextStyle}>{text}</Text>
     </View>
   );
 };
