@@ -1,5 +1,5 @@
 import { Text, StyleSheet, Pressable, Alert } from "react-native";
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import { AntDesign } from "@expo/vector-icons";
@@ -16,6 +16,9 @@ import * as ImagePicker from "expo-image-picker";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import useRecipeStore from "@/zustand/useRecipeStore";
 import FastImage from "react-native-fast-image";
+import RNPickerSelect from "react-native-picker-select";
+import { RecipeType } from "@/types/enums";
+import { RECIPE_TYPES } from "@/constants";
 
 function RecipeTitle() {
   const { showActionSheetWithOptions } = useActionSheet();
@@ -26,6 +29,8 @@ function RecipeTitle() {
   const [title, setTitle] = useState("");
   const [servings, setServings] = useState("");
   const [photo, setPhoto] = useState("");
+  const [preparationTime, setPreparationTime] = useState("");
+  const [type, setType] = useState<RecipeType | "">("");
 
   const router = useRouter();
   const navigation = useNavigation();
@@ -54,7 +59,7 @@ function RecipeTitle() {
 
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Add Recipe</Text>,
     });
-  }, [navigation, title, servings, photo]);
+  }, [navigation, title, servings, photo, type, preparationTime]);
 
   const openGallery = async () => {
     const response = await ImagePicker.launchImageLibraryAsync({
@@ -88,10 +93,22 @@ function RecipeTitle() {
       return;
     }
 
+    if (!type) {
+      showEmptyTypeMessage();
+      return;
+    }
+
+    if (!preparationTime) {
+      showEmptyPreparationTime();
+      return;
+    }
+
     const payload = {
       title,
       servings: parseInt(servings),
       photo: photo,
+      type,
+      preparationTime: parseInt(preparationTime),
     };
 
     addInfoAction(payload);
@@ -109,6 +126,21 @@ function RecipeTitle() {
     Alert.alert(
       "Cannot continue",
       "Please enter the number of servings for the recipe",
+      [{ text: "OK" }],
+      { cancelable: false },
+    );
+  };
+
+  const showEmptyTypeMessage = () => {
+    Alert.alert("Cannot continue", "Please select a type for this recipe", [{ text: "OK" }], {
+      cancelable: false,
+    });
+  };
+
+  const showEmptyPreparationTime = () => {
+    Alert.alert(
+      "Cannot continue",
+      "Please enter a preparation time for this recipe",
       [{ text: "OK" }],
       { cancelable: false },
     );
@@ -200,6 +232,39 @@ function RecipeTitle() {
           />
         </View>
       )}
+      <View style={{ width: "100%", gap: spacing.spacing12 }}>
+        <Text style={[$sizeStyles.n, styles.$labelStyle]}>Type</Text>
+
+        <RNPickerSelect
+          doneText="Search"
+          placeholder={{ value: "", label: "Select a Type" }}
+          value={type}
+          onValueChange={setType}
+          items={RECIPE_TYPES}
+          style={{
+            chevronUp: { display: "none" },
+            chevronDown: { display: "none" },
+            inputIOS: styles.$inputAndroidStyle,
+            inputAndroid: styles.$inputIOSStyle,
+
+            iconContainer: styles.$iconContainerStyle,
+          }}
+          useNativeAndroidPickerStyle={false}
+          Icon={() => {
+            return <RNIcon name="chef" />;
+          }}
+        />
+      </View>
+      <RnInput
+        value={preparationTime}
+        onChangeText={setPreparationTime}
+        keyboardType="numeric"
+        label="Preparation time (minutes)"
+        placeholder="10"
+        wrapperStyle={{ width: "100%" }}
+        leftIcon={<RNIcon name="clock" />}
+        rightIcon={<Text style={{ ...$sizeStyles.s }}>min</Text>}
+      />
     </KeyboardAwareScrollView>
   );
 }
@@ -241,5 +306,31 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     borderRadius: 16,
+  },
+
+  $labelStyle: { fontFamily: "sofia800", color: colors.greyscale500 },
+
+  $inputAndroidStyle: {
+    height: 54,
+    borderColor: colors.greyscale150,
+    borderWidth: 2,
+    fontFamily: "sofia800",
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    color: colors.slate900,
+  },
+
+  $inputIOSStyle: {
+    height: 54,
+    borderColor: colors.greyscale150,
+    color: colors.slate900,
+    borderWidth: 2,
+    fontFamily: "sofia800",
+    paddingHorizontal: 16,
+    borderRadius: 16,
+  },
+  $iconContainerStyle: {
+    top: 14,
+    right: spacing.spacing16,
   },
 });

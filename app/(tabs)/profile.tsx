@@ -25,6 +25,7 @@ import { Skeleton } from "moti/skeleton";
 import FastImage from "react-native-fast-image";
 import { useUserRecipes } from "@/hooks/recipes.hooks";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { RecipeType } from "@/types/enums";
 
 const { width: screenWidth } = Dimensions.get("window");
 const numColumns = 2;
@@ -38,11 +39,16 @@ interface RecipeItemProps {
     title: string;
     photoUrl?: string;
     servings: number;
+    type: RecipeType;
+    totalCalories: number;
+    preparationTime: number;
   };
 }
 
 const RecipeItem: React.FC<RecipeItemProps> = ({ item }) => {
   const router = useRouter();
+
+  const { id, title, photoUrl, totalCalories, preparationTime } = item;
 
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -51,7 +57,7 @@ const RecipeItem: React.FC<RecipeItemProps> = ({ item }) => {
   };
 
   const goToRecipe = () => {
-    router.navigate({ pathname: "/recipe_details", params: { id: item.id } });
+    router.navigate({ pathname: "/recipe_details", params: { id } });
   };
 
   return (
@@ -61,14 +67,13 @@ const RecipeItem: React.FC<RecipeItemProps> = ({ item }) => {
           style={{
             height: "100%",
             width: "100%",
-
             gap: spacing.spacing8,
           }}
         >
-          {item.photoUrl ? (
+          {photoUrl ? (
             <FastImage
               source={{
-                uri: item.photoUrl,
+                uri: photoUrl,
                 priority: FastImage.priority.high,
                 cache: FastImage.cacheControl.web,
               }}
@@ -77,6 +82,7 @@ const RecipeItem: React.FC<RecipeItemProps> = ({ item }) => {
                 width: "100%",
                 height: "50%",
                 borderRadius: spacing.spacing16,
+                display: "flex",
               }}
             />
           ) : (
@@ -97,8 +103,43 @@ const RecipeItem: React.FC<RecipeItemProps> = ({ item }) => {
               />
             </View>
           )}
-          <View style={{ flex: 1, justifyContent: "space-between" }}>
-            <Text style={[$sizeStyles.n, { fontFamily: "sofia800" }]}>{item.title}</Text>
+          <Text style={[$sizeStyles.n, { fontFamily: "sofia800" }]}>{title}</Text>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "space-between",
+            }}
+          >
+            <View
+              row
+              style={{ alignItems: "center", gap: spacing.spacing2 }}
+            >
+              <RNIcon
+                name="fire"
+                style={{ color: colors.greyscale300 }}
+                height={15}
+              />
+              <Text
+                style={[{ ...$sizeStyles.s, fontFamily: "sofia800", color: colors.greyscale300 }]}
+              >
+                {totalCalories} Kcal
+              </Text>
+            </View>
+            <View
+              row
+              style={{ alignItems: "center", gap: spacing.spacing2 }}
+            >
+              <RNIcon
+                name="clock"
+                style={{ color: colors.greyscale300 }}
+                height={15}
+              />
+              <Text
+                style={[{ ...$sizeStyles.s, fontFamily: "sofia800", color: colors.greyscale300 }]}
+              >
+                {preparationTime} min
+              </Text>
+            </View>
           </View>
         </View>
       </RNShadowView>
@@ -180,17 +221,18 @@ const Profile = () => {
 
         <RNShadowView style={styles.$profileContainerStyle}>
           <View style={styles.$profileDetailsStyle}>
-            <FastImage
+            {/* lEAVE IT HERE */}
+            {/* <FastImage
               style={styles.$profileImageStyle}
               source={{
                 uri: "https://reactnative.dev/img/tiny_logo.png",
                 priority: FastImage.priority.normal,
               }}
-            />
+            /> */}
             <View>
-              <Text style={styles.$userNameStyle}>{user?.firstName + " " + user?.lastName}</Text>
-
-              <Text style={styles.$userDescriptionStyle}>Recipe Developer</Text>
+              {/* <Text style={styles.$userNameStyle}>{user?.firstName + " " + user?.lastName}</Text> */}
+              <Text style={styles.$userNameStyle}>John Doe</Text>
+              {/* <Text style={styles.$userDescriptionStyle}>Recipe Developer</Text> */}
             </View>
           </View>
           <RNButton

@@ -22,6 +22,8 @@ import Calories from "./calories.svg";
 import Clock from "./clock.svg";
 import Bowl from "./bowl.svg";
 import Edit from "./edit.svg";
+import Fire from "./fire.svg";
+import Separator from "./separator.svg";
 
 export {
   Email,
@@ -48,4 +50,6 @@ export {
   Clock,
   Bowl,
   Edit,
+  Fire,
+  Separator,
 };

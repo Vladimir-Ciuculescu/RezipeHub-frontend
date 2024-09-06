@@ -2,6 +2,7 @@ import { IngredientItem } from "@/types/ingredient.types";
 import { create } from "zustand";
 import { createSelectors } from "./createSelectors";
 import { Step } from "@/types/step.types";
+import { RecipeType } from "@/types/types";
 
 interface State {
   id?: number;
@@ -10,6 +11,8 @@ interface State {
   title: string;
   servings: number;
   photo: string;
+  type: RecipeType;
+  preparationTime: number;
 }
 
 interface Action {
@@ -32,6 +35,8 @@ const initialState: State = {
   title: "",
   servings: 1,
   photo: "",
+  type: "",
+  preparationTime: 0,
 };
 
 const useRecipeStoreBase = create<State & Action>()((set, get) => ({

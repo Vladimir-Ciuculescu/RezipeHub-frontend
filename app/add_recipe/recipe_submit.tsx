@@ -54,6 +54,8 @@ export default function RecipeSubmit() {
   const title = useRecipeStore.use.title();
   const servings = useRecipeStore.use.servings();
   const photo = useRecipeStore.use.photo();
+  const preparationTime = useRecipeStore.use.preparationTime();
+  const type = useRecipeStore.use.type();
   const ingredients = useRecipeStore.use.ingredients();
   const steps = useRecipeStore.use.steps();
   const reset = useRecipeStore.use.reset();
@@ -144,6 +146,8 @@ export default function RecipeSubmit() {
         servings,
         ingredients: ingredientsPayload,
         steps: stepsPayload,
+        type,
+        preparationTime,
       };
 
       if (photo) {
@@ -159,10 +163,13 @@ export default function RecipeSubmit() {
         await editRecipePhotoMutation({ id: recipe.id, photoUrl: url });
 
         const newRecipe = {
+          id: recipe.id,
+
           title: recipe.title,
           servings: recipe.servings,
-          id: recipe.id,
           photoUrl: url,
+          preparationTime: recipe.preparationTime,
+          totalCalories,
         };
 
         queryClient.setQueryData(["recipes-per-user"], (oldData: any) => {
@@ -170,9 +177,11 @@ export default function RecipeSubmit() {
         });
       } else {
         const newRecipe = {
+          id: recipe.id,
           title: recipe.title,
           servings: recipe.servings,
-          id: recipe.id,
+          preparationTime: recipe.preparationTime,
+          totalCalories,
         };
 
         queryClient.setQueryData(["recipes-per-user"], (oldData: any) => {
@@ -255,7 +264,30 @@ export default function RecipeSubmit() {
             gap: spacing.spacing24,
           }}
         >
-          <Text style={[$sizeStyles.h3]}>{title}</Text>
+          <View
+            row
+            style={{
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text style={[$sizeStyles.h3]}>{title}</Text>
+
+            <View
+              row
+              style={{ gap: spacing.spacing8, alignItems: "center" }}
+            >
+              <RNIcon
+                name="clock"
+                color={colors.greyscale350}
+              />
+              <Text
+                style={{ ...$sizeStyles.n, fontFamily: "sofia400", color: colors.greyscale350 }}
+              >
+                {preparationTime} Min
+              </Text>
+            </View>
+          </View>
 
           <NutritionalInfo
             nutritionInfo={{ totalCalories, totalCarbs, totalFats, totalProteins }}

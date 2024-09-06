@@ -32,7 +32,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import useRecipeStore from "@/zustand/useRecipeStore";
-import { useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import {
   useDeleteRecipeImageMutation,
   useEditRecipeMutation,
@@ -40,10 +40,13 @@ import {
 } from "@/hooks/recipes.hooks";
 import useUserData from "@/hooks/useUserData";
 import { AddPhotoRequest } from "@/types/s3.types";
-import { EditRecipeRequest, RecipeBriefResponse } from "@/types/recipe.types";
+import { EditRecipeRequest, PaginatedRecipeItem, RecipeBriefResponse } from "@/types/recipe.types";
 import Toast from "react-native-toast-message";
 import toastConfig from "@/components/Toast/ToastConfing";
 import RNIcon from "@/components/shared/RNIcon";
+import RNPickerSelect from "react-native-picker-select";
+import useNutritionalTotals from "@/hooks/useNutritionalTotals";
+import { RECIPE_TYPES } from "@/constants";
 
 const { width } = Dimensions.get("screen");
 
@@ -63,8 +66,11 @@ export default function RecipeEditSummary() {
   const title = useRecipeStore.use.title();
   const servings = useRecipeStore.use.servings();
   const photo = useRecipeStore.use.photo();
+  const type = useRecipeStore.use.type();
+  const preparationTime = useRecipeStore.use.preparationTime();
   const ingredients = useRecipeStore.use.ingredients();
   const steps = useRecipeStore.use.steps();
+
   const removeStepAction = useRecipeStore.use.removeStepAction();
   const removeIngredientAction = useRecipeStore.use.removeIngredientAction();
   const { showActionSheetWithOptions } = useActionSheet();
@@ -180,6 +186,8 @@ export default function RecipeEditSummary() {
     title,
     servings: servings.toString(),
     photoUrl: photo,
+    type,
+    preparationTime: preparationTime.toString(),
   };
 
   const handleSegmentIndex = (index: number) => {
@@ -252,7 +260,7 @@ export default function RecipeEditSummary() {
       return;
     }
 
-    const { title, servings, photoUrl } = values;
+    const { title, servings, photoUrl, type, preparationTime } = values;
 
     try {
       let photo = "";
@@ -279,6 +287,8 @@ export default function RecipeEditSummary() {
         title,
         servings: parseInt(servings),
         photoUrl: photo,
+        type,
+        preparationTime: parseInt(preparationTime),
         ingredients,
         steps,
       };
@@ -305,11 +315,14 @@ export default function RecipeEditSummary() {
       queryClient.setQueryData(["recipe"], (oldData: any) => {
         const updatedRecipe = {
           ...oldData.recipe,
+          title: payload.recipe.title,
+
           photoUrl: payload.recipe.photoUrl
             ? getImageUrlWithCacheBuster(payload.recipe.photoUrl)
             : "",
 
-          title: payload.recipe.title,
+          preparationTime: payload.recipe.preparationTime,
+
           ingredients: payload.recipe.ingredients?.map((ingredient) => ({
             ...ingredient,
             allUnits: ingredient.allMeasures,
@@ -328,12 +341,19 @@ export default function RecipeEditSummary() {
 
       //Update the my recipes request
       queryClient.setQueryData(["recipes-per-user"], (oldData: RecipeBriefResponse[]) => {
+        const totalCalories = payload.recipe.ingredients!.reduce(
+          (sum, ingredient) => sum + ((ingredient["calories"] as number) || 0),
+          0,
+        );
+
         return oldData.map((recipe) =>
           recipe.id === recipedId
             ? {
                 ...recipe,
                 title: payload.recipe.title,
                 servings: payload.recipe.servings,
+                preparationTime: payload.recipe.preparationTime,
+                totalCalories,
                 photoUrl: payload.recipe.photoUrl
                   ? getImageUrlWithCacheBuster(payload.recipe.photoUrl)
                   : "",
@@ -341,6 +361,30 @@ export default function RecipeEditSummary() {
             : recipe,
         );
       });
+
+      queryClient.setQueryData(
+        ["all-personal-recipes"],
+        (oldData: InfiniteData<PaginatedRecipeItem[]>) => {
+          console.log(oldData);
+          console.log(payload);
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => {
+              return page.map((recipe: PaginatedRecipeItem) => {
+                return recipe.id === payload.recipe.id
+                  ? {
+                      ...recipe,
+
+                      photoUrl: getImageUrlWithCacheBuster(payload.recipe.photoUrl),
+                      title: payload.recipe.title,
+                      preparationTime: payload.recipe.preparationTime,
+                    }
+                  : recipe;
+              });
+            }),
+          };
+        },
+      );
 
       router.back();
     } catch (error) {
@@ -430,6 +474,39 @@ export default function RecipeEditSummary() {
                       />
                     </View>
                   )}
+                  <View style={{ width: "100%", gap: spacing.spacing12 }}>
+                    <Text style={[$sizeStyles.n, styles.$labelStyle]}>Type</Text>
+
+                    <RNPickerSelect
+                      doneText="Search"
+                      placeholder={{ value: "", label: "Select a Type" }}
+                      value={values.type}
+                      onValueChange={handleChange("type")}
+                      items={RECIPE_TYPES}
+                      style={{
+                        chevronUp: { display: "none" },
+                        chevronDown: { display: "none" },
+                        inputIOS: styles.$inputAndroidStyle,
+                        inputAndroid: styles.$inputIOSStyle,
+
+                        iconContainer: styles.$iconContainerStyle,
+                      }}
+                      useNativeAndroidPickerStyle={false}
+                      Icon={() => {
+                        return <RNIcon name="chef" />;
+                      }}
+                    />
+                  </View>
+                  <RnInput
+                    value={values.preparationTime}
+                    onChangeText={handleChange("preparationTime")}
+                    keyboardType="numeric"
+                    label="Preparation time (minutes)"
+                    placeholder="10"
+                    wrapperStyle={{ width: "100%" }}
+                    leftIcon={<RNIcon name="clock" />}
+                    rightIcon={<Text style={{ ...$sizeStyles.s }}>min</Text>}
+                  />
                   <RNSegmentedControl
                     borderRadius={16}
                     segments={SEGMENTS}
@@ -491,9 +568,34 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+  $inputAndroidStyle: {
+    height: 54,
+    borderColor: colors.greyscale150,
+    borderWidth: 2,
+    fontFamily: "sofia800",
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    color: colors.slate900,
+  },
+
+  $inputIOSStyle: {
+    height: 54,
+    borderColor: colors.greyscale150,
+    color: colors.slate900,
+    borderWidth: 2,
+    fontFamily: "sofia800",
+    paddingHorizontal: 16,
+    borderRadius: 16,
+  },
+  $iconContainerStyle: {
+    top: 14,
+    right: spacing.spacing16,
+  },
   $imageStyle: {
     width: "100%",
     height: "100%",
     borderRadius: 16,
   },
+
+  $labelStyle: { fontFamily: "sofia800", color: colors.greyscale500 },
 });

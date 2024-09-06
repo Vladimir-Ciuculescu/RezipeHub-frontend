@@ -10,10 +10,10 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { Feather, Ionicons, Octicons } from "@expo/vector-icons";
 import _ from "lodash";
-import { useFocusEffect, useNavigation, useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import RNButton from "@/components/shared/RNButton";
 import { View } from "react-native-ui-lib";
 import RNIcon from "@/components/shared/RNIcon";
@@ -26,6 +26,7 @@ import RNSegmentedControl from "@/components/shared/RnSegmentedControl";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import RecipeService from "@/api/services/recipe.service";
 import useUserData from "@/hooks/useUserData";
+import { $sizeStyles } from "@/theme/typography";
 
 const { width } = Dimensions.get("screen");
 
@@ -43,7 +44,6 @@ const LayoutGridAnimation = () => {
 
   const {
     data: recipes,
-
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
@@ -57,6 +57,7 @@ const LayoutGridAnimation = () => {
         ? undefined
         : { ...lastPageParam, page: lastPageParam.page + 1 };
     },
+
     //TODO : Keep for future
     // getPreviousPageParam: (lastPage, allPages, lastPageParam) => {
     //   return !lastPage || !lastPage.length
@@ -64,6 +65,8 @@ const LayoutGridAnimation = () => {
     //     : { ...lastPageParam, page: lastPageParam.page - 1 };
     // },
   });
+
+  console.log(333, recipes);
 
   const getItems = useMemo(() => {
     if (recipes && recipes.pages) {
@@ -204,7 +207,7 @@ const LayoutGridAnimation = () => {
                 <View style={styles.$contentRowStyle}>
                   {item.photoUrl ? (
                     <FastImage
-                      source={{ uri: item.photoUrl }}
+                      source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
                       style={styles.$rowImageStyle}
                     />
                   ) : (
@@ -225,12 +228,75 @@ const LayoutGridAnimation = () => {
                       />
                     </View>
                   )}
-                  <Text
-                    numberOfLines={2}
-                    style={styles.$rowTextStyle}
+                  <View
+                    style={{
+                      flex: 1,
+                      paddingRight: spacing.spacing4,
+                    }}
                   >
-                    {item.title}
-                  </Text>
+                    <Text
+                      numberOfLines={3}
+                      style={styles.$rowTextStyle}
+                    >
+                      {item.title}
+                    </Text>
+
+                    <View
+                      row
+                      style={{
+                        alignItems: "center",
+                        gap: spacing.spacing8,
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <View
+                        row
+                        style={{ alignItems: "flex-start", gap: spacing.spacing4 }}
+                      >
+                        <RNIcon
+                          name="fire"
+                          style={{ color: colors.greyscale300 }}
+                          height={20}
+                        />
+                        <Text
+                          style={[
+                            {
+                              ...$sizeStyles.s,
+                              fontFamily: "sofia800",
+                              color: colors.greyscale300,
+                            },
+                          ]}
+                        >
+                          {item.totalCalories} Kcal
+                        </Text>
+                      </View>
+                      <RNIcon
+                        name="separator"
+                        style={{ color: colors.greyscale300 }}
+                      />
+                      <View
+                        row
+                        style={{ alignItems: "center", gap: spacing.spacing4 }}
+                      >
+                        <RNIcon
+                          name="clock"
+                          style={{ color: colors.greyscale300 }}
+                          height={18}
+                        />
+                        <Text
+                          style={[
+                            {
+                              ...$sizeStyles.s,
+                              fontFamily: "sofia800",
+                              color: colors.greyscale300,
+                            },
+                          ]}
+                        >
+                          {item.preparationTime} min
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
                 </View>
                 <RNButton
                   style={styles.$userDetailsBtnStyle}
@@ -249,7 +315,7 @@ const LayoutGridAnimation = () => {
               <View style={styles.$innerGridInfoStyle}>
                 {item.photoUrl ? (
                   <FastImage
-                    source={{ uri: item.photoUrl }}
+                    source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
                     style={styles.$gridImageStyle}
                   />
                 ) : (
@@ -276,6 +342,47 @@ const LayoutGridAnimation = () => {
                 >
                   {item.title}
                 </Text>
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <View
+                    row
+                    style={{ alignItems: "center", gap: spacing.spacing2 }}
+                  >
+                    <RNIcon
+                      name="fire"
+                      style={{ color: colors.greyscale300 }}
+                      height={15}
+                    />
+                    <Text
+                      style={[
+                        { ...$sizeStyles.s, fontFamily: "sofia800", color: colors.greyscale300 },
+                      ]}
+                    >
+                      {item.totalCalories} Kcal
+                    </Text>
+                  </View>
+                  <View
+                    row
+                    style={{ alignItems: "center", gap: spacing.spacing2 }}
+                  >
+                    <RNIcon
+                      name="clock"
+                      style={{ color: colors.greyscale300 }}
+                      height={15}
+                    />
+                    <Text
+                      style={[
+                        { ...$sizeStyles.s, fontFamily: "sofia800", color: colors.greyscale300 },
+                      ]}
+                    >
+                      {item.preparationTime} min
+                    </Text>
+                  </View>
+                </View>
               </View>
             )}
           </View>
@@ -309,13 +416,13 @@ const LayoutGridAnimation = () => {
           onEndReached={loadNextPage}
           //TODO Keep in mind for the future
           // getItemLayout={getItemLayout}
-          onEndReachedThreshold={0.5} // Trigger loadMore when 50% from the bottom
+          onEndReachedThreshold={0.5}
           ListFooterComponent={
             isFetchingNextPage ? (
               <ActivityIndicator
                 size="large"
                 color={colors.brandPrimary}
-              /> // Show ActivityIndicator while fetching next page
+              />
             ) : null
           }
         />
@@ -379,7 +486,8 @@ const styles = StyleSheet.create({
   $innerGridInfoStyle: {
     width: "100%",
     height: "100%",
-    justifyContent: "space-between",
+    gap: spacing.spacing8,
+    // justifyContent: "space-between",
   },
 
   $innerRowInfoStyle: {
