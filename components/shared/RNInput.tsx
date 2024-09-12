@@ -17,6 +17,8 @@ interface RNInputProps extends TextInputProps {
   error?: string;
   value: string | undefined;
   multiline?: TextInputProps["multiline"];
+  onFocus?: TextInputProps["onFocus"];
+  onBlur?: TextInputProps["onFocus"];
 }
 
 export default function RnInput(props: RNInputProps) {
@@ -33,6 +35,8 @@ export default function RnInput(props: RNInputProps) {
       error,
       value,
       multiline,
+      onFocus,
+      onBlur,
       ...rest
     } = props;
 
@@ -51,8 +55,18 @@ export default function RnInput(props: RNInputProps) {
           selectionColor={colors.accent300}
           value={value}
           placeholder={placeholder}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onFocus={(e) => {
+            if (onFocus) {
+              onFocus(e);
+            }
+            setIsFocused(true);
+          }}
+          onBlur={(e) => {
+            if (onBlur) {
+              onBlur(e);
+            }
+            setIsFocused(false);
+          }}
           containerStyle={[
             styles.$baseContainerstyle,
             multiline ? styles.$multilineStyle : styles.$singlelineStyle,
@@ -91,7 +105,6 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     minHeight: 54,
     justifyContent: "center",
-
     borderColor: "blue",
     borderWidth: 2.5,
   },
@@ -117,7 +130,7 @@ const styles = StyleSheet.create({
   },
   $unfocusedStyle: {
     borderWidth: 2,
-    borderColor: colors.greyscale150,
+    borderColor: colors.greyscale200,
   },
 
   $trailingAccessoryContainer: {

@@ -26,6 +26,8 @@ import {
   Edit,
   Fire,
   Separator,
+  Filter,
+  Check,
 } from "@/assets/icons";
 import { colors } from "@/theme/colors";
 
@@ -58,6 +60,8 @@ enum Icons {
   eidt = "edit",
   fire = "fire",
   separator = "separator",
+  filter = "filter",
+  check = "check",
 }
 
 type IconMap = {
@@ -91,6 +95,8 @@ const icons: IconMap = {
   edit: Edit,
   fire: Fire,
   separator: Separator,
+  filter: Filter,
+  check: Check,
 };
 
 interface RNIconProps {

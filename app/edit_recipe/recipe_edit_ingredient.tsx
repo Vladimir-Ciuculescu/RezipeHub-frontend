@@ -3,7 +3,6 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import { $sizeStyles } from "@/theme/typography";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { spacing } from "@/theme/spacing";
 import {
   IngredientItem,
@@ -179,81 +178,72 @@ export default function RecipeEditIngredient() {
   };
 
   return (
-    <GestureHandlerRootView>
-      <ScrollView
-        keyboardShouldPersistTaps="always"
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.$contentContainerstyle}
-        style={styles.$containerStyle}
-      >
-        <View style={{ gap: spacing.spacing24 }}>
-          <Text style={$sizeStyles.h1}>{parsedIngredient.title}</Text>
-          <View style={styles.$baseWrapperStyle}>
-            <Text style={[$sizeStyles.n, styles.$labelStyle]}>Unit measure</Text>
-            <RNPickerSelect
-              placeholder={{}}
-              doneText="Done"
-              onOpen={() => setPickerDismissed(false)}
-              onClose={() => setPickerDismissed(true)}
-              value={measure}
-              onValueChange={setMeasure}
-              onDonePress={() => setPickerDismissed(true)}
-              items={measures}
-              style={{
-                chevronUp: { display: "none" },
-                chevronDown: { display: "none" },
-                inputIOS: styles.$inputAndroidStyle,
-                inputAndroid: styles.$inputIOSStyle,
-                iconContainer: styles.$iconContainerStyle,
-              }}
-              useNativeAndroidPickerStyle={false}
-              Icon={() => {
-                return <RNIcon name="cook" />;
-              }}
-            />
-          </View>
-          <RnInput
-            onSubmitEditing={submitQuantity}
-            keyboardType="numeric"
-            returnKeyType="done"
-            onChangeText={(value: any) => setQuantity(value)}
-            autoCapitalize="none"
-            value={quantity}
-            label="Quantity"
-            placeholder="Enter quantity"
+    <ScrollView
+      keyboardShouldPersistTaps="always"
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.$contentContainerstyle}
+      style={styles.$containerStyle}
+    >
+      <View style={{ gap: spacing.spacing24 }}>
+        <Text style={$sizeStyles.h1}>{parsedIngredient.title}</Text>
+        <View style={styles.$baseWrapperStyle}>
+          <Text style={[$sizeStyles.n, styles.$labelStyle]}>Unit measure</Text>
+          <RNPickerSelect
+            placeholder={{}}
+            doneText="Done"
+            onOpen={() => setPickerDismissed(false)}
+            onClose={() => setPickerDismissed(true)}
+            value={measure}
+            onValueChange={setMeasure}
+            onDonePress={() => setPickerDismissed(true)}
+            items={measures}
+            style={{
+              chevronUp: { display: "none" },
+              chevronDown: { display: "none" },
+              inputIOS: styles.$inputAndroidStyle,
+              inputAndroid: styles.$inputIOSStyle,
+              iconContainer: styles.$iconContainerStyle,
+            }}
+            useNativeAndroidPickerStyle={false}
+            Icon={() => {
+              return <RNIcon name="cook" />;
+            }}
           />
-          <View style={styles.$baseWrapperStyle}>
-            <Text style={[$sizeStyles.h3, styles.$labelStyle]}>Nutritional information</Text>
-
-            {/* <RNButton
-              label="Save"
-              onPress={handleSave}
-            /> */}
-
-            <RNSegmentedControl
-              borderRadius={16}
-              initialIndex={segmentIndex}
-              segments={segments}
-              onChangeIndex={setSegmentIndex}
-            />
-
-            {nutrientsInfo &&
-              Object.entries(
-                segmentIndex === 0 ? nutrientsInfo.totalNutrients : nutrientsInfo.totalDaily,
-              ).map((nutrient, index, array) => {
-                return (
-                  <React.Fragment
-                    key={`${nutrient[0]}-${nutrient[1].quantity}-${nutrient[1].unit}`}
-                  >
-                    <NutrientItem nutrient={nutrient} />
-                    {index < array.length - 1 && <View style={styles.$separatorStyle} />}
-                  </React.Fragment>
-                );
-              })}
-          </View>
         </View>
-      </ScrollView>
-    </GestureHandlerRootView>
+        <RnInput
+          onSubmitEditing={submitQuantity}
+          keyboardType="numeric"
+          returnKeyType="done"
+          onChangeText={(value: any) => setQuantity(value)}
+          autoCapitalize="none"
+          value={quantity}
+          label="Quantity"
+          placeholder="Enter quantity"
+        />
+        <View style={styles.$baseWrapperStyle}>
+          <Text style={[$sizeStyles.h3, styles.$labelStyle]}>Nutritional information</Text>
+
+          <RNSegmentedControl
+            borderRadius={16}
+            initialIndex={segmentIndex}
+            segments={segments}
+            onChangeIndex={setSegmentIndex}
+          />
+
+          {nutrientsInfo &&
+            Object.entries(
+              segmentIndex === 0 ? nutrientsInfo.totalNutrients : nutrientsInfo.totalDaily,
+            ).map((nutrient, index, array) => {
+              return (
+                <React.Fragment key={`${nutrient[0]}-${nutrient[1].quantity}-${nutrient[1].unit}`}>
+                  <NutrientItem nutrient={nutrient} />
+                  {index < array.length - 1 && <View style={styles.$separatorStyle} />}
+                </React.Fragment>
+              );
+            })}
+        </View>
+      </View>
+    </ScrollView>
   );
 }
 

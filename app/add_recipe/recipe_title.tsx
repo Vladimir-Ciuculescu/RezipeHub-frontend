@@ -56,7 +56,6 @@ function RecipeTitle() {
           <RNIcon name="arrow_right" />
         </Pressable>
       ),
-
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Add Recipe</Text>,
     });
   }, [navigation, title, servings, photo, type, preparationTime]);

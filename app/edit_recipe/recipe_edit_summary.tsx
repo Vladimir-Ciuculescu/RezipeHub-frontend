@@ -28,7 +28,6 @@ import IngredientsList from "@/components/IngredientsList";
 import StepsList from "@/components/StepsList";
 import { IngredientItem } from "@/types/ingredient.types";
 import { Step } from "@/types/step.types";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import useRecipeStore from "@/zustand/useRecipeStore";
@@ -365,8 +364,11 @@ export default function RecipeEditSummary() {
       queryClient.setQueryData(
         ["all-personal-recipes"],
         (oldData: InfiniteData<PaginatedRecipeItem[]>) => {
-          console.log(oldData);
-          console.log(payload);
+          const totalCalories = payload.recipe.ingredients!.reduce(
+            (sum, ingredient) => sum + ((ingredient["calories"] as number) || 0),
+            0,
+          );
+
           return {
             ...oldData,
             pages: oldData.pages.map((page) => {
@@ -375,9 +377,12 @@ export default function RecipeEditSummary() {
                   ? {
                       ...recipe,
 
-                      photoUrl: getImageUrlWithCacheBuster(payload.recipe.photoUrl),
+                      photoUrl: payload.recipe.photoUrl
+                        ? getImageUrlWithCacheBuster(payload.recipe.photoUrl)
+                        : "",
                       title: payload.recipe.title,
                       preparationTime: payload.recipe.preparationTime,
+                      totalCalories,
                     }
                   : recipe;
               });
@@ -393,7 +398,7 @@ export default function RecipeEditSummary() {
   };
 
   return (
-    <GestureHandlerRootView>
+    <>
       <KeyboardAwareScrollView
         extraScrollHeight={160}
         enableAutomaticScroll
@@ -534,7 +539,7 @@ export default function RecipeEditSummary() {
         position="bottom"
         bottomOffset={-50}
       />
-    </GestureHandlerRootView>
+    </>
   );
 }
 

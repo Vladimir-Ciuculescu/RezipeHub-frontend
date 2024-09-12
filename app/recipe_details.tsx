@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import React, { useLayoutEffect, useRef, useState } from "react";
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import RNButton from "@/components/shared/RNButton";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -234,7 +233,7 @@ const RecipeDetails = () => {
   };
 
   return (
-    <GestureHandlerRootView>
+    <>
       <StatusBar style="light" />
       <View style={{ flex: 1 }}>
         {isLoading || !recipe || !recipe.photoUrl ? (
@@ -258,7 +257,7 @@ const RecipeDetails = () => {
         ) : (
           <FastImage
             resizeMode="cover"
-            source={{ uri: recipe ? recipe.photoUrl : "", cache: FastImage.cacheControl.web }}
+            source={{ uri: recipe.photoUrl, cache: FastImage.cacheControl.web }}
             style={[{ height: heightValue }, styles.$imageBackgroundStyle]}
           />
         )}
@@ -431,7 +430,7 @@ const RecipeDetails = () => {
           </BottomSheetScrollView>
         </BottomSheet>
       </View>
-    </GestureHandlerRootView>
+    </>
   );
 };
 

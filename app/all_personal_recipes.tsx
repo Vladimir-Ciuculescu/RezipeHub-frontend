@@ -27,6 +27,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import RecipeService from "@/api/services/recipe.service";
 import useUserData from "@/hooks/useUserData";
 import { $sizeStyles } from "@/theme/typography";
+import { formatFloatingValue } from "@/utils/formatFloatingValue";
 
 const { width } = Dimensions.get("screen");
 
@@ -65,8 +66,6 @@ const LayoutGridAnimation = () => {
     //     : { ...lastPageParam, page: lastPageParam.page - 1 };
     // },
   });
-
-  console.log(333, recipes);
 
   const getItems = useMemo(() => {
     if (recipes && recipes.pages) {
@@ -267,7 +266,7 @@ const LayoutGridAnimation = () => {
                             },
                           ]}
                         >
-                          {item.totalCalories} Kcal
+                          {formatFloatingValue(item.totalCalories)} Kcal
                         </Text>
                       </View>
                       <RNIcon
@@ -362,7 +361,7 @@ const LayoutGridAnimation = () => {
                         { ...$sizeStyles.s, fontFamily: "sofia800", color: colors.greyscale300 },
                       ]}
                     >
-                      {item.totalCalories} Kcal
+                      {formatFloatingValue(item.totalCalories)} Kcal
                     </Text>
                   </View>
                   <View

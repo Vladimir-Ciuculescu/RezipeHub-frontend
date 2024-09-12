@@ -24,6 +24,8 @@ import Bowl from "./bowl.svg";
 import Edit from "./edit.svg";
 import Fire from "./fire.svg";
 import Separator from "./separator.svg";
+import Filter from "./filter.svg";
+import Check from "./check.svg";
 
 export {
   Email,
@@ -52,4 +54,6 @@ export {
   Edit,
   Fire,
   Separator,
+  Filter,
+  Check,
 };

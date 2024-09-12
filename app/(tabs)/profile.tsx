@@ -26,6 +26,7 @@ import FastImage from "react-native-fast-image";
 import { useUserRecipes } from "@/hooks/recipes.hooks";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { RecipeType } from "@/types/enums";
+import { formatFloatingValue } from "@/utils/formatFloatingValue";
 
 const { width: screenWidth } = Dimensions.get("window");
 const numColumns = 2;
@@ -122,7 +123,7 @@ const RecipeItem: React.FC<RecipeItemProps> = ({ item }) => {
               <Text
                 style={[{ ...$sizeStyles.s, fontFamily: "sofia800", color: colors.greyscale300 }]}
               >
-                {totalCalories} Kcal
+                {formatFloatingValue(totalCalories)} Kcal
               </Text>
             </View>
             <View

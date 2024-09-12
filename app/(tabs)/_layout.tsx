@@ -36,7 +36,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="search"
           options={{
-            // headerShown: false,
+            headerShown: false,
             tabBarIcon: ({ focused }) => (
               <RNIcon
                 color={colors.greyscale300}

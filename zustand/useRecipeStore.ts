@@ -2,16 +2,16 @@ import { IngredientItem } from "@/types/ingredient.types";
 import { create } from "zustand";
 import { createSelectors } from "./createSelectors";
 import { Step } from "@/types/step.types";
-import { RecipeType } from "@/types/types";
+import { RecipeType } from "@/types/enums";
 
-interface State {
+export interface RecipeStoreState {
   id?: number;
   ingredients: IngredientItem[];
   steps: Step[];
   title: string;
   servings: number;
   photo: string;
-  type: RecipeType;
+  type: RecipeType | "";
   preparationTime: number;
 }
 
@@ -24,11 +24,11 @@ interface Action {
   editStepAction: (ste: Step) => void;
   removeStepAction: (step: Step) => void;
 
-  addInfoAction: (info: Omit<State, "ingredients" | "steps">) => void;
+  addInfoAction: (info: Omit<RecipeStoreState, "ingredients" | "steps">) => void;
   reset: () => void;
 }
 
-const initialState: State = {
+const initialState: RecipeStoreState = {
   id: 0,
   ingredients: [],
   steps: [],
@@ -39,14 +39,14 @@ const initialState: State = {
   preparationTime: 0,
 };
 
-const useRecipeStoreBase = create<State & Action>()((set, get) => ({
+const useRecipeStoreBase = create<RecipeStoreState & Action>()((set, get) => ({
   ...initialState,
   // * Add one ingredient at a time
   addIngredientAction: (ingredient) =>
-    set((state: State) => ({ ingredients: [...state.ingredients, ingredient] })),
+    set((state: RecipeStoreState) => ({ ingredients: [...state.ingredients, ingredient] })),
   // * Edit one ingredient at a time
   editIngredientAction: (ingredient) =>
-    set((state: State) => ({
+    set((state: RecipeStoreState) => ({
       ingredients: state.ingredients.map((item) => {
         const { measure, quantity, calories, carbs, proteins, fats } = ingredient;
 
@@ -64,18 +64,18 @@ const useRecipeStoreBase = create<State & Action>()((set, get) => ({
       }),
     })),
   // * Overwrite the entire ingredients array
-  setIngredientsAction: (ingredients) => set((state: State) => ({ ingredients })),
+  setIngredientsAction: (ingredients) => set((state: RecipeStoreState) => ({ ingredients })),
   // * Remove one ingredient at a time
   removeIngredientAction: (ingredient: IngredientItem) =>
-    set((state: State) => ({
+    set((state: RecipeStoreState) => ({
       ingredients: state.ingredients.filter((item) => item.foodId !== ingredient.foodId),
     })),
   // * Add all steps
-  addStepsAction: (steps) => set((state: State) => ({ steps: steps })),
+  addStepsAction: (steps) => set((state: RecipeStoreState) => ({ steps: steps })),
 
   // * Edit one step at a time
   editStepAction: (step) =>
-    set((state: State) => ({
+    set((state: RecipeStoreState) => ({
       steps: state.steps.map((item) => {
         return item.id == step.id
           ? {
@@ -87,8 +87,10 @@ const useRecipeStoreBase = create<State & Action>()((set, get) => ({
     })),
   // * Remove one step at a time
   removeStepAction: (step) =>
-    set((state: State) => ({ steps: state.steps.filter((item) => item.id !== step.id) })),
-  addInfoAction: (info) => set((state: State) => ({ ...info })),
+    set((state: RecipeStoreState) => ({
+      steps: state.steps.filter((item) => item.id !== step.id),
+    })),
+  addInfoAction: (info) => set((state: RecipeStoreState) => ({ ...info })),
   reset: () => set(initialState),
 }));
 

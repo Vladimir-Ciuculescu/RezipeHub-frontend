@@ -1,7 +1,6 @@
 import React, { useLayoutEffect } from "react";
 import { StyleSheet, Text, Pressable, Alert, ScrollView } from "react-native";
 import Animated from "react-native-reanimated";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { spacing } from "@/theme/spacing";
 import { colors } from "@/theme/colors";
 import { View } from "react-native-ui-lib";
@@ -128,64 +127,62 @@ export default function RecipeItems() {
   };
 
   return (
-    <GestureHandlerRootView>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.$scrollViewContentContaierStyle}
-        style={styles.$scrollVieContainerStyle}
-      >
-        <View style={styles.$buttonsContainerstyle}>
-          <View>
-            {ingredients.map((item, key: number) => (
-              <SwipeableListItem
-                actions={["delete"]}
-                key={`${item.foodId}-${key}`}
-                onDelete={() => removeIngredientAction(item)}
-              >
-                <IngredientRow ingredient={item} />
-              </SwipeableListItem>
-            ))}
-          </View>
-          <View
-            row
-            style={styles.$buttonsRowContainerStyle}
-          >
-            <RNButton
-              onPress={goToSearchIngredients}
-              label="Add ingredients"
-              style={styles.$btnStyle}
-              labelStyle={styles.$btnLabelStyle}
-            />
-          </View>
-          <View>
-            {steps.map((item, key: number) => (
-              <SwipeableListItem
-                actions={["delete"]}
-                key={`${item.id}-${key}`}
-                onDelete={() => removeStepAction(item)}
-              >
-                <StepRow
-                  item={item}
-                  index={key}
-                />
-              </SwipeableListItem>
-            ))}
-          </View>
-
-          <View
-            row
-            style={styles.$buttonsRowContainerStyle}
-          >
-            <RNButton
-              onPress={gotToAddSteps}
-              label="Add steps"
-              style={styles.$btnStyle}
-              labelStyle={styles.$btnLabelStyle}
-            />
-          </View>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.$scrollViewContentContaierStyle}
+      style={styles.$scrollVieContainerStyle}
+    >
+      <View style={styles.$buttonsContainerstyle}>
+        <View>
+          {ingredients.map((item, key: number) => (
+            <SwipeableListItem
+              actions={["delete"]}
+              key={`${item.foodId}-${key}`}
+              onDelete={() => removeIngredientAction(item)}
+            >
+              <IngredientRow ingredient={item} />
+            </SwipeableListItem>
+          ))}
         </View>
-      </ScrollView>
-    </GestureHandlerRootView>
+        <View
+          row
+          style={styles.$buttonsRowContainerStyle}
+        >
+          <RNButton
+            onPress={goToSearchIngredients}
+            label="Add ingredients"
+            style={styles.$btnStyle}
+            labelStyle={styles.$btnLabelStyle}
+          />
+        </View>
+        <View>
+          {steps.map((item, key: number) => (
+            <SwipeableListItem
+              actions={["delete"]}
+              key={`${item.id}-${key}`}
+              onDelete={() => removeStepAction(item)}
+            >
+              <StepRow
+                item={item}
+                index={key}
+              />
+            </SwipeableListItem>
+          ))}
+        </View>
+
+        <View
+          row
+          style={styles.$buttonsRowContainerStyle}
+        >
+          <RNButton
+            onPress={gotToAddSteps}
+            label="Add steps"
+            style={styles.$btnStyle}
+            labelStyle={styles.$btnLabelStyle}
+          />
+        </View>
+      </View>
+    </ScrollView>
   );
 }
 
