@@ -40,21 +40,15 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ label, checked, onPress
   return (
     <Animated.View
       layout={LinearTransition.springify().mass(0.8)}
-      style={[styles.container, rContainerStyle]}
+      style={[styles.$containerStyle, rContainerStyle]}
       onTouchEnd={onPress}
     >
-      <Animated.Text style={[styles.label, rTextStyle]}>{label}</Animated.Text>
+      <Animated.Text style={[styles.$labelStyle, rTextStyle]}>{label}</Animated.Text>
       {checked && (
         <Animated.View
           entering={FadeIn.duration(350)}
           exiting={FadeOut}
-          style={{
-            marginLeft: 8,
-            justifyContent: "center",
-            alignItems: "center",
-            height: 20,
-            width: 20,
-          }}
+          style={styles.$checkedContainerStyle}
         >
           <RNIcon
             name="check"
@@ -69,7 +63,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ label, checked, onPress
 export default CategoryFilter;
 
 const styles = StyleSheet.create({
-  container: {
+  $containerStyle: {
     paddingVertical: 12,
     borderWidth: 1,
     borderColor: "#fff",
@@ -78,9 +72,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  label: {
+  $labelStyle: {
     fontFamily: "sofia400",
     color: "#fff",
     ...$sizeStyles.s,
+  },
+
+  $checkedContainerStyle: {
+    marginLeft: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    height: 20,
+    width: 20,
   },
 });

@@ -40,8 +40,6 @@ export const useAddRecipeMutation = () => {
 };
 
 export const useEditRecipeMutation = () => {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (payload: EditRecipeRequest) => {
       try {

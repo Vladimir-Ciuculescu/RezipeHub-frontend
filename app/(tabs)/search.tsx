@@ -1,11 +1,4 @@
-import {
-  Keyboard,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  useWindowDimensions,
-} from "react-native";
+import { Keyboard, Pressable, StyleSheet, Text, useWindowDimensions } from "react-native";
 import React, { useCallback, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
@@ -18,7 +11,6 @@ import CustomFlatList from "@/components/CustomFlatList/CustomFlatList";
 import { $sizeStyles } from "@/theme/typography";
 import { BottomSheetModal, useBottomSheetModal } from "@gorhom/bottom-sheet";
 import FiltersBottomSheet from "@/components/FiltersBottomSheet";
-
 import RNSlider from "@/components/Slider/RNSlider";
 import { View } from "react-native-ui-lib";
 import RNButton from "@/components/shared/RNButton";
@@ -88,7 +80,7 @@ export default function Search() {
   const rMainButtonStyle = useAnimatedStyle(() => {
     return {
       width: 64,
-      marginLeft: withTiming(splitted ? spacing.spacing12 : 0),
+      marginLeft: withTiming(splitted ? spacing.spacing12 : spacing.spacing12),
       backgroundColor: colors.accent200,
       opacity: withTiming(splitted ? 1 : 0),
     };
@@ -138,9 +130,7 @@ export default function Search() {
         onPress={() => {}}
         key={item.id}
       >
-        <RNShadowView
-          style={[styles.$gridContainerStyle, layout === "LIST" && styles.$rowContainerStyle]}
-        >
+        <RNShadowView style={styles.$rowContainerStyle}>
           <View
             style={[
               styles.$innerContainerStyle,
@@ -265,23 +255,23 @@ export default function Search() {
   return (
     <SafeAreaView>
       <CustomFlatList
-        contentContainerStyle={{ paddingHorizontal: spacing.spacing24 }}
+        contentContainerStyle={styles.$flatListContaienrStyle}
         showsVerticalScrollIndicator={false}
         data={data}
         style={styles.list}
-        TopListElementComponent={
-          <View
-            style={{
-              // borderColor: "orange",
-              // borderWidth: 5,
-              height: 70,
-              width: "100%",
-              justifyContent: "center",
-            }}
-          >
-            {/* <Text>Filter applied</Text> */}
-          </View>
-        }
+        // TopListElementComponent={
+        //   <View
+        //     style={{
+        //       // borderColor: "orange",
+        //       // borderWidth: 5,
+        //       height: 70,
+        //       width: "100%",
+        //       justifyContent: "center",
+        //     }}
+        //   >
+        //     {/* <Text>Filter applied</Text> */}
+        //   </View>
+        // }
         // renderItem={() => <View style={styles.item} />}
         renderItem={renderItem}
         HeaderComponent={
@@ -290,15 +280,7 @@ export default function Search() {
           </View>
         }
         StickyElementComponent={
-          <View
-            style={{
-              width: "100%",
-              paddingHorizontal: PADDING_HORIZONTAL,
-              flexDirection: "row",
-              backgroundColor: colors.greyscale150,
-              height: 64,
-            }}
-          >
+          <View style={styles.$stickyFlatlistComponentStyle}>
             <Animated.View style={[rLeftButtonStyle, styles.button]}>
               <RnInput
                 onFocus={() => setSplitted(true)}
@@ -342,26 +324,12 @@ export default function Search() {
       />
 
       <FiltersBottomSheet ref={bottomSheetRef}>
-        <View style={{ flex: 1, justifyContent: "space-between" }}>
+        <View style={styles.$bottomSheetContainerStyle}>
           <View>
-            <Text
-              style={{
-                textAlign: "center",
-                ...$sizeStyles.h3,
-                fontFamily: "sofia800",
-                color: colors.greyscale500,
-                paddingBottom: spacing.spacing32,
-              }}
-            >
-              Filters
-            </Text>
+            <Text style={styles.$bottomSheetTitleStyle}>Filters</Text>
             <View style={{ gap: spacing.spacing32 }}>
               <View style={{ gap: spacing.spacing16 }}>
-                <Text
-                  style={[
-                    { ...$sizeStyles.l, fontFamily: "sofia800", paddingLeft: spacing.spacing24 },
-                  ]}
-                >
+                <Text style={[styles.$bottomSheetSectionStyle, { paddingLeft: spacing.spacing24 }]}>
                   Category
                 </Text>
 
@@ -381,86 +349,41 @@ export default function Search() {
                 </View>
               </View>
               <View style={{ gap: spacing.spacing32 }}>
-                <View style={{ paddingHorizontal: spacing.spacing24, gap: spacing.spacing8 }}>
-                  <View
-                    row
-                    style={{
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text style={[{ ...$sizeStyles.l, fontFamily: "sofia800" }]}>Calories</Text>
-                    <Text style={[{ ...$sizeStyles.l, fontFamily: "sofia400" }]}>
-                      {`${minCalories} - ${maxCalories}`} Kcal
-                    </Text>
-                  </View>
+                <RNSlider
+                  label="Calories"
+                  unit="Kcal"
+                  minValue={0}
+                  maxValue={MAX_CALORIES}
+                  lowerValue={minCalories}
+                  greaterValue={maxCalories}
+                  onChangeMinValue={setMinCalories}
+                  onChangeMaxValue={setMaxCalories}
+                />
 
-                  <RNSlider
-                    minValue={0}
-                    maxValue={MAX_CALORIES}
-                    lowerValue={minCalories}
-                    greaterValue={maxCalories}
-                    onChangeMinValue={setMinCalories}
-                    onChangeMaxValue={setMaxCalories}
-                  />
-                </View>
-
-                <View style={{ paddingHorizontal: spacing.spacing24, gap: spacing.spacing8 }}>
-                  <View
-                    row
-                    style={{
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text style={[{ ...$sizeStyles.l, fontFamily: "sofia800" }]}>
-                      Preparation time
-                    </Text>
-                    <Text style={[{ ...$sizeStyles.l, fontFamily: "sofia400" }]}>
-                      {`${minPreparationTime} - ${maxPreparationTime}`} minutes
-                    </Text>
-                  </View>
-
-                  <RNSlider
-                    minValue={0}
-                    maxValue={MAX_PREPARATION_TIME}
-                    lowerValue={minPreparationTime}
-                    greaterValue={maxPreparationTime}
-                    onChangeMinValue={setMinPreparationTime}
-                    onChangeMaxValue={setMaxPreparationTime}
-                  />
-                </View>
+                <RNSlider
+                  label="Preparation time"
+                  unit="minutes"
+                  minValue={0}
+                  maxValue={MAX_PREPARATION_TIME}
+                  lowerValue={minPreparationTime}
+                  greaterValue={maxPreparationTime}
+                  onChangeMinValue={setMinPreparationTime}
+                  onChangeMaxValue={setMaxPreparationTime}
+                />
               </View>
               <View>
                 <RNButton
                   onPress={applyFilters}
                   loading={isLoading}
                   label="Apply Filters"
-                  style={{
-                    marginHorizontal: spacing.spacing16,
-                    backgroundColor: colors.accent200,
-                    height: 64,
-                  }}
-                  labelStyle={{
-                    ...$sizeStyles.n,
-                    color: colors.greyscale50,
-                    fontFamily: "sofia800",
-                    fontSize: spacing.spacing16,
-                  }}
+                  style={styles.$applyBtnStyle}
+                  labelStyle={styles.$applyBtnLabelStyle}
                 />
                 <RNButton
                   label="Clear"
                   link
-                  style={{
-                    marginHorizontal: spacing.spacing16,
-                    height: 64,
-                  }}
-                  labelStyle={{
-                    ...$sizeStyles.n,
-                    color: colors.accent200,
-                    fontFamily: "sofia800",
-                    fontSize: spacing.spacing16,
-                  }}
+                  style={styles.$clearBtnStyle}
+                  labelStyle={styles.$clearBtnLabelStyle}
                 />
               </View>
             </View>
@@ -474,9 +397,67 @@ export default function Search() {
 const borderWidth = 4;
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
+  $flatListContaienrStyle: {
+    gap: spacing.spacing16,
+    paddingHorizontal: spacing.spacing16,
   },
+
+  $stickyFlatlistComponentStyle: {
+    width: "100%",
+    paddingHorizontal: PADDING_HORIZONTAL,
+    flexDirection: "row",
+    backgroundColor: colors.greyscale150,
+    height: 64,
+  },
+
+  $bottomSheetContainerStyle: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+
+  $bottomSheetTitleStyle: {
+    textAlign: "center",
+    ...$sizeStyles.h3,
+    fontFamily: "sofia800",
+    color: colors.greyscale500,
+    paddingBottom: spacing.spacing32,
+  },
+
+  $bottomSheetSectionStyle: {
+    ...$sizeStyles.l,
+    fontFamily: "sofia800",
+  },
+
+  $bottomSheetSectionValueStyle: {
+    ...$sizeStyles.l,
+    fontFamily: "sofia400",
+  },
+
+  $applyBtnStyle: {
+    marginHorizontal: spacing.spacing16,
+    backgroundColor: colors.accent200,
+    height: 64,
+  },
+
+  $applyBtnLabelStyle: {
+    ...$sizeStyles.n,
+    color: colors.greyscale50,
+    fontFamily: "sofia800",
+    fontSize: spacing.spacing16,
+  },
+
+  $clearBtnStyle: {
+    marginHorizontal: spacing.spacing16,
+    height: 64,
+  },
+
+  $clearBtnLabelStyle: {
+    ...$sizeStyles.n,
+    color: colors.accent200,
+    fontFamily: "sofia800",
+    fontSize: spacing.spacing16,
+  },
+
   header: {
     padding: 20,
     alignItems: "center",
@@ -547,11 +528,6 @@ const styles = StyleSheet.create({
     paddingTop: spacing.spacing32,
   },
 
-  $gridContainerStyle: {
-    // width: GRID_CONTAINER_SIZE,
-    marginBottom: spacing.spacing16,
-    overflow: "hidden",
-  },
   $rowContainerStyle: {
     width: "100%",
     justifyContent: "flex-start",

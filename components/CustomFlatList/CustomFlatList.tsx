@@ -1,11 +1,12 @@
 import React from "react";
-import { Animated, FlatListProps, View } from "react-native";
+import { Animated, FlatListProps, View, ViewStyle } from "react-native";
 import { useCustomFlatListHook } from "./useCustomFlatListHook";
 
 type CustomFlatListProps<T> = Omit<FlatListProps<T>, "ListHeaderComponent"> & {
   HeaderComponent: JSX.Element;
   StickyElementComponent: JSX.Element;
   TopListElementComponent?: JSX.Element;
+  contentContainerStyle?: ViewStyle;
 };
 
 function CustomFlatList<T>({ style, ...props }: CustomFlatListProps<T>): React.ReactElement {
@@ -37,6 +38,7 @@ function CustomFlatList<T>({ style, ...props }: CustomFlatListProps<T>): React.R
         onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
           useNativeDriver: true,
         })}
+        contentContainerStyle={props.contentContainerStyle}
       />
     </View>
   );
