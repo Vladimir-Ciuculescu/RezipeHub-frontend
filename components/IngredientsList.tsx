@@ -79,6 +79,7 @@ const IngredientsList: React.FC<IngredientsListProps> = ({
   onEdit,
 }) => {
   const isNotEditable = !editable;
+
   return (
     <View style={[styles.$containerStyle, isNotEditable && styles.$notEditableContainerStyle]}>
       {ingredients.length ? (

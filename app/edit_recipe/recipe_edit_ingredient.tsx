@@ -6,6 +6,7 @@ import { $sizeStyles } from "@/theme/typography";
 import { spacing } from "@/theme/spacing";
 import {
   IngredientItem,
+  Measure,
   NutrientDetail,
   NutrientResponse,
   NutrientsRequestPayload,
@@ -79,10 +80,40 @@ export default function RecipeEditIngredient() {
 
   const [pickerDismissed, setPickerDismissed] = useState(true);
   const [saveEnabled, setSaveEnabled] = useState(true);
+  const [measures, setMeasures] = useState<Measure[]>([]);
+
   const parsedIngredient: IngredientItem = JSON.parse(ingredient!);
   const [measure, setMeasure] = useState<string>(parsedIngredient.measure);
   const [quantity, setQuantity] = useState(parsedIngredient.quantity.toString());
   const editIngredientAction = useRecipeStore.use.editIngredientAction();
+
+  useEffect(() => {
+    const getIngredientMeasures = async () => {
+      try {
+        const result = await FoodService.searchFood(parsedIngredient.foodId as string);
+        const measureItems = result.hints[0].measures.map((measure: Measure) => ({
+          uri: measure.uri,
+          label: measure.label,
+          value: measure.label,
+        }));
+
+        //@ts-ignore
+        const currentMeasure = measureItems.find((unit) => unit.label === measure);
+
+        getNutritionData(
+          parsedIngredient.foodId as string,
+          currentMeasure!.uri,
+          parsedIngredient.quantity as string,
+        );
+
+        setMeasures(measureItems);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getIngredientMeasures();
+  }, []);
 
   Keyboard.addListener("keyboardWillShow", () => {
     setSaveEnabled(false);
@@ -90,12 +121,6 @@ export default function RecipeEditIngredient() {
   Keyboard.addListener("keyboardWillHide", () => {
     setSaveEnabled(true);
   });
-
-  const measures = parsedIngredient.allMeasures!.map((measure) => ({
-    uri: measure.uri,
-    label: measure.label,
-    value: measure.label,
-  }));
 
   useLayoutEffect(() => {
     const saveDisabled = !saveEnabled || !pickerDismissed;
@@ -125,8 +150,8 @@ export default function RecipeEditIngredient() {
   }, [navigation, quantity, measure, nutrientsInfo, saveEnabled, pickerDismissed]);
 
   useEffect(() => {
-    if (pickerDismissed || Platform.OS === "android") {
-      const currentMeasure = parsedIngredient.allMeasures!.find((unit) => unit.label === measure);
+    if ((pickerDismissed || Platform.OS === "android") && measures.length) {
+      const currentMeasure = measures.find((unit) => unit.label === measure);
 
       getNutritionData(
         parsedIngredient.foodId as string,
@@ -157,8 +182,7 @@ export default function RecipeEditIngredient() {
   };
 
   const submitQuantity = async () => {
-    const currentMeasure = parsedIngredient.allMeasures!.find((unit) => unit.label === measure);
-
+    const currentMeasure = measures.find((unit) => unit.label === measure);
     getNutritionData(parsedIngredient.foodId as string, currentMeasure!.uri, quantity);
   };
 
@@ -196,6 +220,7 @@ export default function RecipeEditIngredient() {
             value={measure}
             onValueChange={setMeasure}
             onDonePress={() => setPickerDismissed(true)}
+            //@ts-ignore
             items={measures}
             style={{
               chevronUp: { display: "none" },
@@ -263,7 +288,7 @@ const styles = StyleSheet.create({
   $labelStyle: { fontFamily: "sofia800", color: colors.greyscale500 },
   $inputAndroidStyle: {
     height: 54,
-    borderColor: colors.greyscale150,
+    borderColor: colors.greyscale200,
     borderWidth: 2,
     fontFamily: "sofia800",
     paddingHorizontal: 16,
@@ -273,7 +298,7 @@ const styles = StyleSheet.create({
 
   $inputIOSStyle: {
     height: 54,
-    borderColor: colors.greyscale150,
+    borderColor: colors.greyscale200,
     color: colors.slate900,
     borderWidth: 2,
     fontFamily: "sofia800",

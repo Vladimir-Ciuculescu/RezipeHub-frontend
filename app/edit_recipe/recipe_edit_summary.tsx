@@ -6,7 +6,6 @@ import {
   ListRenderItem,
   Dimensions,
   Platform,
-  TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
@@ -44,7 +43,6 @@ import Toast from "react-native-toast-message";
 import toastConfig from "@/components/Toast/ToastConfing";
 import RNIcon from "@/components/shared/RNIcon";
 import RNPickerSelect from "react-native-picker-select";
-import useNutritionalTotals from "@/hooks/useNutritionalTotals";
 import { RECIPE_TYPES } from "@/constants";
 
 const { width } = Dimensions.get("screen");
@@ -78,7 +76,6 @@ export default function RecipeEditSummary() {
 
   //List of ids that needs to be deleted from DB if ingredients are deleted from FE
   const [ingredientIds, setingredientIds] = useState<number[]>([]);
-  const [nutritionalInfoIds, setNutritionalInfoIds] = useState<number[]>([]);
   const [stepsIds, setStepsIds] = useState<number[]>([]);
 
   const { mutateAsync: editRecipeMutation, isPending: editRecipePending } = useEditRecipeMutation();
@@ -126,7 +123,6 @@ export default function RecipeEditSummary() {
   const onDeleteIngredient = useCallback((ingredient: IngredientItem) => {
     removeIngredientAction(ingredient);
     setingredientIds((oldValue) => [...oldValue, ingredient.id!]);
-    setNutritionalInfoIds((oldValue) => [...oldValue, ingredient.nutritionalInfoId!]);
   }, []);
 
   const onDeleteStep = useCallback((step: Step) => {
@@ -299,10 +295,6 @@ export default function RecipeEditSummary() {
         payload.ingredientsIds = ingredientIds;
       }
 
-      if (nutritionalInfoIds.length) {
-        payload.nutritionalInfoIds = nutritionalInfoIds;
-      }
-
       //If steps were deleted from FE, append to payload the list of ids that needs to be deleted
       if (stepsIds.length) {
         payload.stepsIds = stepsIds;
@@ -315,7 +307,7 @@ export default function RecipeEditSummary() {
         const updatedRecipe = {
           ...oldData.recipe,
           title: payload.recipe.title,
-
+          servings: payload.recipe.servings,
           photoUrl: payload.recipe.photoUrl
             ? getImageUrlWithCacheBuster(payload.recipe.photoUrl)
             : "",
@@ -364,6 +356,10 @@ export default function RecipeEditSummary() {
       queryClient.setQueryData(
         ["all-personal-recipes"],
         (oldData: InfiniteData<PaginatedRecipeItem[]>) => {
+          if (!oldData) {
+            return oldData;
+          }
+
           const totalCalories = payload.recipe.ingredients!.reduce(
             (sum, ingredient) => sum + ((ingredient["calories"] as number) || 0),
             0,

@@ -115,7 +115,7 @@ export default function RecipeConfirmIngredient() {
   const measures = parsedIngredient.measures
     .filter((measure) => measure.label)
     .map((measure) => ({
-      label: `1 ${measure.label}`,
+      label: `${measure.label}`,
       value: measure.label,
       uri: measure.uri,
     }));

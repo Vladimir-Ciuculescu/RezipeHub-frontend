@@ -235,7 +235,7 @@ function RecipeTitle() {
         <Text style={[$sizeStyles.n, styles.$labelStyle]}>Type</Text>
 
         <RNPickerSelect
-          doneText="Search"
+          doneText="Done"
           placeholder={{ value: "", label: "Select a Type" }}
           value={type}
           onValueChange={setType}
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
 
   $inputAndroidStyle: {
     height: 54,
-    borderColor: colors.greyscale150,
+    borderColor: colors.greyscale200,
     borderWidth: 2,
     fontFamily: "sofia800",
     paddingHorizontal: 16,
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
 
   $inputIOSStyle: {
     height: 54,
-    borderColor: colors.greyscale150,
+    borderColor: colors.greyscale200,
     color: colors.slate900,
     borderWidth: 2,
     fontFamily: "sofia800",
