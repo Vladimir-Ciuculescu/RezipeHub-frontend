@@ -3,11 +3,14 @@ import {
   EditRecipePhotoRequest,
   EditRecipeRequest,
   GetRecipesByUserRequest,
+  GetRecipesRequest,
   RecipeResponse,
 } from "@/types/recipe.types";
 import { handleError } from "../handleError";
 import { axiosInstance } from "..";
 import { RECIPES } from "../constants";
+import { QueryKeyType } from "@/types/query";
+import { CategoryItem } from "@/types/category.types";
 
 const RecipeService = {
   addRecipe: async (payload: AddRecipeRequest) => {
@@ -54,6 +57,30 @@ const RecipeService = {
   getRecipe: async (recipeId: number): Promise<RecipeResponse> => {
     try {
       const { data } = await axiosInstance.get(`/${RECIPES}/${recipeId}`);
+      return data;
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+
+  getRecipes: async (params: QueryKeyType) => {
+    const [_, filters] = params.queryKey;
+
+    const paramsObject = {
+      title: filters.text,
+      categories: filters.categories
+        .filter((category: CategoryItem) => category.checked)
+        .map((category: CategoryItem) => category.value),
+      caloriesRange: filters.caloriesRange,
+      preparationTimeRange: filters.preparationTimeRange,
+      page: params.pageParam.page,
+      limit: 10,
+    };
+
+    try {
+      const { data } = await axiosInstance.get(`/${RECIPES}`, {
+        params: paramsObject,
+      });
       return data;
     } catch (error) {
       throw handleError(error);

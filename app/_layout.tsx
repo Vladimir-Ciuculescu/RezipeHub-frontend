@@ -141,7 +141,7 @@ export default function Layout() {
                     headerBackVisible: false,
                     headerShadowVisible: false,
                     headerTitleAlign: "center",
-                    headerStyle: { backgroundColor: colors.greyscale150 },
+                    headerStyle: { backgroundColor: colors.greyscale75 },
                     contentStyle: { backgroundColor: colors.greyscale150 },
                   }}
                 />

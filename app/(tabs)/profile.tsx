@@ -196,7 +196,7 @@ const Profile = () => {
   const logOut = () => {
     storage.delete(ACCESS_TOKEN);
     signOut();
-    router.dismissAll();
+    router.navigate("/home");
   };
 
   const goBack = () => {
@@ -329,7 +329,6 @@ const styles = StyleSheet.create({
   $profileContainerStyle: {
     width: "100%",
     height: 80,
-    overflow: "hidden",
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: spacing.spacing16,

@@ -6,7 +6,7 @@ import { View, StyleSheet, ViewStyle, StyleProp } from "react-native";
 
 interface RNShadowViewProps {
   children?: React.JSX.Element | React.JSX.Element[];
-  style: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
 }
 
 const RNShadowView: React.FC<RNShadowViewProps> = ({ children, style }) => {
@@ -20,14 +20,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     // Shadow properties
-    shadowColor: "rgba(6, 51, 54, 0.1)",
+    // shadowColor: "rgba(6, 51, 54, 0.1)",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 1,
+    // shadowRadius: spacing.spacing16,
+    // elevation: spacing.spacing4,
+    shadowColor: colors.greyscale200,
     shadowOffset: {
-      width: 0,
+      width: 2,
       height: 2,
     },
+    shadowRadius: 16,
+    elevation: 16,
     shadowOpacity: 1,
-    shadowRadius: spacing.spacing16,
-    elevation: spacing.spacing4,
     borderRadius: 16,
   },
 });

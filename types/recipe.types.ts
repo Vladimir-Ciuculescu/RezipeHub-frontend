@@ -1,3 +1,4 @@
+import { CategoryFilter, CategoryItem } from "./category.types";
 import { RecipeType } from "./enums";
 import { IngredientItem, IngredientItemResponse, IngredientPayload } from "./ingredient.types";
 import { Step, StepItemResponse, StepPayload } from "./step.types";
@@ -40,11 +41,31 @@ export interface GetRecipesByUserRequest {
   userId: number;
 }
 
+export interface GetRecipesRequest {
+  text: string;
+  categories: CategoryItem[];
+  caloriesRange: [min: number, max: number];
+  preparationTimeRange: [min: number, max: number];
+}
+
 export interface RecipeBriefResponse {
   id: number;
   photoUrl: string;
   servings: number;
   title: string;
+}
+
+export interface RecipeSearchResponse {
+  id: number;
+  title: string;
+  photoUrl: string;
+  preparationTime: number;
+  user: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    photoUrl: string;
+  };
 }
 
 export interface RecipeResponse {

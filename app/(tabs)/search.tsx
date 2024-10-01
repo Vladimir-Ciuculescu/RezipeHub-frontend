@@ -1,327 +1,226 @@
-import { Keyboard, Pressable, StyleSheet, Text, useWindowDimensions } from "react-native";
-import React, { useCallback, useRef, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  Keyboard,
+  FlatList,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
+import { spacing } from "@/theme/spacing";
+import RecipeSearchResultItem from "@/components/RecipeSearchResultItem";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import RecipeService from "@/api/services/recipe.service";
+import { colors } from "@/theme/colors";
+import RNShadowView from "@/components/shared/RNShadowView";
 import RnInput from "@/components/shared/RNInput";
 import RNIcon from "@/components/shared/RNIcon";
-import { colors } from "@/theme/colors";
-import { AntDesign, Ionicons } from "@expo/vector-icons";
-import { spacing } from "@/theme/spacing";
-import CustomFlatList from "@/components/CustomFlatList/CustomFlatList";
-import { $sizeStyles } from "@/theme/typography";
 import { BottomSheetModal, useBottomSheetModal } from "@gorhom/bottom-sheet";
 import FiltersBottomSheet from "@/components/FiltersBottomSheet";
-import RNSlider from "@/components/Slider/RNSlider";
-import { View } from "react-native-ui-lib";
-import RNButton from "@/components/shared/RNButton";
 import CategoryFilter from "@/components/CategoryFilter";
-import { RECIPE_TYPES } from "@/constants";
+import { MAX_CALORIES, MAX_PREPARATION_TIME, RECIPE_TYPES } from "@/constants";
 import useFilterStore from "@/zustand/useFilterStore";
-import RNShadowView from "@/components/shared/RNShadowView";
-import { formatFloatingValue } from "@/utils/formatFloatingValue";
-import FastImage from "react-native-fast-image";
+import RNSlider from "@/components/Slider/RNSlider";
+import { $sizeStyles } from "@/theme/typography";
+import RNButton from "@/components/shared/RNButton";
+import { Skeleton } from "moti/skeleton";
+import { No_results } from "@/assets/illustrations";
 
-const PADDING_HORIZONTAL = spacing.spacing16;
-const GAP = spacing.spacing16;
+const { width, height } = Dimensions.get("screen");
 
-const MAX_CALORIES = 5000;
-const MAX_PREPARATION_TIME = 180;
-
-export default function Search() {
-  const CATEGORIES = RECIPE_TYPES.map((category, index) => ({
-    id: index,
-    label: category.label,
-    value: category.value,
-    checked: false,
-  }));
-  const { dismiss } = useBottomSheetModal();
-  const [text, setText] = useState("");
-  const [splitted, setSplitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [minCalories, setMinCalories] = useState(0);
-  const [maxCalories, setMaxCalories] = useState(MAX_CALORIES);
-  const [filterCategories, setFilterCategories] = useState(CATEGORIES);
-  const [minPreparationTime, setMinPreparationTime] = useState(0);
-  const [maxPreparationTime, setMaxPreparationTime] = useState(MAX_PREPARATION_TIME);
-  const { width: windowWidth } = useWindowDimensions();
-  const fullWidth = windowWidth - PADDING_HORIZONTAL * 2 - GAP;
-
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
-
-  const setFiltersAction = useFilterStore.use.setFiltersAction();
-
+const SearchScreen = () => {
   const categories = useFilterStore.use.categories();
   const preparationTimeRange = useFilterStore.use.preparationTimeRange();
   const caloriesRange = useFilterStore.use.caloriesRange();
+  const text = useFilterStore.use.text();
+
+  console.log(333, caloriesRange);
+
+  const { dismiss } = useBottomSheetModal();
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const [filters, setFilters] = useState({
+    text,
+    minCalories: caloriesRange[0],
+    maxCalories: caloriesRange[1],
+    categories: categories,
+    minPreparationTime: preparationTimeRange[0],
+    maxPreparationTime: preparationTimeRange[1],
+  });
+
+  const filterObject = {
+    text,
+    categories,
+    preparationTimeRange,
+    caloriesRange,
+  };
+
+  const {
+    data: recipess,
+    hasNextPage,
+    fetchNextPage,
+    isLoading,
+  } = useInfiniteQuery({
+    queryKey: ["recipes", filterObject],
+
+    queryFn: RecipeService.getRecipes,
+    initialPageParam: { page: 0 },
+    getNextPageParam: (lastPage, allPages, lastPageParam) => {
+      return !lastPage || !lastPage.length
+        ? undefined
+        : { ...lastPageParam, page: lastPageParam.page + 1 };
+    },
+  });
+
+  const loadNextPage = () => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  };
+
+  const openBottomSheetFilters = () => {
+    Keyboard.dismiss();
+
+    if (bottomSheetRef.current) {
+      bottomSheetRef.current.present();
+    }
+  };
+
+  const getRecipes = useMemo(() => {
+    if (recipess && recipess.pages) {
+      const recipes = recipess.pages.flatMap((page) => page);
+
+      return recipes;
+    }
+  }, [recipess]);
 
   const toggleCategory = useCallback((id: number) => {
-    setFilterCategories((prevCategories) => {
-      return prevCategories.map((category) => {
-        if (category.id === id) {
-          return {
-            ...category,
-            checked: !category.checked,
-          };
-        }
-        return category;
-      });
-    });
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      categories: prevFilters.categories.map((category) =>
+        category.id === id ? { ...category, checked: !category.checked } : category,
+      ),
+    }));
   }, []);
 
-  const rLeftButtonStyle = useAnimatedStyle(() => {
-    const leftButtonWidth = splitted ? fullWidth - 64 : fullWidth + GAP;
-
-    return {
-      width: withTiming(leftButtonWidth),
-      opacity: withTiming(1),
-    };
-  }, [splitted]);
-
-  const rMainButtonStyle = useAnimatedStyle(() => {
-    return {
-      width: 64,
-      marginLeft: withTiming(splitted ? spacing.spacing12 : spacing.spacing12),
-      backgroundColor: colors.accent200,
-      opacity: withTiming(splitted ? 1 : 0),
-    };
-  }, [splitted, text]);
-
-  const clearSearch = () => {
-    setText("");
-  };
-
-  const handleSearch = async () => {
-    Keyboard.dismiss();
-  };
-
-  const data = Array(25).fill(1);
-
-  const AnimatedFilterBtn = Animated.createAnimatedComponent(Pressable);
+  const setFiltersAction = useFilterStore.use.setFiltersAction();
+  const resetFiltersAction = useFilterStore.use.resetFiltersAction();
 
   const applyFilters = () => {
-    setIsLoading(true);
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      text: filters.text,
+      minCalories: filters.minCalories,
+      maxCalories: filters.maxCalories,
+      minPreparationTime: filters.minPreparationTime,
+      maxPreparationTime: filters.maxPreparationTime,
+      categories: filters.categories,
+    }));
 
-    let payload: any = {};
+    setFiltersAction(filters);
 
-    const categoriesPayload = filterCategories
-      .filter((category) => category.checked)
-      .map((category) => ({ label: category.value }));
-
-    if (filterCategories.length) {
-      payload.categories = categoriesPayload;
-    }
-
-    payload.caloriesRange = [minCalories, maxCalories];
-    payload.preparationTimeRange = [minPreparationTime, maxPreparationTime];
-
-    setFiltersAction(payload);
-
-    setTimeout(() => {
-      setIsLoading(false);
-      dismiss();
-    }, 3000);
+    dismiss();
   };
 
-  const layout: any = "LIST";
+  const clearFilters = () => {
+    setFilters({
+      text: "",
+      minCalories: 0,
+      maxCalories: MAX_CALORIES,
+      minPreparationTime: 0,
+      maxPreparationTime: MAX_PREPARATION_TIME,
+      categories: RECIPE_TYPES.map((category, index) => ({
+        id: index,
+        label: category.label,
+        value: category.value,
+        checked: false,
+      })),
+    });
 
-  const renderItem = ({ item }) => {
-    return (
-      <Pressable
-        onPress={() => {}}
-        key={item.id}
-      >
-        <RNShadowView style={styles.$rowContainerStyle}>
-          <View
-            style={[
-              styles.$innerContainerStyle,
-              layout === "GRID" ? styles.$innerGridContainerStyle : styles.$innerRowContainerStyle,
-            ]}
-          >
-            {layout === "LIST" && (
-              <View style={styles.$innerRowInfoStyle}>
-                <View style={styles.$contentRowStyle}>
-                  {item.photoUrl ? (
-                    <FastImage
-                      source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
-                      style={styles.$rowImageStyle}
-                    />
-                  ) : (
-                    <View
-                      style={[
-                        styles.$rowImageStyle,
-                        {
-                          backgroundColor: colors.greyscale200,
-                          justifyContent: "center",
-                          alignItems: "center",
-                        },
-                      ]}
-                    >
-                      <Ionicons
-                        name="image-outline"
-                        size={35}
-                        color={colors.greyscale400}
-                      />
-                    </View>
-                  )}
-                  <View
-                    style={{
-                      flex: 1,
-                      paddingRight: spacing.spacing4,
-                    }}
-                  >
-                    <Text
-                      numberOfLines={3}
-                      style={styles.$rowTextStyle}
-                    >
-                      awdawdad
-                    </Text>
+    resetFiltersAction();
 
-                    <View
-                      row
-                      style={{
-                        alignItems: "center",
-                        gap: spacing.spacing8,
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <View
-                        row
-                        style={{ alignItems: "flex-start", gap: spacing.spacing4 }}
-                      >
-                        <RNIcon
-                          name="fire"
-                          style={{ color: colors.greyscale300 }}
-                          height={20}
-                        />
-                        <Text
-                          style={[
-                            {
-                              ...$sizeStyles.s,
-                              fontFamily: "sofia800",
-                              color: colors.greyscale300,
-                            },
-                          ]}
-                        >
-                          {formatFloatingValue(34343.23)} Kcal
-                        </Text>
-                      </View>
-                      <RNIcon
-                        name="separator"
-                        style={{ color: colors.greyscale300 }}
-                      />
-                      <View
-                        row
-                        style={{ alignItems: "center", gap: spacing.spacing4 }}
-                      >
-                        <RNIcon
-                          name="clock"
-                          style={{ color: colors.greyscale300 }}
-                          height={18}
-                        />
-                        <Text
-                          style={[
-                            {
-                              ...$sizeStyles.s,
-                              fontFamily: "sofia800",
-                              color: colors.greyscale300,
-                            },
-                          ]}
-                        >
-                          {item.preparationTime} min
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-                <RNButton
-                  style={styles.$userDetailsBtnStyle}
-                  iconSource={() => (
-                    <RNIcon
-                      name="arrow_right"
-                      color={colors.greyscale50}
-                      height={12}
-                      width={12}
-                    />
-                  )}
-                />
-              </View>
-            )}
-          </View>
-        </RNShadowView>
-      </Pressable>
-    );
+    dismiss();
+  };
+
+  const applyText = () => {
+    setFiltersAction({ ...filters, text: filters.text });
   };
 
   return (
-    <SafeAreaView>
-      <CustomFlatList
-        contentContainerStyle={styles.$flatListContaienrStyle}
-        showsVerticalScrollIndicator={false}
-        data={data}
-        style={styles.list}
-        // TopListElementComponent={
-        //   <View
-        //     style={{
-        //       // borderColor: "orange",
-        //       // borderWidth: 5,
-        //       height: 70,
-        //       width: "100%",
-        //       justifyContent: "center",
-        //     }}
-        //   >
-        //     {/* <Text>Filter applied</Text> */}
-        //   </View>
-        // }
-        // renderItem={() => <View style={styles.item} />}
-        renderItem={renderItem}
-        HeaderComponent={
-          <View style={styles.header}>
-            <Text style={[{ ...$sizeStyles.h2 }]}>Search a recipe</Text>
-          </View>
-        }
-        StickyElementComponent={
-          <View style={styles.$stickyFlatlistComponentStyle}>
-            <Animated.View style={[rLeftButtonStyle, styles.button]}>
-              <RnInput
-                onFocus={() => setSplitted(true)}
-                onBlur={() => setSplitted(false)}
-                returnKeyType="search"
-                wrapperStyle={{ width: "100%" }}
-                containerStyle={{ height: "100%" }}
-                onSubmitEditing={handleSearch}
-                placeholder="Search"
-                blurOnSubmit={false}
-                value={text}
-                onChangeText={setText}
-                leftIcon={<RNIcon name="search" />}
-                rightIcon={
-                  text ? (
-                    <Pressable onPress={clearSearch}>
-                      <AntDesign
-                        name="close"
-                        size={24}
-                        color="black"
-                      />
-                    </Pressable>
-                  ) : undefined
-                }
-              />
-            </Animated.View>
-            <AnimatedFilterBtn
-              onPress={() => {
-                Keyboard.dismiss();
-                bottomSheetRef.current?.present();
-              }}
-              style={[rMainButtonStyle, styles.button]}
-            >
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <RNShadowView>
+          <RnInput
+            onSubmitEditing={applyText}
+            returnKeyType="search"
+            placeholder="Search a recipe"
+            value={filters.text}
+            onChangeText={(text) => setFilters((prev) => ({ ...prev, text }))}
+            wrapperStyle={{ width: "100%" }}
+            containerStyle={{ borderColor: "transparent" }}
+            leftIcon={
               <RNIcon
-                name="filter"
-                color={colors.greyscale50}
+                color={colors.accent200}
+                name={"search"}
               />
-            </AnimatedFilterBtn>
-          </View>
-        }
-      />
+            }
+            rightIcon={
+              <TouchableOpacity onPress={openBottomSheetFilters}>
+                <RNIcon
+                  color={colors.accent200}
+                  name={"filter"}
+                />
+              </TouchableOpacity>
+            }
+          />
+        </RNShadowView>
+      </View>
+
+      {isLoading ? (
+        <View
+          style={{ gap: spacing.spacing16, paddingHorizontal: spacing.spacing24, paddingTop: 30 }}
+        >
+          {Array(8)
+            .fill(null)
+            .map((_: number, key: number) => (
+              <Skeleton
+                key={key}
+                colorMode="light"
+                width="100%"
+                height={100}
+              />
+            ))}
+        </View>
+      ) : getRecipes && getRecipes.length ? (
+        <FlatList
+          contentContainerStyle={{
+            paddingHorizontal: spacing.spacing24,
+            paddingTop: 30,
+            paddingBottom: 110,
+          }}
+          scrollEnabled={getRecipes && getRecipes?.length > 4}
+          showsVerticalScrollIndicator={false}
+          ItemSeparatorComponent={() => <View style={{ height: spacing.spacing16 }} />}
+          data={getRecipes}
+          renderItem={({ item }) => <RecipeSearchResultItem recipe={item} />}
+          onEndReached={loadNextPage}
+          scrollEventThrottle={16}
+        />
+      ) : (
+        <View
+          style={{ alignItems: "center", paddingTop: spacing.spacing64, gap: spacing.spacing48 }}
+        >
+          <No_results
+            height={height / 3}
+            width={width}
+          />
+
+          <Text style={{ color: colors.slate900, ...$sizeStyles.h2 }}>
+            Oops, no results found ...{" "}
+          </Text>
+        </View>
+      )}
 
       <FiltersBottomSheet ref={bottomSheetRef}>
         <View style={styles.$bottomSheetContainerStyle}>
@@ -334,7 +233,7 @@ export default function Search() {
                 </Text>
 
                 <View style={styles.listContainer}>
-                  {filterCategories.map((category) => {
+                  {filters.categories.map((category) => {
                     return (
                       <CategoryFilter
                         key={category.id}
@@ -354,10 +253,14 @@ export default function Search() {
                   unit="Kcal"
                   minValue={0}
                   maxValue={MAX_CALORIES}
-                  lowerValue={minCalories}
-                  greaterValue={maxCalories}
-                  onChangeMinValue={setMinCalories}
-                  onChangeMaxValue={setMaxCalories}
+                  lowerValue={filters.minCalories}
+                  greaterValue={filters.maxCalories}
+                  onChangeMinValue={(minCalories) =>
+                    setFilters((prev) => ({ ...prev, minCalories }))
+                  }
+                  onChangeMaxValue={(maxCalories) =>
+                    setFilters((prev) => ({ ...prev, maxCalories }))
+                  }
                 />
 
                 <RNSlider
@@ -365,10 +268,14 @@ export default function Search() {
                   unit="minutes"
                   minValue={0}
                   maxValue={MAX_PREPARATION_TIME}
-                  lowerValue={minPreparationTime}
-                  greaterValue={maxPreparationTime}
-                  onChangeMinValue={setMinPreparationTime}
-                  onChangeMaxValue={setMaxPreparationTime}
+                  lowerValue={filters.minPreparationTime}
+                  greaterValue={filters.maxPreparationTime}
+                  onChangeMinValue={(minTime) =>
+                    setFilters((prev) => ({ ...prev, minPreparationTime: minTime }))
+                  }
+                  onChangeMaxValue={(maxTime) =>
+                    setFilters((prev) => ({ ...prev, maxPreparationTime: maxTime }))
+                  }
                 />
               </View>
               <View>
@@ -380,6 +287,7 @@ export default function Search() {
                   labelStyle={styles.$applyBtnLabelStyle}
                 />
                 <RNButton
+                  onPress={clearFilters}
                   label="Clear"
                   link
                   style={styles.$clearBtnStyle}
@@ -392,24 +300,36 @@ export default function Search() {
       </FiltersBottomSheet>
     </SafeAreaView>
   );
-}
-
-const borderWidth = 4;
+};
 
 const styles = StyleSheet.create({
-  $flatListContaienrStyle: {
-    gap: spacing.spacing16,
-    paddingHorizontal: spacing.spacing16,
+  container: {
+    flex: 1,
   },
-
-  $stickyFlatlistComponentStyle: {
-    width: "100%",
-    paddingHorizontal: PADDING_HORIZONTAL,
-    flexDirection: "row",
-    backgroundColor: colors.greyscale150,
-    height: 64,
+  header: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    justifyContent: "space-between",
   },
-
+  searchText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  searchBar: {
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: "#e0e0e0",
+    paddingHorizontal: 10,
+  },
+  contentContainer: {
+    paddingTop: 10,
+  },
+  item: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
   $bottomSheetContainerStyle: {
     flex: 1,
     justifyContent: "space-between",
@@ -422,21 +342,22 @@ const styles = StyleSheet.create({
     color: colors.greyscale500,
     paddingBottom: spacing.spacing32,
   },
-
-  $bottomSheetSectionStyle: {
-    ...$sizeStyles.l,
-    fontFamily: "sofia800",
+  listContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+    width: "100%",
+    paddingHorizontal: 24,
   },
-
-  $bottomSheetSectionValueStyle: {
-    ...$sizeStyles.l,
-    fontFamily: "sofia400",
-  },
-
   $applyBtnStyle: {
     marginHorizontal: spacing.spacing16,
     backgroundColor: colors.accent200,
     height: 64,
+  },
+
+  $bottomSheetSectionStyle: {
+    ...$sizeStyles.l,
+    fontFamily: "sofia800",
   },
 
   $applyBtnLabelStyle: {
@@ -457,162 +378,6 @@ const styles = StyleSheet.create({
     fontFamily: "sofia800",
     fontSize: spacing.spacing16,
   },
-
-  header: {
-    padding: 20,
-    alignItems: "center",
-  },
-
-  item: {
-    backgroundColor: colors.greyscale150,
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-  },
-
-  button: {
-    borderRadius: spacing.spacing16,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  list: {
-    overflow: "hidden",
-  },
-  listContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-    width: "100%",
-    paddingHorizontal: 24,
-  },
-
-  label: {
-    fontSize: 16,
-    color: "black",
-  },
-
-  activeMark: {
-    borderColor: "red",
-    borderWidth,
-    left: -borderWidth / 2,
-  },
-  inactiveMark: {
-    borderColor: "grey",
-    borderWidth,
-    left: -borderWidth / 2,
-  },
-  sliderContainer: {
-    paddingVertical: 16,
-  },
-  titleContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  ////
-  $segmentLabelStyle: {
-    width: 20,
-    textAlign: "center",
-  },
-  $segmentStyle: {
-    height: 34,
-  },
-
-  $containerStyle: {
-    flex: 1,
-  },
-  $contentContainerStyle: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: spacing.spacing24,
-    paddingTop: spacing.spacing32,
-  },
-
-  $rowContainerStyle: {
-    width: "100%",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    flexDirection: "row",
-    borderRadius: spacing.spacing16,
-    backgroundColor: colors.greyscale50,
-  },
-  $innerContainerStyle: {
-    borderRadius: spacing.spacing16,
-    width: "100%",
-  },
-
-  $innerGridContainerStyle: {
-    height: 198,
-    padding: spacing.spacing12,
-  },
-
-  $innerRowContainerStyle: {
-    height: 100,
-    paddingLeft: spacing.spacing8,
-    paddingRight: spacing.spacing16,
-    paddingTop: spacing.spacing12,
-    paddingBottom: spacing.spacing12,
-  },
-
-  $innerGridInfoStyle: {
-    width: "100%",
-    height: "100%",
-    gap: spacing.spacing8,
-    // justifyContent: "space-between",
-  },
-
-  $innerRowInfoStyle: {
-    width: "100%",
-    height: "100%",
-    justifyContent: "space-between",
-    alignItems: "center",
-    flexDirection: "row",
-  },
-
-  $contentRowStyle: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: spacing.spacing12,
-    flexShrink: 1,
-    height: "100%",
-    width: "100%",
-  },
-
-  $rowImageStyle: {
-    height: "100%",
-    width: 100,
-    borderRadius: spacing.spacing16,
-  },
-
-  $gridImageStyle: {
-    height: 88,
-    width: "100%",
-    borderRadius: spacing.spacing16,
-  },
-
-  $rowTextStyle: {
-    flex: 1,
-    flexWrap: "wrap",
-    fontFamily: "sofia800",
-    color: colors.greyscale500,
-    paddingRight: spacing.spacing4,
-  },
-
-  $gridTextStyle: {
-    fontFamily: "sofia800",
-    color: colors.greyscale500,
-  },
-
-  $userDetailsBtnStyle: {
-    backgroundColor: colors.brandPrimary,
-    height: 24,
-    width: 24,
-  },
-
-  $emptyContainerStyle: {
-    // width: GRID_CONTAINER_SIZE * GRID_COLUMNS,
-    height: 198,
-    justifyContent: "center",
-    alignItems: "center",
-  },
 });
+
+export default SearchScreen;

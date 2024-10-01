@@ -390,13 +390,6 @@ const LayoutGridAnimation = () => {
     );
   };
 
-  //TODO : Keep in mind for future
-  // const getItemLayout = (data: any, index: number) => ({
-  //   length: 100,
-  //   offset: 100 * index,
-  //   index,
-  // });
-
   return (
     <SafeAreaView
       edges={["left", "right"]}
@@ -443,6 +436,7 @@ const styles = StyleSheet.create({
 
   $containerStyle: {
     flex: 1,
+    backgroundColor: colors.greyscale75,
   },
   $contentContainerStyle: {
     alignItems: "center",
@@ -454,7 +448,6 @@ const styles = StyleSheet.create({
   $gridContainerStyle: {
     width: GRID_CONTAINER_SIZE,
     marginBottom: spacing.spacing16,
-    overflow: "hidden",
   },
   $rowContainerStyle: {
     width: "100%",
