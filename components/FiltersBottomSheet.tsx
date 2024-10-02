@@ -11,12 +11,13 @@ type Ref = BottomSheetModal;
 
 interface Props {
   children: React.ReactNode;
+  onDismiss: () => void;
 }
 
 const FiltersBottomSheet = forwardRef<Ref, Props>((props, ref) => {
   const snapPoints = useMemo(() => ["85%", "85%"], []);
 
-  const { children } = props;
+  const { children, onDismiss } = props;
 
   const renderBackDrop = useCallback(
     (props: any) => (
@@ -31,6 +32,7 @@ const FiltersBottomSheet = forwardRef<Ref, Props>((props, ref) => {
 
   return (
     <BottomSheetModal
+      onDismiss={onDismiss}
       backdropComponent={renderBackDrop}
       index={0}
       handleIndicatorStyle={{ backgroundColor: colors.greyscale300, width: 50, height: 5 }}
