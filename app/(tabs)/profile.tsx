@@ -17,7 +17,7 @@ import useUserData from "@/hooks/useUserData";
 import { ACCESS_TOKEN, storage } from "@/storage";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
-import { useAuth } from "@clerk/clerk-expo";
+import { useAuth, useUser } from "@clerk/clerk-expo";
 import { useNavigation, useRouter } from "expo-router";
 import RNShadowView from "@/components/shared/RNShadowView";
 
@@ -49,6 +49,8 @@ interface RecipeItemProps {
 const RecipeItem: React.FC<RecipeItemProps> = ({ item }) => {
   const router = useRouter();
 
+  const user = useUserData();
+
   const { id, title, photoUrl, totalCalories, preparationTime } = item;
 
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -58,7 +60,7 @@ const RecipeItem: React.FC<RecipeItemProps> = ({ item }) => {
   };
 
   const goToRecipe = () => {
-    router.navigate({ pathname: "/recipe_details", params: { id } });
+    router.navigate({ pathname: "/recipe_details", params: { id, userId: user.id } });
   };
 
   return (
@@ -223,7 +225,7 @@ const Profile = () => {
         <RNShadowView style={styles.$profileContainerStyle}>
           <View style={styles.$profileDetailsStyle}>
             {/* lEAVE IT HERE */}
-            {/* <FastImage
+            {/* <FastImage 
               style={styles.$profileImageStyle}
               source={{
                 uri: "https://reactnative.dev/img/tiny_logo.png",
@@ -231,8 +233,8 @@ const Profile = () => {
               }}
             /> */}
             <View>
-              {/* <Text style={styles.$userNameStyle}>{user?.firstName + " " + user?.lastName}</Text> */}
-              <Text style={styles.$userNameStyle}>John Doe</Text>
+              <Text style={styles.$userNameStyle}>{user?.firstName + " " + user?.lastName}</Text>
+              {/* <Text style={styles.$userNameStyle}>John Doe</Text> */}
               {/* <Text style={styles.$userDescriptionStyle}>Recipe Developer</Text> */}
             </View>
           </View>

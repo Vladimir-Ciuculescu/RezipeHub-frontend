@@ -1,21 +1,20 @@
 import {
   Text,
-  ImageBackground,
   Dimensions,
   StyleSheet,
   FlatList,
   ListRenderItem,
   Alert,
+  Pressable,
 } from "react-native";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import RNButton from "@/components/shared/RNButton";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { spacing } from "@/theme/spacing";
 import { colors } from "@/theme/colors";
 import Feather from "@expo/vector-icons/Feather";
-
 import { View } from "react-native-ui-lib";
 import { $sizeStyles } from "@/theme/typography";
 import RNSegmentedControl, { SegmentItem } from "@/components/shared/RnSegmentedControl";
@@ -33,8 +32,12 @@ import { Ionicons } from "@expo/vector-icons";
 import * as DropdownMenu from "zeego/dropdown-menu";
 import useRecipeStore from "@/zustand/useRecipeStore";
 import FastImage from "react-native-fast-image";
-import Toast from "react-native-toast-message";
 import RNIcon from "@/components/shared/RNIcon";
+import useUserData from "@/hooks/useUserData";
+import LottieView from "lottie-react-native";
+import { useIsFavorite } from "@/hooks/favorites.hooks";
+import FavoritesService from "@/api/services/favorites.service";
+import Toast from "react-native-toast-message";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -65,15 +68,72 @@ const RecipeDetails = () => {
   const setIngredientsAction = useRecipeStore.use.setIngredientsAction();
   const setStepsAction = useRecipeStore.use.addStepsAction();
 
-  const { id } = useLocalSearchParams<{ id: string }>();
-
-  const { data: recipe, isLoading } = useRecipe(parseInt(id!));
-
   const navigation = useNavigation();
 
   const router = useRouter();
 
+  const heartRef = useRef<LottieView>(null);
+
   const inputsFlatlListRef = useRef<FlatList>(null);
+
+  const [isFavorite, setIsFavotite] = useState(false);
+
+  const user = useUserData();
+
+  const { id, userId } = useLocalSearchParams<{ id: string; userId: string }>();
+
+  const belongsToCurrentUser = parseInt(userId!) === user.id;
+
+  const { data: recipe, isLoading } = useRecipe(parseInt(id!));
+
+  const recipeId = recipe ? recipe.id : null;
+
+  //This api call will not execute unless the recipe id does not exist or  the recipe does not belong to the current logged i user
+  const { data: isInFavorites, isFetching } = useIsFavorite(
+    { recipeId: parseInt(id!), userId: user.id },
+    !!recipeId && !belongsToCurrentUser,
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!belongsToCurrentUser && !isFetching) {
+        if (isInFavorites) {
+          heartRef.current?.play(140, 144);
+          setIsFavotite(true);
+        } else {
+          heartRef.current?.reset();
+        }
+      }
+    }, [id, isInFavorites, isFetching, belongsToCurrentUser]),
+  );
+
+  const toggleFavorite = async () => {
+    const payload = { recipeId: parseInt(id!), userId: user.id };
+
+    await FavoritesService.toggleFavoriteRecipe(payload);
+
+    if (isFavorite) {
+      heartRef.current?.reset();
+    } else {
+      heartRef.current?.play(30, 144);
+    }
+
+    setIsFavotite((oldValue) => !oldValue);
+
+    Toast.show({
+      type: "success",
+      props: {
+        title: isFavorite ? "Recipe removed from favorites !" : "Recipe added to favorites !",
+        icon: (
+          <AntDesign
+            name="check"
+            size={24}
+            color={colors.greyscale50}
+          />
+        ),
+      },
+    });
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -91,36 +151,58 @@ const RecipeDetails = () => {
         />
       ),
       headerTitle: "",
-      headerRight: () => (
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger>
-            <RNButton
-              style={styles.$headerBtnStyle}
-              iconSource={() => (
-                <Feather
-                  name="menu"
-                  size={24}
-                  color="black"
-                />
-              )}
+      headerRight: () =>
+        belongsToCurrentUser ? (
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              <RNButton
+                style={styles.$headerBtnStyle}
+                iconSource={() => (
+                  <Feather
+                    name="menu"
+                    size={24}
+                    color="black"
+                  />
+                )}
+              />
+            </DropdownMenu.Trigger>
+            {/* @ts-ignore */}
+            <DropdownMenu.Content>
+              {ITEMS.map((item) => (
+                <DropdownMenu.Item
+                  onSelect={item.onSelect}
+                  key={item.key}
+                >
+                  <DropdownMenu.ItemTitle>{item.label}</DropdownMenu.ItemTitle>
+                  <DropdownMenu.ItemIcon ios={{ name: item.iosIcon }} />
+                </DropdownMenu.Item>
+              ))}
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+        ) : (
+          <Pressable
+            onPress={toggleFavorite}
+            style={[
+              styles.$headerBtnStyle,
+              { borderRadius: spacing.spacing8, justifyContent: "center", alignItems: "center" },
+            ]}
+          >
+            <LottieView
+              loop={false}
+              ref={heartRef}
+              autoPlay={false}
+              style={{
+                //flex: 1,
+                height: 50,
+                width: 50,
+              }}
+              // Find more Lottie files at https://lottiefiles.com/featured
+              source={require("../assets/gifs/heart.json")}
             />
-          </DropdownMenu.Trigger>
-          {/* @ts-ignore */}
-          <DropdownMenu.Content>
-            {ITEMS.map((item) => (
-              <DropdownMenu.Item
-                onSelect={item.onSelect}
-                key={item.key}
-              >
-                <DropdownMenu.ItemTitle>{item.label}</DropdownMenu.ItemTitle>
-                <DropdownMenu.ItemIcon ios={{ name: item.iosIcon }} />
-              </DropdownMenu.Item>
-            ))}
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
-      ),
+          </Pressable>
+        ),
     });
-  }, [navigation, recipe]);
+  }, [navigation, recipe, isFavorite]);
 
   const handleIndex = (index: number) => {
     setIndex(index);

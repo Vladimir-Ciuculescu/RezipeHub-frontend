@@ -242,6 +242,7 @@ export default function RecipeEditSummary() {
       Toast.show({
         type: "error",
         props: {
+          title: "Missing Information",
           msg: "Each recipe must have at least one ingredient and one step",
           icon: (
             <RNIcon

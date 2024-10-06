@@ -3,7 +3,6 @@ import {
   EditRecipePhotoRequest,
   EditRecipeRequest,
   GetRecipesByUserRequest,
-  GetRecipesRequest,
   RecipeResponse,
 } from "@/types/recipe.types";
 import { handleError } from "../handleError";
@@ -67,6 +66,7 @@ const RecipeService = {
     const [_, filters] = params.queryKey;
 
     const paramsObject = {
+      userId: filters.userId,
       title: filters.text,
       categories: filters.categories
         .filter((category: CategoryItem) => category.checked)

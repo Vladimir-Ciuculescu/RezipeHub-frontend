@@ -7,12 +7,13 @@ import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
 
 interface Props {
+  title: string;
   msg: string;
   icon: React.ReactNode;
   type: "error" | "success";
 }
 
-const RNToast = ({ msg, icon, type }: Props) => {
+const RNToast = ({ title, msg, icon, type }: Props) => {
   let backgroundColor;
 
   switch (type) {
@@ -30,8 +31,8 @@ const RNToast = ({ msg, icon, type }: Props) => {
         {icon}
 
         <View>
-          <Text style={{ ...$sizeStyles.l, color: colors.greyscale50 }}>Missing information</Text>
-          <Text style={{ ...$sizeStyles.n, color: colors.greyscale150 }}>{msg}</Text>
+          <Text style={{ ...$sizeStyles.l, color: colors.greyscale50 }}>{title}</Text>
+          {msg && <Text style={{ ...$sizeStyles.n, color: colors.greyscale150 }}>{msg}</Text>}
         </View>
       </View>
     </Animated.View>

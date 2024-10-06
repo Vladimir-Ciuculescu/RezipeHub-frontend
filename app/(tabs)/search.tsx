@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   Keyboard,
   FlatList,
   TouchableOpacity,
@@ -32,6 +31,8 @@ import { No_results } from "@/assets/illustrations";
 import FilterCard from "@/components/FilterCard";
 import { CategoryItem } from "@/types/category.types";
 import { isEqual } from "lodash";
+import { SafeAreaView } from "react-native-safe-area-context";
+import useUserData from "@/hooks/useUserData";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -40,6 +41,7 @@ const SearchScreen = () => {
   const preparationTimeRange = useFilterStore.use.preparationTimeRange();
   const caloriesRange = useFilterStore.use.caloriesRange();
   const text = useFilterStore.use.text();
+  const user = useUserData();
 
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -61,6 +63,7 @@ const SearchScreen = () => {
   const [debouncedText, setDebouncedText] = useState(filters.text);
 
   const filterObject = {
+    userId: user.id,
     text: debouncedText,
     categories,
     preparationTimeRange,
@@ -98,7 +101,6 @@ const SearchScreen = () => {
       }
     };
   }, [filters.text]);
-
   const loadNextPage = () => {
     if (hasNextPage) {
       fetchNextPage();
@@ -112,7 +114,6 @@ const SearchScreen = () => {
       filterCopyRef.current = filters;
 
       bottomSheetRef.current.present();
-      // setFiltersModified(false);
     }
   };
 
@@ -149,7 +150,6 @@ const SearchScreen = () => {
 
     setFiltersAction(filters);
 
-    // setFiltersModified(true);
     filterCopyRef.current = filters;
 
     dismiss();
@@ -436,7 +436,7 @@ const SearchScreen = () => {
                   />
                   <RNButton
                     onPress={clearFilters}
-                    label="Clear"
+                    label="Clear Filters"
                     link
                     style={styles.$clearBtnStyle}
                     labelStyle={styles.$clearBtnLabelStyle}

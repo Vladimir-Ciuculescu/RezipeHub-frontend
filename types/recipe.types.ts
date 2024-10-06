@@ -42,6 +42,7 @@ export interface GetRecipesByUserRequest {
 }
 
 export interface GetRecipesRequest {
+  userId: number;
   text: string;
   categories: CategoryItem[];
   caloriesRange: [min: number, max: number];

@@ -149,7 +149,7 @@ export default function Layout() {
               <Toast
                 config={toastConfig}
                 position="bottom"
-                bottomOffset={50}
+                bottomOffset={-50}
               />
             </ClerkProvider>
           </BottomSheetModalProvider>

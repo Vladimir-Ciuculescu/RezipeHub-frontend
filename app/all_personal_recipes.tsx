@@ -168,7 +168,7 @@ const LayoutGridAnimation = () => {
   };
 
   const goToRecipe = (id: number) => {
-    router.navigate({ pathname: "/recipe_details", params: { id: id } });
+    router.navigate({ pathname: "/recipe_details", params: { id: id, userId: user.id } });
   };
 
   const loadNextPage = () => {

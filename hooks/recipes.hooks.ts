@@ -1,5 +1,6 @@
 import RecipeService from "@/api/services/recipe.service";
 import S3Service from "@/api/services/s3.service";
+import { GetIsInFavoritesRequest } from "@/types/favorites";
 import {
   AddRecipeRequest,
   EditRecipePhotoRequest,
@@ -7,7 +8,7 @@ import {
   GetRecipesByUserRequest,
 } from "@/types/recipe.types";
 import { AddPhotoRequest, DeleteRecipePhotoRequest } from "@/types/s3.types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useUserRecipes = (params: GetRecipesByUserRequest) => {
   return useQuery({
@@ -44,7 +45,9 @@ export const useEditRecipeMutation = () => {
     mutationFn: async (payload: EditRecipeRequest) => {
       try {
         await RecipeService.editRecipe(payload);
-      } catch (error) {}
+      } catch (error) {
+        console.error("Error during mutation:", error);
+      }
     },
 
     onError: (error) => {

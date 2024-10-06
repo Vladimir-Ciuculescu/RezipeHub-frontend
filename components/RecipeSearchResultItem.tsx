@@ -10,17 +10,24 @@ import { $sizeStyles } from "@/theme/typography";
 import { spacing } from "@/theme/spacing";
 import { View } from "react-native-ui-lib";
 import { RecipeSearchResponse } from "@/types/recipe.types";
+import { useRouter } from "expo-router";
 
 interface RecipeSearchResultItemProps {
   recipe: RecipeSearchResponse;
 }
 
 const RecipeSearchResultItem: React.FC<RecipeSearchResultItemProps> = ({ recipe }) => {
-  const { user } = recipe;
+  const { user, id } = recipe;
+
+  const router = useRouter();
+
+  const goToRecipeDetails = () => {
+    router.navigate({ pathname: "/recipe_details", params: { id, userId: user.id } });
+  };
 
   return (
     <Pressable
-      onPress={() => {}}
+      onPress={goToRecipeDetails}
       key={recipe.id}
     >
       <RNShadowView style={styles.$rowContainerStyle}>
