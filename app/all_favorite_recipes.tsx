@@ -176,7 +176,7 @@ export default function all_favorite_recipes() {
     });
   };
 
-  const renderItem = ({ item, index }) => {
+  const renderItem = ({ item, index }: { item: any; index: number }) => {
     if (item === null && layout === "GRID") {
       return (
         <View
