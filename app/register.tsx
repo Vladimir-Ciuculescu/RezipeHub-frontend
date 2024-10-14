@@ -67,7 +67,7 @@ export default function Register() {
       "Account Created",
       "Your account has been successfully created!",
       [{ text: "OK", onPress: () => goToOtpVerification(userId, email) }],
-      { cancelable: false },
+      { cancelable: false, userInterfaceStyle: "light" },
     );
   };
 

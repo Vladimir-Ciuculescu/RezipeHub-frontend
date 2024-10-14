@@ -28,6 +28,7 @@ import {
   Separator,
   Filter,
   Check,
+  Heart,
 } from "@/assets/icons";
 import { colors } from "@/theme/colors";
 
@@ -62,6 +63,7 @@ enum Icons {
   separator = "separator",
   filter = "filter",
   check = "check",
+  heart = "heart",
 }
 
 type IconMap = {
@@ -97,6 +99,7 @@ const icons: IconMap = {
   separator: Separator,
   filter: Filter,
   check: Check,
+  heart: Heart,
 };
 
 interface RNIconProps {

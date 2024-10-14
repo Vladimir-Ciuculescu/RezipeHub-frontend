@@ -1,3 +1,9 @@
+export interface GetFavoritesRequest {
+  userId: number;
+  page: number;
+  limit: number;
+}
+
 export interface GetIsInFavoritesRequest {
   userId: number;
   recipeId: number;

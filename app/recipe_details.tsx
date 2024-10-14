@@ -15,7 +15,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { spacing } from "@/theme/spacing";
 import { colors } from "@/theme/colors";
 import Feather from "@expo/vector-icons/Feather";
-import { View } from "react-native-ui-lib";
+import { Dividers, View } from "react-native-ui-lib";
 import { $sizeStyles } from "@/theme/typography";
 import RNSegmentedControl, { SegmentItem } from "@/components/shared/RnSegmentedControl";
 import IngredientsList from "@/components/IngredientsList";
@@ -38,6 +38,7 @@ import LottieView from "lottie-react-native";
 import { useIsFavorite } from "@/hooks/favorites.hooks";
 import FavoritesService from "@/api/services/favorites.service";
 import Toast from "react-native-toast-message";
+import { useQueryClient } from "@tanstack/react-query";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -68,6 +69,8 @@ const RecipeDetails = () => {
   const setIngredientsAction = useRecipeStore.use.setIngredientsAction();
   const setStepsAction = useRecipeStore.use.addStepsAction();
 
+  const queryClient = useQueryClient();
+
   const navigation = useNavigation();
 
   const router = useRouter();
@@ -78,11 +81,17 @@ const RecipeDetails = () => {
 
   const [isFavorite, setIsFavotite] = useState(false);
 
-  const user = useUserData();
+  const userData = useUserData();
 
-  const { id, userId } = useLocalSearchParams<{ id: string; userId: string }>();
+  const { id, userId, owner } = useLocalSearchParams<{
+    id: string;
+    userId: string;
+    owner: string;
+  }>();
 
-  const belongsToCurrentUser = parseInt(userId!) === user.id;
+  const parsedOwner = owner ? JSON.parse(owner) : null;
+
+  const belongsToCurrentUser = parseInt(userId!) === userData.id;
 
   const { data: recipe, isLoading } = useRecipe(parseInt(id!));
 
@@ -90,7 +99,7 @@ const RecipeDetails = () => {
 
   //This api call will not execute unless the recipe id does not exist or  the recipe does not belong to the current logged i user
   const { data: isInFavorites, isFetching } = useIsFavorite(
-    { recipeId: parseInt(id!), userId: user.id },
+    { recipeId: parseInt(id!), userId: userData.id },
     !!recipeId && !belongsToCurrentUser,
   );
 
@@ -108,9 +117,11 @@ const RecipeDetails = () => {
   );
 
   const toggleFavorite = async () => {
-    const payload = { recipeId: parseInt(id!), userId: user.id };
+    const payload = { recipeId: parseInt(id!), userId: userData.id };
 
     await FavoritesService.toggleFavoriteRecipe(payload);
+
+    queryClient.invalidateQueries({ queryKey: ["favorites"] });
 
     if (isFavorite) {
       heartRef.current?.reset();
@@ -196,7 +207,6 @@ const RecipeDetails = () => {
                 height: 50,
                 width: 50,
               }}
-              // Find more Lottie files at https://lottiefiles.com/featured
               source={require("../assets/gifs/heart.json")}
             />
           </Pressable>
@@ -215,7 +225,7 @@ const RecipeDetails = () => {
   };
 
   const openAddToFavoritesAlert = () => {
-    Alert.alert("Feature under development", "", [{ text: "OK" }]);
+    Alert.alert("Feature under development", "", [{ text: "OK" }], { userInterfaceStyle: "light" });
   };
 
   const openEditModal = () => {
@@ -489,6 +499,58 @@ const RecipeDetails = () => {
                       </MotiView>
                     </MotiView>
                   </Skeleton.Group>
+                )}
+
+                {!belongsToCurrentUser && parsedOwner && (
+                  <View
+                    style={{
+                      width: "100%",
+                      justifyContent: "center",
+                      display: "flex",
+                      gap: spacing.spacing16,
+                    }}
+                  >
+                    <View
+                      style={{
+                        height: 1.5,
+                        width: "100%",
+                        backgroundColor: colors.greyscale150,
+                        justifyContent: "center",
+                      }}
+                    />
+
+                    <View style={{ gap: spacing.spacing12 }}>
+                      <Text style={{ ...$sizeStyles.h3 }}>Creator</Text>
+
+                      <View
+                        row
+                        style={{ alignItems: "center", gap: spacing.spacing16 }}
+                      >
+                        <FastImage
+                          source={{ uri: parsedOwner.photoUrl, cache: FastImage.cacheControl.web }}
+                          style={{
+                            height: 48,
+                            width: 48,
+                            borderRadius: 24,
+                            borderWidth: 2,
+                            borderColor: colors.accent200,
+                          }}
+                        />
+                        <Text
+                          style={{ ...$sizeStyles.l }}
+                        >{`${parsedOwner.firstName} ${parsedOwner.lastName}`}</Text>
+                      </View>
+                    </View>
+
+                    <View
+                      style={{
+                        height: 1.5,
+                        width: "100%",
+                        backgroundColor: colors.greyscale150,
+                        justifyContent: "center",
+                      }}
+                    />
+                  </View>
                 )}
 
                 <RNSegmentedControl

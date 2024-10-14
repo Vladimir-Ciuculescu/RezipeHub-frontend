@@ -1,71 +1,67 @@
 import {
-  Dimensions,
-  LayoutAnimation,
-  Platform,
-  Pressable,
-  StyleSheet,
   Text,
+  Pressable,
+  Platform,
   UIManager,
+  LayoutAnimation,
+  StyleSheet,
+  Dimensions,
   FlatList,
   ActivityIndicator,
 } from "react-native";
-
 import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
-import { Feather, Ionicons, Octicons } from "@expo/vector-icons";
-import _, { size } from "lodash";
 import { useNavigation, useRouter } from "expo-router";
-import RNButton from "@/components/shared/RNButton";
-import { View } from "react-native-ui-lib";
 import RNIcon from "@/components/shared/RNIcon";
-import RNShadowView from "@/components/shared/RNShadowView";
-import { colors } from "@/theme/colors";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { spacing } from "@/theme/spacing";
-import FastImage from "react-native-fast-image";
 import RNSegmentedControl from "@/components/shared/RnSegmentedControl";
+import { colors } from "@/theme/colors";
+import { Feather, Ionicons, Octicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import RecipeService from "@/api/services/recipe.service";
+import FavoritesService from "@/api/services/favorites.service";
 import useUserData from "@/hooks/useUserData";
+import _ from "lodash";
+import { No_results } from "@/assets/illustrations";
 import { $sizeStyles } from "@/theme/typography";
-import { formatFloatingValue } from "@/utils/formatFloatingValue";
+import { spacing } from "@/theme/spacing";
+import { View } from "react-native-ui-lib";
+import RNShadowView from "@/components/shared/RNShadowView";
+import RNButton from "@/components/shared/RNButton";
+import FastImage from "react-native-fast-image";
 
-const { width } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("screen");
 
 const GRID_CONTAINER_SIZE = width * 0.4;
 const GRID_COLUMNS = 2;
 
-const LayoutGridAnimation = () => {
+export default function all_favorite_recipes() {
+  const navigation = useNavigation();
+
+  const router = useRouter();
+
   const user = useUserData();
 
   const [layoutIndex, setLayoutIndex] = useState(0);
   const [layout, setLayout] = useState<"LIST" | "GRID">("LIST");
 
-  const navigation = useNavigation();
-  const router = useRouter();
-
   const {
-    data: recipes,
+    data: favorites,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
   } = useInfiniteQuery({
-    queryKey: ["all-personal-recipes"],
-    queryFn: RecipeService.getPaginatedRecipesPerUser,
+    queryKey: ["all-favorites-recipes"],
+    queryFn: FavoritesService.getPaginatedFavorites,
     initialPageParam: { page: 0, userId: user.id },
-
     getNextPageParam: (lastPage, allPages, lastPageParam) => {
       return !lastPage || !lastPage.length
         ? undefined
         : { ...lastPageParam, page: lastPageParam.page + 1 };
     },
-
-    //TODO : Keep for future
-    // getPreviousPageParam: (lastPage, allPages, lastPageParam) => {
-    //   return !lastPage || !lastPage.length
-    //     ? undefined
-    //     : { ...lastPageParam, page: lastPageParam.page - 1 };
-    // },
   });
+
+  const goBack = () => {
+    router.back();
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -74,7 +70,8 @@ const LayoutGridAnimation = () => {
           <RNIcon name="arrow_left" />
         </Pressable>
       ),
-      headerTitle: () => <Text style={{ ...$sizeStyles.h2 }}>Recipes</Text>,
+      headerTitle: () => <Text style={{ ...$sizeStyles.h2 }}>Favorites</Text>,
+
       headerRight: () => (
         <RNSegmentedControl
           backgroundColor={colors.greyscale50}
@@ -108,28 +105,6 @@ const LayoutGridAnimation = () => {
     });
   }, [navigation, layoutIndex]);
 
-  const getItems = useMemo(() => {
-    if (recipes && recipes.pages) {
-      const cols = Math.floor(width / GRID_CONTAINER_SIZE);
-
-      const allItems = recipes.pages.flatMap((page) => page);
-
-      const rows = allItems.length / cols;
-
-      const dividedRowsCols = rows / cols;
-      const itemsToAdd = Math.ceil((dividedRowsCols - parseInt(`${dividedRowsCols}`)) * cols);
-
-      if (layout === "GRID") {
-        const newData = [...allItems, ..._.range(0, itemsToAdd).map(() => null)];
-        return newData;
-      }
-
-      return allItems;
-    }
-
-    return [];
-  }, [layout, recipes]);
-
   useEffect(() => {
     if (Platform.OS === "android") {
       if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -137,10 +112,6 @@ const LayoutGridAnimation = () => {
       }
     }
   }, []);
-
-  const goBack = () => {
-    router.back();
-  };
 
   const handleLayoutChange = (index: number) => {
     setLayoutIndex(index);
@@ -167,9 +138,27 @@ const LayoutGridAnimation = () => {
     }, 0.00000001);
   };
 
-  const goToRecipe = (id: number) => {
-    router.navigate({ pathname: "/recipe_details", params: { id: id, userId: user.id } });
-  };
+  const getItems = useMemo(() => {
+    if (favorites && favorites.pages) {
+      const cols = Math.floor(width / GRID_CONTAINER_SIZE);
+
+      const allItems = favorites.pages.flatMap((page) => page);
+
+      const rows = allItems.length / cols;
+
+      const dividedRowsCols = rows / cols;
+      const itemsToAdd = Math.ceil((dividedRowsCols - parseInt(`${dividedRowsCols}`)) * cols);
+
+      if (layout === "GRID") {
+        const newData = [...allItems, ..._.range(0, itemsToAdd).map(() => null)];
+        return newData;
+      }
+
+      return allItems;
+    }
+
+    return [];
+  }, [layout, favorites]);
 
   const loadNextPage = () => {
     if (hasNextPage) {
@@ -177,7 +166,17 @@ const LayoutGridAnimation = () => {
     }
   };
 
-  const renderItem = ({ item, index }: { item: any; index: number }) => {
+  const goToFavoriteRecipe = (
+    recipeId: number,
+    user: { id: number; firstName: string; lastName: string; photoUrl: string },
+  ) => {
+    router.navigate({
+      pathname: "/recipe_details",
+      params: { id: recipeId, owner: JSON.stringify(user) },
+    });
+  };
+
+  const renderItem = ({ item, index }) => {
     if (item === null && layout === "GRID") {
       return (
         <View
@@ -189,7 +188,7 @@ const LayoutGridAnimation = () => {
 
     return (
       <Pressable
-        onPress={() => goToRecipe(item.id)}
+        onPress={() => goToFavoriteRecipe(item.id, item.user)}
         key={item.id}
       >
         <RNShadowView
@@ -205,10 +204,27 @@ const LayoutGridAnimation = () => {
               <View style={styles.$innerRowInfoStyle}>
                 <View style={styles.$contentRowStyle}>
                   {item.photoUrl ? (
-                    <FastImage
-                      source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
-                      style={styles.$rowImageStyle}
-                    />
+                    <View style={styles.$rowImageStyle}>
+                      <FastImage
+                        source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
+                        style={{ flex: 1 }}
+                      />
+                      <View
+                        style={{
+                          height: 28,
+                          width: 28,
+                          backgroundColor: colors.greyscale50,
+                          position: "absolute",
+                          borderRadius: spacing.spacing12,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          right: spacing.spacing8,
+                          top: spacing.spacing8,
+                        }}
+                      >
+                        <RNIcon name="heart" />
+                      </View>
+                    </View>
                   ) : (
                     <View
                       style={[
@@ -241,59 +257,32 @@ const LayoutGridAnimation = () => {
                     </Text>
 
                     <View
-                      row
-                      style={{
-                        alignItems: "center",
-                        gap: spacing.spacing8,
-                        justifyContent: "space-between",
-                      }}
+                      style={{ flexDirection: "row", alignItems: "center", gap: spacing.spacing4 }}
                     >
-                      <View
-                        row
-                        style={{ alignItems: "flex-start", gap: spacing.spacing4 }}
-                      >
-                        <RNIcon
-                          name="fire"
-                          style={{ color: colors.greyscale300 }}
-                          height={20}
-                        />
-                        <Text
-                          style={[
-                            {
-                              ...$sizeStyles.s,
-                              fontFamily: "sofia800",
-                              color: colors.greyscale300,
-                            },
-                          ]}
-                        >
-                          {formatFloatingValue(item.totalCalories)} Kcal
-                        </Text>
-                      </View>
-                      <RNIcon
-                        name="separator"
-                        style={{ color: colors.greyscale300 }}
+                      <FastImage
+                        source={{ uri: item.user.photoUrl }}
+                        style={{
+                          width: 24,
+                          height: 24,
+                          borderRadius: spacing.spacing16,
+                          borderWidth: 2,
+                          borderColor: colors.accent200,
+                        }}
                       />
-                      <View
-                        row
-                        style={{ alignItems: "center", gap: spacing.spacing4 }}
+                      <Text
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        style={[
+                          {
+                            ...$sizeStyles.s,
+                            fontFamily: "sofia400",
+                            color: colors.greyscale300,
+                            paddingRight: 30,
+                          },
+                        ]}
                       >
-                        <RNIcon
-                          name="clock"
-                          style={{ color: colors.greyscale300 }}
-                          height={18}
-                        />
-                        <Text
-                          style={[
-                            {
-                              ...$sizeStyles.s,
-                              fontFamily: "sofia800",
-                              color: colors.greyscale300,
-                            },
-                          ]}
-                        >
-                          {item.preparationTime} min
-                        </Text>
-                      </View>
+                        {item.user ? `${item.user.firstName} ${item.user.lastName}` : ""}
+                      </Text>
                     </View>
                   </View>
                 </View>
@@ -313,10 +302,27 @@ const LayoutGridAnimation = () => {
             {layout === "GRID" && (
               <View style={styles.$innerGridInfoStyle}>
                 {item.photoUrl ? (
-                  <FastImage
-                    source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
-                    style={styles.$gridImageStyle}
-                  />
+                  <View style={styles.$gridImageStyle}>
+                    <FastImage
+                      source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
+                      style={{ flex: 1 }}
+                    />
+                    <View
+                      style={{
+                        height: 28,
+                        width: 28,
+                        backgroundColor: colors.greyscale50,
+                        position: "absolute",
+                        borderRadius: spacing.spacing12,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        right: spacing.spacing8,
+                        top: spacing.spacing8,
+                      }}
+                    >
+                      <RNIcon name="heart" />
+                    </View>
+                  </View>
                 ) : (
                   <View
                     style={[
@@ -335,50 +341,40 @@ const LayoutGridAnimation = () => {
                     />
                   </View>
                 )}
-                <Text
-                  numberOfLines={3}
-                  style={styles.$gridTextStyle}
-                >
-                  {item.title}
-                </Text>
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <View
-                    row
-                    style={{ alignItems: "center", gap: spacing.spacing2 }}
+                <View style={{ flex: 1, justifyContent: "space-between" }}>
+                  <Text
+                    numberOfLines={3}
+                    style={styles.$gridTextStyle}
                   >
-                    <RNIcon
-                      name="fire"
-                      style={{ color: colors.greyscale300 }}
-                      height={15}
+                    {item.title}
+                  </Text>
+
+                  <View
+                    style={{ flexDirection: "row", alignItems: "center", gap: spacing.spacing4 }}
+                  >
+                    <FastImage
+                      source={{ uri: item.user.photoUrl }}
+                      style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: spacing.spacing16,
+                        borderWidth: 2,
+                        borderColor: colors.accent200,
+                      }}
                     />
                     <Text
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
                       style={[
-                        { ...$sizeStyles.s, fontFamily: "sofia800", color: colors.greyscale300 },
+                        {
+                          ...$sizeStyles.s,
+                          fontFamily: "sofia400",
+                          color: colors.greyscale300,
+                          paddingRight: 30,
+                        },
                       ]}
                     >
-                      {formatFloatingValue(item.totalCalories)} Kcal
-                    </Text>
-                  </View>
-                  <View
-                    row
-                    style={{ alignItems: "center", gap: spacing.spacing2 }}
-                  >
-                    <RNIcon
-                      name="clock"
-                      style={{ color: colors.greyscale300 }}
-                      height={15}
-                    />
-                    <Text
-                      style={[
-                        { ...$sizeStyles.s, fontFamily: "sofia800", color: colors.greyscale300 },
-                      ]}
-                    >
-                      {item.preparationTime} min
+                      {item.user ? `${item.user.firstName} ${item.user.lastName}` : ""}
                     </Text>
                   </View>
                 </View>
@@ -395,13 +391,13 @@ const LayoutGridAnimation = () => {
       edges={["left", "right"]}
       style={styles.$containerStyle}
     >
-      {recipes && (
+      {getItems && getItems.length ? (
         <FlatList
           showsVerticalScrollIndicator={false}
           key={layout === "GRID" ? GRID_COLUMNS : 1}
           data={getItems}
-          renderItem={renderItem}
           numColumns={layout === "GRID" ? GRID_COLUMNS : 1}
+          renderItem={renderItem}
           contentContainerStyle={styles.$contentContainerStyle}
           ListEmptyComponent={<View style={styles.$emptyContainerStyle} />}
           columnWrapperStyle={layout === "GRID" ? { gap: spacing.spacing16 } : undefined}
@@ -418,12 +414,27 @@ const LayoutGridAnimation = () => {
             ) : null
           }
         />
+      ) : (
+        <View
+          style={{
+            alignItems: "center",
+            flex: 1,
+            justifyContent: "center",
+            paddingHorizontal: spacing.spacing12,
+          }}
+        >
+          <No_results
+            height={height / 3}
+            width={width}
+          />
+          <Text style={{ color: colors.slate900, ...$sizeStyles.h2 }}>
+            Add meals to favorites !
+          </Text>
+        </View>
       )}
     </SafeAreaView>
   );
-};
-
-export default LayoutGridAnimation;
+}
 
 const styles = StyleSheet.create({
   $segmentLabelStyle: {
@@ -443,6 +454,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: spacing.spacing24,
     paddingTop: spacing.spacing32,
+  },
+
+  $emptyContainerStyle: {
+    width: GRID_CONTAINER_SIZE * GRID_COLUMNS,
+    height: 198,
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   $gridContainerStyle: {
@@ -500,15 +518,19 @@ const styles = StyleSheet.create({
   },
 
   $rowImageStyle: {
+    display: "flex",
     height: "100%",
     width: 100,
     borderRadius: spacing.spacing16,
+    overflow: "hidden",
   },
 
   $gridImageStyle: {
     height: 88,
     width: "100%",
     borderRadius: spacing.spacing16,
+    display: "flex",
+    overflow: "hidden",
   },
 
   $rowTextStyle: {
@@ -528,12 +550,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brandPrimary,
     height: 24,
     width: 24,
-  },
-
-  $emptyContainerStyle: {
-    width: GRID_CONTAINER_SIZE * GRID_COLUMNS,
-    height: 198,
-    justifyContent: "center",
-    alignItems: "center",
   },
 });

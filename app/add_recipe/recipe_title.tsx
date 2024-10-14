@@ -118,6 +118,7 @@ function RecipeTitle() {
   const showEmptyTitleMessage = () => {
     Alert.alert("Cannot continue", "Please enter a title for the recipe", [{ text: "OK" }], {
       cancelable: false,
+      userInterfaceStyle: "light",
     });
   };
 
@@ -126,13 +127,14 @@ function RecipeTitle() {
       "Cannot continue",
       "Please enter the number of servings for the recipe",
       [{ text: "OK" }],
-      { cancelable: false },
+      { cancelable: false, userInterfaceStyle: "light" },
     );
   };
 
   const showEmptyTypeMessage = () => {
     Alert.alert("Cannot continue", "Please select a type for this recipe", [{ text: "OK" }], {
       cancelable: false,
+      userInterfaceStyle: "light",
     });
   };
 
@@ -141,7 +143,7 @@ function RecipeTitle() {
       "Cannot continue",
       "Please enter a preparation time for this recipe",
       [{ text: "OK" }],
-      { cancelable: false },
+      { cancelable: false, userInterfaceStyle: "light" },
     );
   };
 

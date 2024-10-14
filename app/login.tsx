@@ -140,7 +140,7 @@ export default function Login() {
             text: "OK",
           },
         ],
-        { cancelable: false },
+        { cancelable: false, userInterfaceStyle: "light" },
       );
     }
   };
@@ -161,7 +161,7 @@ export default function Login() {
             text: "OK",
           },
         ],
-        { cancelable: false },
+        { cancelable: false, userInterfaceStyle: "light" },
       );
     }
 

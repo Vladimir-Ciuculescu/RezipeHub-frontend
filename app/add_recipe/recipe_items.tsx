@@ -79,12 +79,14 @@ export default function RecipeItems() {
   const showNoIngredientsMessage = () => {
     Alert.alert("Cannot continue", "Please enter one or more ingredients", [{ text: "OK" }], {
       cancelable: false,
+      userInterfaceStyle: "light",
     });
   };
 
   const showNoStepsMessage = () => {
     Alert.alert("Cannot continue", "Please enter one or more step", [{ text: "OK" }], {
       cancelable: false,
+      userInterfaceStyle: "light",
     });
   };
 

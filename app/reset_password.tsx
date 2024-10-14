@@ -69,7 +69,10 @@ export default function ResetPassword() {
   };
 
   const showErrorMessage = () => {
-    Alert.alert("Error", "Token invalid or expired", [{ text: "OK" }], { cancelable: false });
+    Alert.alert("Error", "Token invalid or expired", [{ text: "OK" }], {
+      cancelable: false,
+      userInterfaceStyle: "light",
+    });
   };
 
   const showConfirmationMessage = () => {
@@ -79,6 +82,7 @@ export default function ResetPassword() {
       [{ text: "OK", onPress: () => goToLogin() }],
       {
         cancelable: false,
+        userInterfaceStyle: "light",
       },
     );
   };

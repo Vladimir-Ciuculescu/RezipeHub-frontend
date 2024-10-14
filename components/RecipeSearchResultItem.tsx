@@ -22,7 +22,10 @@ const RecipeSearchResultItem: React.FC<RecipeSearchResultItemProps> = ({ recipe 
   const router = useRouter();
 
   const goToRecipeDetails = () => {
-    router.navigate({ pathname: "/recipe_details", params: { id, userId: user.id } });
+    router.navigate({
+      pathname: "/recipe_details",
+      params: { id, userId: user.id, owner: JSON.stringify(user) },
+    });
   };
 
   return (

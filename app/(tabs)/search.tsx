@@ -258,7 +258,6 @@ const SearchScreen = () => {
           style={{ flexDirection: "row", gap: spacing.spacing8 }}
           onStartShouldSetResponder={() => true}
         >
-          {/* Display checked categories */}
           {selectedCategories.map((category) => (
             <FilterCard
               onRemove={() => removeCategory(category)}

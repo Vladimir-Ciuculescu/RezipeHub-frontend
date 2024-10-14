@@ -65,7 +65,7 @@ export default function ForgotPassword() {
       "Email sent",
       "Please check your inbox.",
       [{ text: "OK", onPress: () => goToResetPassword(email) }],
-      { cancelable: false },
+      { cancelable: false, userInterfaceStyle: "light" },
     );
   };
 

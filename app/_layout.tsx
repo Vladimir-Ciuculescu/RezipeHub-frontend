@@ -145,6 +145,16 @@ export default function Layout() {
                     contentStyle: { backgroundColor: colors.greyscale150 },
                   }}
                 />
+                <Stack.Screen
+                  name="all_favorite_recipes"
+                  options={{
+                    headerBackVisible: false,
+                    headerShadowVisible: false,
+                    headerTitleAlign: "center",
+                    headerStyle: { backgroundColor: colors.greyscale75 },
+                    contentStyle: { backgroundColor: colors.greyscale150 },
+                  }}
+                />
               </Stack>
               <Toast
                 config={toastConfig}

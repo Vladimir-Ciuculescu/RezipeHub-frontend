@@ -172,9 +172,10 @@ export default function RecipeSubmit() {
           totalCalories,
         };
 
-        queryClient.setQueryData(["recipes-per-user"], (oldData: any) => {
-          return oldData ? [newRecipe, ...oldData] : [newRecipe];
-        });
+        // queryClient.setQueryData(["recipes-per-user"], (oldData: any) => {
+        //   return oldData ? [newRecipe, ...oldData] : [newRecipe];
+        // });
+        queryClient.invalidateQueries({ queryKey: ["recipes-per-user"] });
       } else {
         const newRecipe = {
           id: recipe.id,
@@ -184,9 +185,10 @@ export default function RecipeSubmit() {
           totalCalories,
         };
 
-        queryClient.setQueryData(["recipes-per-user"], (oldData: any) => {
-          return oldData ? [newRecipe, ...oldData] : [newRecipe];
-        });
+        // queryClient.setQueryData(["recipes-per-user"], (oldData: any) => {
+        //   return oldData ? [newRecipe, ...oldData] : [newRecipe];
+        // });
+        queryClient.invalidateQueries({ queryKey: ["recipes-per-user"] });
       }
 
       reset();

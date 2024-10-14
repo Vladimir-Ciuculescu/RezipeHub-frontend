@@ -168,7 +168,7 @@ export default function OtpVerification() {
       "OTP Resent",
       "A new OTP has been sent to your email address. Please check your inbox.",
       [{ text: "OK" }],
-      { cancelable: false },
+      { cancelable: false, userInterfaceStyle: "light" },
     );
   };
 
@@ -177,12 +177,15 @@ export default function OtpVerification() {
       "Validation Successful",
       "Your token has been successfully validated. Welcome!",
       [{ text: "OK", onPress: goToLogin }],
-      { cancelable: false },
+      { cancelable: false, userInterfaceStyle: "light" },
     );
   };
 
   const showError = (error: string) => {
-    Alert.alert("Invalid Token", error, [{ text: "OK" }], { cancelable: false });
+    Alert.alert("Invalid Token", error, [{ text: "OK" }], {
+      cancelable: false,
+      userInterfaceStyle: "light",
+    });
   };
 
   const goToLogin = () => {

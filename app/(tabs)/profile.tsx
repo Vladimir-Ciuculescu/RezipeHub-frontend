@@ -1,12 +1,5 @@
-import React, { useLayoutEffect, useState } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-  Pressable,
-  Image,
-} from "react-native";
+import React, { useLayoutEffect } from "react";
+import { ScrollView, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, View } from "react-native-ui-lib";
 import Feather from "@expo/vector-icons/Feather";
@@ -17,16 +10,15 @@ import useUserData from "@/hooks/useUserData";
 import { ACCESS_TOKEN, storage } from "@/storage";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
-import { useAuth, useUser } from "@clerk/clerk-expo";
+import { useAuth } from "@clerk/clerk-expo";
 import { useNavigation, useRouter } from "expo-router";
 import RNShadowView from "@/components/shared/RNShadowView";
-
 import { Skeleton } from "moti/skeleton";
-import FastImage from "react-native-fast-image";
 import { useUserRecipes } from "@/hooks/recipes.hooks";
-import { AntDesign, Ionicons } from "@expo/vector-icons";
-import { RecipeType } from "@/types/enums";
-import { formatFloatingValue } from "@/utils/formatFloatingValue";
+import { AntDesign } from "@expo/vector-icons";
+import PersonalRecipeItem from "@/components/PersonalRecipeItem";
+import { useFavorites } from "@/hooks/favorites.hooks";
+import FavoriteRecipeItem from "@/components/FavoriteRecipeItem";
 
 const { width: screenWidth } = Dimensions.get("window");
 const numColumns = 2;
@@ -34,175 +26,32 @@ const gap = spacing.spacing16;
 const paddingHorizontal = spacing.spacing24 * 2;
 const itemSize = (screenWidth - paddingHorizontal - (numColumns - 1) * gap) / numColumns;
 
-interface RecipeItemProps {
-  item: {
-    id: number;
-    title: string;
-    photoUrl?: string;
-    servings: number;
-    type: RecipeType;
-    totalCalories: number;
-    preparationTime: number;
-  };
-}
-
-const RecipeItem: React.FC<RecipeItemProps> = ({ item }) => {
-  const router = useRouter();
-
-  const user = useUserData();
-
-  const { id, title, photoUrl, totalCalories, preparationTime } = item;
-
-  const [imageLoaded, setImageLoaded] = useState(false);
-
-  const handleImageLoad = () => {
-    setImageLoaded(true);
-  };
-
-  const goToRecipe = () => {
-    router.navigate({ pathname: "/recipe_details", params: { id, userId: user.id } });
-  };
-
-  return (
-    <Pressable onPress={goToRecipe}>
-      <RNShadowView style={styles.$recipeItemStyle}>
-        <View
-          style={{
-            height: "100%",
-            width: "100%",
-            gap: spacing.spacing8,
-          }}
-        >
-          {photoUrl ? (
-            <FastImage
-              source={{
-                uri: photoUrl,
-                priority: FastImage.priority.high,
-                cache: FastImage.cacheControl.web,
-              }}
-              onLoad={handleImageLoad}
-              style={{
-                width: "100%",
-                height: "50%",
-                borderRadius: spacing.spacing16,
-                display: "flex",
-              }}
-            />
-          ) : (
-            <View
-              style={[
-                { width: "100%", height: "50%", borderRadius: spacing.spacing16 },
-                {
-                  backgroundColor: colors.greyscale200,
-                  justifyContent: "center",
-                  alignItems: "center",
-                },
-              ]}
-            >
-              <Ionicons
-                name="image-outline"
-                size={35}
-                color={colors.greyscale400}
-              />
-            </View>
-          )}
-          <Text style={[$sizeStyles.n, { fontFamily: "sofia800" }]}>{title}</Text>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "space-between",
-            }}
-          >
-            <View
-              row
-              style={{ alignItems: "center", gap: spacing.spacing2 }}
-            >
-              <RNIcon
-                name="fire"
-                style={{ color: colors.greyscale300 }}
-                height={15}
-              />
-              <Text
-                style={[{ ...$sizeStyles.s, fontFamily: "sofia800", color: colors.greyscale300 }]}
-              >
-                {formatFloatingValue(totalCalories)} Kcal
-              </Text>
-            </View>
-            <View
-              row
-              style={{ alignItems: "center", gap: spacing.spacing2 }}
-            >
-              <RNIcon
-                name="clock"
-                style={{ color: colors.greyscale300 }}
-                height={15}
-              />
-              <Text
-                style={[{ ...$sizeStyles.s, fontFamily: "sofia800", color: colors.greyscale300 }]}
-              >
-                {preparationTime} min
-              </Text>
-            </View>
-          </View>
-        </View>
-      </RNShadowView>
-    </Pressable>
-  );
-};
-
 const Profile = () => {
   const router = useRouter();
   const user = useUserData();
   const { signOut } = useAuth();
 
-  const { data: recipes, isLoading } = useUserRecipes({ limit: 10, page: 0, userId: user!.id });
+  const { data: recipes, isLoading } = useUserRecipes({ limit: 5, page: 0, userId: user!.id });
+  const { data: favorites, isLoading: favoritesLoading } = useFavorites({
+    limit: 5,
+    page: 0,
+    userId: user.id,
+  });
 
   const navigation = useNavigation();
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <RNButton
-          onPress={goBack}
-          iconSource={() => (
-            <AntDesign
-              name="close"
-              size={24}
-              color="black"
-            />
-          )}
-        />
-      ),
-      headerTitle: "",
-      headerRight: () => (
-        <RNButton
-          iconSource={() => (
-            <Feather
-              name="heart"
-              size={24}
-              color="black"
-            />
-          )}
-        />
-      ),
-    });
-  }, [navigation]);
-
   const goToAllYourRecipes = () => {
-    router.navigate({
-      pathname: "/all_personal_recipes",
-      params: { recipes: JSON.stringify(recipes) },
-    });
+    router.navigate("/all_personal_recipes");
+  };
+
+  const goToAllFavoritesRecipes = () => {
+    router.navigate("/all_favorite_recipes");
   };
 
   const logOut = () => {
     storage.delete(ACCESS_TOKEN);
     signOut();
     router.navigate("/home");
-  };
-
-  const goBack = () => {
-    router.back();
   };
 
   return (
@@ -276,7 +125,41 @@ const Profile = () => {
                   ))
               : recipes &&
                 recipes.slice(0, 4).map((item: any, key: number) => (
-                  <RecipeItem
+                  <PersonalRecipeItem
+                    key={key}
+                    item={item}
+                  />
+                ))}
+          </View>
+        </View>
+        <View>
+          <View style={styles.$recipesSectionStyle}>
+            <Text style={styles.$sectionTitleStyle}>My Favorites</Text>
+            {favorites && favorites.length > 4 && (
+              <RNButton
+                onPress={goToAllFavoritesRecipes}
+                link
+                label="See All"
+                labelStyle={styles.$seeAllBtnStyle}
+              />
+            )}
+          </View>
+
+          <View style={styles.$recipesContainerStyle}>
+            {favoritesLoading
+              ? Array(4)
+                  .fill(null)
+                  .map((_: number, key: number) => (
+                    <Skeleton
+                      key={key}
+                      colorMode="light"
+                      width={itemSize}
+                      height={198}
+                    />
+                  ))
+              : favorites &&
+                favorites.slice(0, 4).map((item: any, key: number) => (
+                  <FavoriteRecipeItem
                     key={key}
                     item={item}
                   />
@@ -298,7 +181,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   $scrollViewContentStyle: {
-    paddingVertical: spacing.spacing12,
+    paddingTop: 12,
+    paddingBottom: 100,
     paddingHorizontal: spacing.spacing24,
     gap: spacing.spacing16,
   },

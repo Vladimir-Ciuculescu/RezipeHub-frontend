@@ -1,6 +1,5 @@
 import RecipeService from "@/api/services/recipe.service";
 import S3Service from "@/api/services/s3.service";
-import { GetIsInFavoritesRequest } from "@/types/favorites";
 import {
   AddRecipeRequest,
   EditRecipePhotoRequest,

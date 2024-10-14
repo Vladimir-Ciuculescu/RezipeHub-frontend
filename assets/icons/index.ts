@@ -26,6 +26,7 @@ import Fire from "./fire.svg";
 import Separator from "./separator.svg";
 import Filter from "./filter.svg";
 import Check from "./check.svg";
+import Heart from "./heart.svg";
 
 export {
   Email,
@@ -56,4 +57,5 @@ export {
   Separator,
   Filter,
   Check,
+  Heart,
 };

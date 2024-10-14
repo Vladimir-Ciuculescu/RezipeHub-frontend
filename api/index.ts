@@ -1,10 +1,12 @@
 import { ACCESS_TOKEN, REFRESH_TOKEN, storage } from "@/storage";
 import axios from "axios";
 
-const baseURL = "http://192.168.1.144:3000";
+const baseURL = "http://192.168.1.145:3000";
 
 const axiosPublicInstance = axios.create({
-  //baseURL: 'http://localhost:3000', // Replace with your API base URL
+  //
+
+  //baseURL: "http://localhost:3000", // Replace with your API base URL
   baseURL,
 
   timeout: 10000,
@@ -20,7 +22,7 @@ axiosPublicInstance.interceptors.request.use((config) => {
 });
 
 const axiosInstance = axios.create({
-  //baseURL: 'http://localhost:3000', // Replace with your API base URL
+  //baseURL: "http://localhost:3000", // Replace with your API base URL
   baseURL,
 
   timeout: 10000,
