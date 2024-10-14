@@ -4,10 +4,18 @@ import {
   AddRecipeRequest,
   EditRecipePhotoRequest,
   EditRecipeRequest,
+  GetLatestRecipesRequest,
   GetRecipesByUserRequest,
 } from "@/types/recipe.types";
 import { AddPhotoRequest, DeleteRecipePhotoRequest } from "@/types/s3.types";
 import { useMutation, useQuery } from "@tanstack/react-query";
+
+export const useLatestRecipes = (params: GetLatestRecipesRequest) => {
+  return useQuery({
+    queryKey: ["latest-recipes"],
+    queryFn: async () => await RecipeService.getLatestRecipes(params),
+  });
+};
 
 export const useUserRecipes = (params: GetRecipesByUserRequest) => {
   return useQuery({

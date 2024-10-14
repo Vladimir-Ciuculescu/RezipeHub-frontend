@@ -38,8 +38,6 @@ const Profile = () => {
     userId: user.id,
   });
 
-  const navigation = useNavigation();
-
   const goToAllYourRecipes = () => {
     router.navigate("/all_personal_recipes");
   };

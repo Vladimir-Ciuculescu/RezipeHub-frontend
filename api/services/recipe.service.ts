@@ -2,6 +2,7 @@ import {
   AddRecipeRequest,
   EditRecipePhotoRequest,
   EditRecipeRequest,
+  GetLatestRecipesRequest,
   GetRecipesByUserRequest,
   RecipeResponse,
 } from "@/types/recipe.types";
@@ -56,6 +57,15 @@ const RecipeService = {
   getRecipe: async (recipeId: number): Promise<RecipeResponse> => {
     try {
       const { data } = await axiosInstance.get(`/${RECIPES}/${recipeId}`);
+      return data;
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+
+  getLatestRecipes: async (params: GetLatestRecipesRequest) => {
+    try {
+      const { data } = await axiosInstance.get(`${RECIPES}/latest`, { params });
       return data;
     } catch (error) {
       throw handleError(error);

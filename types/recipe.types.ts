@@ -35,6 +35,12 @@ export interface EditRecipeRequest {
   stepsIds?: number[];
 }
 
+export interface GetLatestRecipesRequest {
+  page: number;
+  limit: number;
+  userId: number;
+}
+
 export interface GetRecipesByUserRequest {
   page: number;
   limit: number;
@@ -61,6 +67,20 @@ export interface RecipeSearchResponse {
   title: string;
   photoUrl: string;
   preparationTime: number;
+  user: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    photoUrl: string;
+  };
+}
+
+export interface LatestRecipeResponse {
+  id: number;
+  title: string;
+  photoUrl: string;
+  preparationTime: number;
+  isInFavorites: boolean;
   user: {
     id: number;
     firstName: string;

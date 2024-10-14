@@ -1,5 +1,14 @@
 import { SocialProvider } from "./enums";
 
+export interface UserData {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  iat: number;
+  exp: number;
+}
+
 export interface User {
   id: number;
   email: string;

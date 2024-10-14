@@ -203,7 +203,6 @@ const RecipeDetails = () => {
               ref={heartRef}
               autoPlay={false}
               style={{
-                //flex: 1,
                 height: 50,
                 width: 50,
               }}
