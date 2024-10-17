@@ -236,6 +236,21 @@ export default function all_favorite_recipes() {
                         },
                       ]}
                     >
+                      <View
+                        style={{
+                          height: 28,
+                          width: 28,
+                          backgroundColor: colors.greyscale50,
+                          position: "absolute",
+                          borderRadius: spacing.spacing12,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          right: spacing.spacing8,
+                          top: spacing.spacing8,
+                        }}
+                      >
+                        <RNIcon name="heart" />
+                      </View>
                       <Ionicons
                         name="image-outline"
                         size={35}
@@ -257,18 +272,38 @@ export default function all_favorite_recipes() {
                     </Text>
 
                     <View
-                      style={{ flexDirection: "row", alignItems: "center", gap: spacing.spacing4 }}
+                      style={{ flexDirection: "row", alignItems: "center", gap: spacing.spacing8 }}
                     >
-                      <FastImage
-                        source={{ uri: item.user.photoUrl }}
-                        style={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: spacing.spacing16,
-                          borderWidth: 2,
-                          borderColor: colors.accent200,
-                        }}
-                      />
+                      {item.user.photoUrl ? (
+                        <FastImage
+                          source={{ uri: item.user.photoUrl }}
+                          style={{
+                            width: 24,
+                            height: 24,
+                            borderRadius: spacing.spacing16,
+                            borderWidth: 2,
+                            borderColor: colors.accent200,
+                          }}
+                        />
+                      ) : (
+                        <View
+                          style={{
+                            width: 24,
+                            height: 24,
+                            borderRadius: spacing.spacing16,
+
+                            backgroundColor: colors.greyscale300,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Feather
+                            name="user"
+                            size={15}
+                            color={colors.greyscale50}
+                          />
+                        </View>
+                      )}
                       <Text
                         numberOfLines={1}
                         ellipsizeMode="tail"
@@ -334,6 +369,21 @@ export default function all_favorite_recipes() {
                       },
                     ]}
                   >
+                    <View
+                      style={{
+                        height: 28,
+                        width: 28,
+                        backgroundColor: colors.greyscale50,
+                        position: "absolute",
+                        borderRadius: spacing.spacing12,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        right: spacing.spacing8,
+                        top: spacing.spacing8,
+                      }}
+                    >
+                      <RNIcon name="heart" />
+                    </View>
                     <Ionicons
                       name="image-outline"
                       size={35}
@@ -350,9 +400,9 @@ export default function all_favorite_recipes() {
                   </Text>
 
                   <View
-                    style={{ flexDirection: "row", alignItems: "center", gap: spacing.spacing4 }}
+                    style={{ flexDirection: "row", alignItems: "center", gap: spacing.spacing8 }}
                   >
-                    <FastImage
+                    {/* <FastImage
                       source={{ uri: item.user.photoUrl }}
                       style={{
                         width: 24,
@@ -361,7 +411,37 @@ export default function all_favorite_recipes() {
                         borderWidth: 2,
                         borderColor: colors.accent200,
                       }}
-                    />
+                    /> */}
+                    {item.user.photoUrl ? (
+                      <FastImage
+                        source={{ uri: item.user.photoUrl }}
+                        style={{
+                          width: 24,
+                          height: 24,
+                          borderRadius: spacing.spacing16,
+                          borderWidth: 2,
+                          borderColor: colors.accent200,
+                        }}
+                      />
+                    ) : (
+                      <View
+                        style={{
+                          width: 24,
+                          height: 24,
+                          borderRadius: spacing.spacing16,
+
+                          backgroundColor: colors.greyscale300,
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Feather
+                          name="user"
+                          size={15}
+                          color={colors.greyscale50}
+                        />
+                      </View>
+                    )}
                     <Text
                       numberOfLines={1}
                       ellipsizeMode="tail"
@@ -374,7 +454,7 @@ export default function all_favorite_recipes() {
                         },
                       ]}
                     >
-                      {item.user ? `${item.user.firstName} ${item.user.lastName}` : ""}
+                      {item.user ? `${item.user.lastName}` : ""}
                     </Text>
                   </View>
                 </View>

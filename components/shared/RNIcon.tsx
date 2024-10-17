@@ -102,7 +102,7 @@ const icons: IconMap = {
   heart: Heart,
 };
 
-interface RNIconProps {
+interface RNIconProps extends React.SVGAttributes<SVGElement> {
   name: Icons;
 }
 

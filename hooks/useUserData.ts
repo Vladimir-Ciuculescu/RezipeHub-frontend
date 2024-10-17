@@ -1,9 +1,9 @@
 import { ACCESS_TOKEN, storage } from "@/storage";
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { CurrentUser } from "@/types/user.types";
+import { CurrentUser, UserData } from "@/types/user.types";
 
-const useUserData = () => {
+const useUserData = (): UserData => {
   const accessToken = storage.getString(ACCESS_TOKEN);
 
   let user: any = {};
