@@ -4,9 +4,9 @@ import { ACCESS_TOKEN, ONBOARDED, storage } from "@/storage";
 import { colors } from "@/theme/colors";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
-import { Redirect, router, useRouter } from "expo-router";
+import { Redirect, router, useRootNavigationState, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, FlatList, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Text, View } from "react-native-ui-lib";
@@ -88,6 +88,7 @@ export default function Onboarding() {
   const viewConfigRef = useRef({
     viewAreaCoveragePercentThreshold: 50,
   });
+
   const onChangeViewableItem = useCallback(({ viewableItems }: any) => {
     setCurrentIndex(viewableItems[0].index);
   }, []);

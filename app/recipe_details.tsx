@@ -15,13 +15,13 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { spacing } from "@/theme/spacing";
 import { colors } from "@/theme/colors";
 import Feather from "@expo/vector-icons/Feather";
-import { Dividers, View } from "react-native-ui-lib";
+import { View } from "react-native-ui-lib";
 import { $sizeStyles } from "@/theme/typography";
 import RNSegmentedControl, { SegmentItem } from "@/components/shared/RnSegmentedControl";
 import IngredientsList from "@/components/IngredientsList";
 import StepsList from "@/components/StepsList";
 import NutritionalInfo from "@/components/NutritionalInfo";
-import { useRecipe } from "@/hooks/recipes.hooks";
+import { useRecipe, useUpdateViewMutation } from "@/hooks/recipes.hooks";
 import { Skeleton } from "moti/skeleton";
 import { MotiView } from "moti";
 import { StatusBar } from "expo-status-bar";
@@ -69,6 +69,8 @@ const RecipeDetails = () => {
   const setIngredientsAction = useRecipeStore.use.setIngredientsAction();
   const setStepsAction = useRecipeStore.use.addStepsAction();
 
+  const { mutateAsync: updateViewCountMutation } = useUpdateViewMutation();
+
   const queryClient = useQueryClient();
 
   const navigation = useNavigation();
@@ -103,8 +105,16 @@ const RecipeDetails = () => {
     !!recipeId && !belongsToCurrentUser,
   );
 
+  const updateViewCount = async (recipeId: number) => {
+    await updateViewCountMutation(recipeId);
+  };
+
   useFocusEffect(
     useCallback(() => {
+      if (!isFetching) {
+        updateViewCount(parseInt(id!));
+      }
+
       if (!belongsToCurrentUser && !isFetching) {
         if (isInFavorites) {
           heartRef.current?.play(140, 144);
@@ -133,17 +143,26 @@ const RecipeDetails = () => {
 
     Toast.show({
       type: "success",
-      props: {
-        title: isFavorite ? "Recipe removed from favorites !" : "Recipe added to favorites !",
-        icon: (
-          <AntDesign
-            name="check"
-            size={24}
-            color={colors.greyscale50}
-          />
-        ),
+      text1: "ad",
+      text2: "awdaw",
+      text1Style: {
+        color: "red",
       },
+      // props: {
+      //   title: isFavorite ? "Recipe removed from favorites !" : "Recipe added to favorites !",
+      //   icon: (
+      //     <AntDesign
+      //       name="check"
+      //       size={24}
+      //       color={colors.greyscale50}
+      //     />
+      //   ),
+      // },
     });
+    // Toast.show({
+    //   type: "success",
+    //   text2: "awda",
+    // });
   };
 
   useLayoutEffect(() => {
@@ -525,16 +544,36 @@ const RecipeDetails = () => {
                         row
                         style={{ alignItems: "center", gap: spacing.spacing16 }}
                       >
-                        <FastImage
-                          source={{ uri: parsedOwner.photoUrl, cache: FastImage.cacheControl.web }}
-                          style={{
-                            height: 48,
-                            width: 48,
-                            borderRadius: 24,
-                            borderWidth: 2,
-                            borderColor: colors.accent200,
-                          }}
-                        />
+                        {parsedOwner.photoUrl ? (
+                          <FastImage
+                            source={{ uri: parsedOwner.photoUrl }}
+                            style={{
+                              height: 48,
+                              width: 48,
+                              borderRadius: spacing.spacing24,
+                              borderWidth: 4,
+                              borderColor: colors.accent200,
+                            }}
+                          />
+                        ) : (
+                          <View
+                            style={{
+                              height: 48,
+                              width: 48,
+                              borderRadius: spacing.spacing24,
+
+                              backgroundColor: colors.greyscale300,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Feather
+                              name="user"
+                              size={15}
+                              color={colors.greyscale50}
+                            />
+                          </View>
+                        )}
                         <Text
                           style={{ ...$sizeStyles.l }}
                         >{`${parsedOwner.firstName} ${parsedOwner.lastName}`}</Text>

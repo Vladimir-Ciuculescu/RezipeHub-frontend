@@ -1,4 +1,4 @@
-import { CategoryFilter, CategoryItem } from "./category.types";
+import { CategoryItem } from "./category.types";
 import { RecipeType } from "./enums";
 import { IngredientItem, IngredientItemResponse, IngredientPayload } from "./ingredient.types";
 import { Step, StepItemResponse, StepPayload } from "./step.types";
@@ -41,6 +41,12 @@ export interface GetLatestRecipesRequest {
   userId: number;
 }
 
+export interface GetMostPopularRecipesRequest {
+  page: number;
+  limit: number;
+  userId: number;
+}
+
 export interface GetRecipesByUserRequest {
   page: number;
   limit: number;
@@ -76,6 +82,20 @@ export interface RecipeSearchResponse {
 }
 
 export interface LatestRecipeResponse {
+  id: number;
+  title: string;
+  photoUrl: string;
+  preparationTime: number;
+  isInFavorites: boolean;
+  user: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    photoUrl: string;
+  };
+}
+
+export interface MostPopularRecipeResponse {
   id: number;
   title: string;
   photoUrl: string;

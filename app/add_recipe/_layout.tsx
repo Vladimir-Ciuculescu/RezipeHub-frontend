@@ -14,6 +14,7 @@ export default function Layout() {
           headerBackVisible: false,
           headerShadowVisible: false,
           headerTitleAlign: "center",
+          gestureEnabled: false,
         }}
         name="recipe_title"
       />
@@ -22,6 +23,7 @@ export default function Layout() {
           headerBackVisible: false,
           headerShadowVisible: false,
           headerTitleAlign: "center",
+          gestureEnabled: false,
         }}
         name="recipe_items"
       />
@@ -30,6 +32,7 @@ export default function Layout() {
           headerBackVisible: false,
           headerShadowVisible: false,
           headerTitleAlign: "center",
+          gestureEnabled: false,
         }}
         name="recipe_search_ingredients"
       />
@@ -38,6 +41,7 @@ export default function Layout() {
           headerBackVisible: false,
           headerShadowVisible: false,
           headerTitleAlign: "center",
+          gestureEnabled: false,
         }}
         name="recipe_confirm_ingredient"
       />
@@ -46,6 +50,7 @@ export default function Layout() {
           headerBackVisible: false,
           headerShadowVisible: false,
           headerTitleAlign: "center",
+          gestureEnabled: false,
         }}
         name="recipe_add_steps"
       />
@@ -54,7 +59,7 @@ export default function Layout() {
           headerBackVisible: false,
           headerShadowVisible: false,
           headerTitleAlign: "center",
-          //headerShown: false,
+          gestureEnabled: false,
         }}
         name="recipe_submit"
       />

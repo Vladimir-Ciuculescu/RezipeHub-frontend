@@ -5,6 +5,7 @@ import {
   EditRecipePhotoRequest,
   EditRecipeRequest,
   GetLatestRecipesRequest,
+  GetMostPopularRecipesRequest,
   GetRecipesByUserRequest,
 } from "@/types/recipe.types";
 import { AddPhotoRequest, DeleteRecipePhotoRequest } from "@/types/s3.types";
@@ -14,6 +15,13 @@ export const useLatestRecipes = (params: GetLatestRecipesRequest) => {
   return useQuery({
     queryKey: ["latest-recipes"],
     queryFn: async () => await RecipeService.getLatestRecipes(params),
+  });
+};
+
+export const useMostPopularRecipes = (params: GetMostPopularRecipesRequest) => {
+  return useQuery({
+    queryKey: ["most-popular-recipes"],
+    queryFn: async () => await RecipeService.getMostPopularRecipes(params),
   });
 };
 
@@ -101,6 +109,9 @@ export const useUploadToS3Mutation = () => {
         throw new Error(error.message || "Could not upload to s3");
       }
     },
+    onError: (error) => {
+      console.error("Error during mutation:", error);
+    },
   });
 };
 
@@ -112,6 +123,24 @@ export const useDeleteRecipeImageMutation = () => {
       } catch (error: any) {
         throw new Error(error.message || "Could not delete from S3");
       }
+    },
+    onError: (error) => {
+      console.error("Error during mutation:", error);
+    },
+  });
+};
+
+export const useUpdateViewMutation = () => {
+  return useMutation({
+    mutationFn: async (recipeId: number) => {
+      try {
+        await RecipeService.updateViewCount(recipeId);
+      } catch (error: any) {
+        throw new Error(error.message || "Error while trying to update the view count");
+      }
+    },
+    onError: (error) => {
+      console.error("Error during mutation:", error);
     },
   });
 };

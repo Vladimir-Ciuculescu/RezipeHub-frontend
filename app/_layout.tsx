@@ -42,7 +42,7 @@ const tokenCache = {
 const clerkKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 export const unstable_settings = {
-  initialRouteName: "home",
+  initialRouteName: "login",
 };
 
 const queryClient = new QueryClient();
@@ -67,13 +67,13 @@ export default function Layout() {
                 }}
               >
                 <Stack.Screen
-                  options={{ headerShown: false }}
+                  options={{ headerShown: false, gestureEnabled: false }}
                   name="index"
                 />
 
                 <Stack.Screen
                   name="home"
-                  options={{ headerShown: false }}
+                  options={{ headerShown: false, gestureEnabled: false }}
                 />
 
                 <Stack.Screen
@@ -82,6 +82,7 @@ export default function Layout() {
                     headerBackVisible: false,
                     headerShadowVisible: false,
                     headerTitleAlign: "center",
+                    gestureEnabled: false,
                   }}
                 />
 
@@ -91,6 +92,7 @@ export default function Layout() {
                     headerBackVisible: false,
                     headerShadowVisible: false,
                     headerTitleAlign: "center",
+                    gestureEnabled: false,
                   }}
                 />
                 <Stack.Screen
@@ -99,6 +101,7 @@ export default function Layout() {
                     headerBackVisible: false,
                     headerShadowVisible: false,
                     headerTitleAlign: "center",
+                    gestureEnabled: false,
                   }}
                 />
                 <Stack.Screen
@@ -115,12 +118,17 @@ export default function Layout() {
                     headerBackVisible: false,
                     headerShadowVisible: false,
                     headerTitleAlign: "center",
+                    gestureEnabled: false,
                   }}
                 />
 
                 <Stack.Screen
                   name="add_recipe"
-                  options={{ presentation: "fullScreenModal", headerShown: false }}
+                  options={{
+                    presentation: "fullScreenModal",
+                    headerShown: false,
+                    gestureEnabled: false,
+                  }}
                 />
                 <Stack.Screen
                   name="edit_recipe"
@@ -128,11 +136,11 @@ export default function Layout() {
                 />
                 <Stack.Screen
                   name="(tabs)"
-                  options={{ headerShown: false }}
+                  options={{ headerShown: false, gestureEnabled: false }}
                 />
                 <Stack.Screen
                   name="recipe_details"
-                  options={{ headerShown: true, headerTransparent: true }}
+                  options={{ headerShown: true, headerTransparent: true, gestureEnabled: false }}
                 />
 
                 <Stack.Screen
@@ -143,6 +151,7 @@ export default function Layout() {
                     headerTitleAlign: "center",
                     headerStyle: { backgroundColor: colors.greyscale75 },
                     contentStyle: { backgroundColor: colors.greyscale150 },
+                    gestureEnabled: false,
                   }}
                 />
                 <Stack.Screen
@@ -153,6 +162,7 @@ export default function Layout() {
                     headerTitleAlign: "center",
                     headerStyle: { backgroundColor: colors.greyscale75 },
                     contentStyle: { backgroundColor: colors.greyscale150 },
+                    gestureEnabled: false,
                   }}
                 />
               </Stack>

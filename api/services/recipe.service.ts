@@ -3,6 +3,7 @@ import {
   EditRecipePhotoRequest,
   EditRecipeRequest,
   GetLatestRecipesRequest,
+  GetMostPopularRecipesRequest,
   GetRecipesByUserRequest,
   RecipeResponse,
 } from "@/types/recipe.types";
@@ -72,6 +73,15 @@ const RecipeService = {
     }
   },
 
+  getMostPopularRecipes: async (params: GetMostPopularRecipesRequest) => {
+    try {
+      const { data } = await axiosInstance.get(`${RECIPES}/most-popular`, { params });
+      return data;
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+
   getRecipes: async (params: QueryKeyType) => {
     const [_, filters] = params.queryKey;
 
@@ -100,6 +110,14 @@ const RecipeService = {
   editRecipe: async (payload: EditRecipeRequest) => {
     try {
       await axiosInstance.put(`/${RECIPES}/edit`, payload);
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+
+  updateViewCount: async (recipeId: number) => {
+    try {
+      await axiosInstance.put(`/${RECIPES}/${recipeId}/view`);
     } catch (error) {
       throw handleError(error);
     }

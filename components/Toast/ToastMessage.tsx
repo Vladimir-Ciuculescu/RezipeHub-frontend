@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
 
     width: "100%",
     height: "100%",
+
     paddingLeft: spacing.spacing16,
     paddingRight: spacing.spacing48,
     paddingTop: 16,
