@@ -14,10 +14,13 @@ import { updateProfileSchema } from "@/yup/update-profile.schema";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import * as ImagePicker from "expo-image-picker";
 import RNButton from "@/components/shared/RNButton";
+import { useEditProfileMutation } from "@/hooks/users.hooks";
 
 export default function edit_profile() {
   const navigation = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
+
+  const { mutateAsync: editProfileMutation } = useEditProfileMutation();
 
   const goBack = () => {
     navigation.goBack();
@@ -41,7 +44,10 @@ export default function edit_profile() {
     bio: "",
   };
 
-  const handleUpdate = async () => {};
+  const handleUpdate = async () => {
+    console.log(333);
+    await editProfileMutation({});
+  };
 
   const openGallery = async () => {
     await ImagePicker.launchImageLibraryAsync({
@@ -191,7 +197,8 @@ export default function edit_profile() {
               />
             </View>
             <RNButton
-              onPress={openGallery}
+              // onPress={handleUpdate}
+
               label="Update Profile"
               style={styles.$updateBtnStyle}
               labelStyle={[{ color: colors.greyscale50 }, $sizeStyles.l]}
