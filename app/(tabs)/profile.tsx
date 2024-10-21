@@ -1,5 +1,12 @@
 import React from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, Dimensions, Platform } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  Platform,
+  Pressable,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, View } from "react-native-ui-lib";
 import Feather from "@expo/vector-icons/Feather";
@@ -53,6 +60,10 @@ const Profile = () => {
     router.navigate("/home");
   };
 
+  const goToEditProfile = () => {
+    router.navigate("/edit_profile");
+  };
+
   const paddingBottom = Platform.OS === "ios" ? 210 : 190;
 
   return (
@@ -72,32 +83,34 @@ const Profile = () => {
         </TouchableOpacity>
       </View>
 
-      <RNShadowView style={styles.$profileContainerStyle}>
-        <View style={styles.$profileDetailsStyle}>
-          {/* lEAVE IT HERE */}
-          {/* <FastImage 
+      <Pressable onPress={goToEditProfile}>
+        <RNShadowView style={styles.$profileContainerStyle}>
+          <View style={styles.$profileDetailsStyle}>
+            {/* lEAVE IT HERE */}
+            {/* <FastImage 
               style={styles.$profileImageStyle}
               source={{
                 uri: "https://reactnative.dev/img/tiny_logo.png",
                 priority: FastImage.priority.normal,
               }}
             /> */}
-          <View>
-            <Text style={styles.$userNameStyle}>{user?.firstName + " " + user?.lastName}</Text>
-            {/* <Text style={styles.$userNameStyle}>John Doe</Text> */}
-            {/* <Text style={styles.$userDescriptionStyle}>Recipe Developer</Text> */}
+            <View>
+              <Text style={styles.$userNameStyle}>{user?.firstName + " " + user?.lastName}</Text>
+              {/* <Text style={styles.$userNameStyle}>John Doe</Text> */}
+              {/* <Text style={styles.$userDescriptionStyle}>Recipe Developer</Text> */}
+            </View>
           </View>
-        </View>
-        <RNButton
-          style={styles.$userDetailsBtnStyle}
-          iconSource={() => (
-            <RNIcon
-              name="arrow_right"
-              color={colors.greyscale50}
-            />
-          )}
-        />
-      </RNShadowView>
+          <RNButton
+            style={styles.$userDetailsBtnStyle}
+            iconSource={() => (
+              <RNIcon
+                name="arrow_right"
+                color={colors.greyscale50}
+              />
+            )}
+          />
+        </RNShadowView>
+      </Pressable>
 
       <View>
         <View style={styles.$recipesSectionStyle}>

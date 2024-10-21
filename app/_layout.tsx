@@ -142,6 +142,15 @@ export default function Layout() {
                   name="recipe_details"
                   options={{ headerShown: true, headerTransparent: true, gestureEnabled: false }}
                 />
+                <Stack.Screen
+                  name="edit_profile"
+                  options={{
+                    headerBackVisible: false,
+                    headerShadowVisible: false,
+                    headerTitleAlign: "center",
+                    gestureEnabled: false,
+                  }}
+                />
 
                 <Stack.Screen
                   name="all_personal_recipes"
