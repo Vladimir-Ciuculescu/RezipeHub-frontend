@@ -1,4 +1,4 @@
-import { Text, Pressable, TouchableOpacity, Alert, StyleSheet } from "react-native";
+import { Text, Pressable, Alert, StyleSheet } from "react-native";
 import React, { useLayoutEffect } from "react";
 import { useNavigation } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
@@ -15,12 +15,21 @@ import { useActionSheet } from "@expo/react-native-action-sheet";
 import * as ImagePicker from "expo-image-picker";
 import RNButton from "@/components/shared/RNButton";
 import { useEditProfileMutation } from "@/hooks/users.hooks";
+import FastImage from "react-native-fast-image";
+import { UpdateProfileRequest } from "@/types/user.types";
+import { handleError } from "@/api/handleError";
+import { ACCESS_TOKEN, storage } from "@/storage";
+import { jwtDecode } from "jwt-decode";
+import useUserStore from "@/zustand/useUserStore";
 
 export default function edit_profile() {
   const navigation = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
+  // const user = useUserData();
+  const setUser = useUserStore.use.setUser();
+  const userData = useUserStore.use.user();
 
-  const { mutateAsync: editProfileMutation } = useEditProfileMutation();
+  const { mutateAsync: editProfileMutation, isPending } = useEditProfileMutation();
 
   const goBack = () => {
     navigation.goBack();
@@ -38,48 +47,99 @@ export default function edit_profile() {
   }, [navigation]);
 
   const initialValues = {
-    firstName: "",
-    lastName: "",
-    email: "",
-    bio: "",
+    firstName: userData.firstName,
+    lastName: userData.lastName,
+    email: userData.email,
+    bio: userData.bio,
+    photoUrl: userData.photoUrl,
   };
 
-  const handleUpdate = async () => {
-    console.log(333);
-    await editProfileMutation({});
+  const handleUpdate = async (values: UpdateProfileRequest) => {
+    const { firstName, lastName, bio, email, photoUrl } = values;
+
+    const formData = new FormData();
+
+    if (photoUrl) {
+      formData.append("file", {
+        uri: values.photoUrl,
+        type: "image/jpeg",
+        name: `users-${userData.id}-profile`,
+      } as any);
+    }
+    formData.append("id", userData.id.toString());
+    formData.append("firstName", firstName);
+    formData.append("lastName", lastName);
+    formData.append("email", email);
+    formData.append("bio", bio);
+
+    try {
+      const newAccessToken = await editProfileMutation(formData);
+
+      const userData = jwtDecode(newAccessToken) as any;
+
+      storage.set(ACCESS_TOKEN, newAccessToken);
+      setUser(userData);
+    } catch (error) {
+      console.log(error);
+      throw handleError(error);
+    }
   };
 
-  const openGallery = async () => {
-    await ImagePicker.launchImageLibraryAsync({
+  const openGallery = async (setFieldValue: (label: string, value: string) => void) => {
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
+
+    if (!result.canceled) {
+      const [image] = result.assets;
+
+      setFieldValue("photoUrl", image.uri);
+    }
   };
 
   const openCamera = async () => {
     Alert.alert("Feature under development !");
   };
 
-  const chooseProfilePicture = () => {
-    const options = ["Choose from gallery", "Open Camera", "Cancel"];
-    // const destructiveButtonIndex = 0;
-    const cancelButtonIndex = 2;
+  const chooseProfilePicture = (
+    photoUrl: string | null,
+    setFieldValue: (label: string, value: string) => void,
+  ) => {
+    let cancelButtonIndex;
+    let destructiveButtonIndex = 2;
+
+    let options;
+
+    if (photoUrl) {
+      options = ["Choose from gallery", "Open camera", "Remove photo", "Cancel"];
+      cancelButtonIndex = 3;
+      destructiveButtonIndex = 2;
+    } else {
+      options = ["Choose from gallery", "Open camera", "Cancel"];
+      cancelButtonIndex = 2;
+      destructiveButtonIndex = 2;
+    }
 
     showActionSheetWithOptions(
       {
         options,
         cancelButtonIndex,
+        destructiveButtonIndex,
       },
       //@ts-ignore
       (selectedIndex: number) => {
         switch (selectedIndex) {
           case 0:
-            openGallery();
+            openGallery(setFieldValue);
             break;
           case 1:
             openCamera();
+            break;
+          case 2:
+            setFieldValue("photoUrl", "");
             break;
         }
       },
@@ -97,11 +157,21 @@ export default function edit_profile() {
       }}
     >
       <Formik
+        //@ts-ignore
         initialValues={initialValues}
         onSubmit={handleUpdate}
         validationSchema={updateProfileSchema}
       >
-        {({ values, touched, errors, handleSubmit, handleChange, handleBlur }) => (
+        {({
+          values,
+          touched,
+          errors,
+          handleSubmit,
+          dirty,
+          handleChange,
+          handleBlur,
+          setFieldValue,
+        }) => (
           <View style={{ gap: spacing.spacing32 }}>
             <View style={{ gap: spacing.spacing32 }}>
               <View style={{ width: "100%", alignItems: "center" }}>
@@ -116,13 +186,27 @@ export default function edit_profile() {
                     alignItems: "center",
                   }}
                 >
-                  <RNIcon
-                    name="profile"
-                    height={60}
-                    width={60}
-                  />
-                  <TouchableOpacity
-                    onPress={chooseProfilePicture}
+                  {values.photoUrl ? (
+                    <FastImage
+                      source={{ uri: values.photoUrl }}
+                      style={{
+                        height: 120,
+                        width: 120,
+                        borderWidth: 3,
+                        borderColor: colors.accent200,
+
+                        borderRadius: spacing.spacing64,
+                      }}
+                    />
+                  ) : (
+                    <RNIcon
+                      name="profile"
+                      height={60}
+                      width={60}
+                    />
+                  )}
+                  <Pressable
+                    onPress={() => chooseProfilePicture(values.photoUrl, setFieldValue)}
                     style={{
                       height: 30,
                       width: 30,
@@ -137,10 +221,10 @@ export default function edit_profile() {
                   >
                     <AntDesign
                       name="plus"
-                      size={24}
+                      size={20}
                       color="black"
                     />
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
               </View>
 
@@ -197,8 +281,9 @@ export default function edit_profile() {
               />
             </View>
             <RNButton
-              // onPress={handleUpdate}
-
+              disabled={!dirty || isPending}
+              loading={isPending}
+              onPress={() => handleSubmit()}
               label="Update Profile"
               style={styles.$updateBtnStyle}
               labelStyle={[{ color: colors.greyscale50 }, $sizeStyles.l]}

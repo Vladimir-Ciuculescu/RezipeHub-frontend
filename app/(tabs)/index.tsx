@@ -12,6 +12,7 @@ import { Skeleton } from "moti/skeleton";
 import { colors } from "@/theme/colors";
 import CategoryItem from "@/components/CategoryItem";
 import MostPopularRecipeItem from "@/components/MostPopularRecipeItem";
+import useUserStore from "@/zustand/useUserStore";
 
 const categories = [
   {
@@ -93,18 +94,20 @@ const categories = [
 ];
 
 const Home = () => {
-  const user = useUserData();
+  // const user = useUserData();
 
-  const { id, firstName, lastName } = user;
+  // const { id, firstName, lastName } = user;
+
+  const userData = useUserStore.use.user();
 
   const { data: latestRecipes, isLoading: areLatestRecipesLoading } = useLatestRecipes({
     page: 0,
     limit: 10,
-    userId: id,
+    userId: userData.id,
   });
 
   const { data: mostPopularRecipes, isLoading: areMostPopularRecipesLoading } =
-    useMostPopularRecipes({ page: 0, limit: 10, userId: id });
+    useMostPopularRecipes({ page: 0, limit: 10, userId: userData.id });
 
   const getGreetingData = () => {
     const currentHour = dayjs().hour();
@@ -176,7 +179,7 @@ const Home = () => {
           {icon}
           <Text style={styles.$messageStyle}>{message}</Text>
         </View>
-        <Text style={styles.$userNameStyle}>{`${firstName} ${lastName}`}</Text>
+        <Text style={styles.$userNameStyle}>{`${userData.firstName} ${userData.lastName}`}</Text>
       </View>
 
       <View style={{ gap: spacing.spacing16 }}>

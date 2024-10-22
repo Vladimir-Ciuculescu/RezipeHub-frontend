@@ -128,6 +128,7 @@ export default function Login() {
   const handleSocialLogin = async (payload: SocialLoginUserRequest) => {
     try {
       const data = await AuthService.socialLoginUser(payload);
+
       storeUser(data.access_token, data.refresh_token);
       goToApp();
     } catch (error: any) {

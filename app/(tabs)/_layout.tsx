@@ -4,6 +4,7 @@ import { ACCESS_TOKEN, storage } from "@/storage";
 import { colors } from "@/theme/colors";
 import { CurrentUser } from "@/types/user.types";
 import useRecipeStore from "@/zustand/useRecipeStore";
+import useUserStore from "@/zustand/useUserStore";
 import { Tabs, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { jwtDecode } from "jwt-decode";
@@ -13,6 +14,7 @@ export default function TabLayout() {
   const router = useRouter();
 
   const reset = useRecipeStore.use.reset();
+  const setUser = useUserStore.use.setUser();
 
   const openAddRecipeModal = () => {
     reset();
@@ -22,9 +24,11 @@ export default function TabLayout() {
   useEffect(() => {
     const getProfile = async () => {
       const accessToken = storage.getString(ACCESS_TOKEN);
-      const { id } = jwtDecode(accessToken!) as CurrentUser;
-      const newAccessToken = await UserService.getProfile(id);
+      const userData = jwtDecode(accessToken!) as CurrentUser;
+
+      const newAccessToken = await UserService.getProfile(userData.id);
       storage.set(ACCESS_TOKEN, newAccessToken);
+      setUser(userData);
     };
 
     getProfile();
