@@ -29,6 +29,7 @@ import {
   Filter,
   Check,
   Heart,
+  Bio,
 } from "@/assets/icons";
 import { colors } from "@/theme/colors";
 
@@ -64,6 +65,7 @@ enum Icons {
   filter = "filter",
   check = "check",
   heart = "heart",
+  bio = "bio",
 }
 
 type IconMap = {
@@ -100,6 +102,7 @@ const icons: IconMap = {
   filter: Filter,
   check: Check,
   heart: Heart,
+  bio: Bio,
 };
 
 interface RNIconProps extends React.SVGAttributes<SVGElement> {

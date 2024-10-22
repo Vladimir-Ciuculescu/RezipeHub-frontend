@@ -1,12 +1,18 @@
 import React from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, Dimensions, Platform } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  Platform,
+  Pressable,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, View } from "react-native-ui-lib";
 import Feather from "@expo/vector-icons/Feather";
 import { colors } from "@/theme/colors";
 import RNButton from "@/components/shared/RNButton";
 import RNIcon from "@/components/shared/RNIcon";
-import useUserData from "@/hooks/useUserData";
 import { ACCESS_TOKEN, storage } from "@/storage";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
@@ -18,6 +24,9 @@ import { useUserRecipes } from "@/hooks/recipes.hooks";
 import PersonalRecipeItem from "@/components/PersonalRecipeItem";
 import { useFavorites } from "@/hooks/favorites.hooks";
 import FavoriteRecipeItem from "@/components/FavoriteRecipeItem";
+import FastImage from "react-native-fast-image";
+import useUserStore from "@/zustand/useUserStore";
+import { Ionicons } from "@expo/vector-icons";
 
 const { width: screenWidth } = Dimensions.get("window");
 const numColumns = 2;
@@ -29,14 +38,16 @@ const Profile = () => {
   const { top } = useSafeAreaInsets();
 
   const router = useRouter();
-  const user = useUserData();
+  // const user = useUserData();
+  const { id, firstName, lastName, photoUrl } = useUserStore.use.user();
+
   const { signOut } = useAuth();
 
-  const { data: recipes, isLoading } = useUserRecipes({ limit: 5, page: 0, userId: user!.id });
+  const { data: recipes, isLoading } = useUserRecipes({ limit: 5, page: 0, userId: id });
   const { data: favorites, isLoading: favoritesLoading } = useFavorites({
     limit: 5,
     page: 0,
-    userId: user.id,
+    userId: id,
   });
 
   const goToAllYourRecipes = () => {
@@ -51,6 +62,10 @@ const Profile = () => {
     storage.delete(ACCESS_TOKEN);
     signOut();
     router.navigate("/home");
+  };
+
+  const goToEditProfile = () => {
+    router.navigate("/edit_profile");
   };
 
   const paddingBottom = Platform.OS === "ios" ? 210 : 190;
@@ -72,32 +87,45 @@ const Profile = () => {
         </TouchableOpacity>
       </View>
 
-      <RNShadowView style={styles.$profileContainerStyle}>
-        <View style={styles.$profileDetailsStyle}>
-          {/* lEAVE IT HERE */}
-          {/* <FastImage 
-              style={styles.$profileImageStyle}
-              source={{
-                uri: "https://reactnative.dev/img/tiny_logo.png",
-                priority: FastImage.priority.normal,
-              }}
-            /> */}
-          <View>
-            <Text style={styles.$userNameStyle}>{user?.firstName + " " + user?.lastName}</Text>
-            {/* <Text style={styles.$userNameStyle}>John Doe</Text> */}
-            {/* <Text style={styles.$userDescriptionStyle}>Recipe Developer</Text> */}
+      <Pressable onPress={goToEditProfile}>
+        <RNShadowView style={styles.$profileContainerStyle}>
+          <View style={styles.$profileDetailsStyle}>
+            {photoUrl ? (
+              <View style={styles.$imageStyle}>
+                <FastImage
+                  source={{
+                    uri: photoUrl,
+                    priority: FastImage.priority.high,
+                    cache: FastImage.cacheControl.web,
+                  }}
+                  style={{ flex: 1 }}
+                />
+              </View>
+            ) : (
+              <View style={styles.$placeholderstyle}>
+                <Feather
+                  name="user"
+                  size={24}
+                  color={colors.greyscale50}
+                />
+              </View>
+            )}
+            <View>
+              <Text style={styles.$userNameStyle}>{firstName + " " + lastName}</Text>
+              <Text style={styles.$userDescriptionStyle}>This is a little bio about myself</Text>
+            </View>
           </View>
-        </View>
-        <RNButton
-          style={styles.$userDetailsBtnStyle}
-          iconSource={() => (
-            <RNIcon
-              name="arrow_right"
-              color={colors.greyscale50}
-            />
-          )}
-        />
-      </RNShadowView>
+          <RNButton
+            style={styles.$userDetailsBtnStyle}
+            iconSource={() => (
+              <RNIcon
+                name="arrow_right"
+                color={colors.greyscale50}
+              />
+            )}
+          />
+        </RNShadowView>
+      </Pressable>
 
       <View>
         <View style={styles.$recipesSectionStyle}>
@@ -217,6 +245,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: spacing.spacing16,
+  },
+
+  $imageStyle: {
+    width: 48,
+    height: 48,
+    borderRadius: spacing.spacing32,
+    display: "flex",
+    overflow: "hidden",
+  },
+
+  $placeholderstyle: {
+    width: 48,
+    height: 48,
+    borderRadius: spacing.spacing32,
+    backgroundColor: colors.greyscale300,
+
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   $profileDetailsStyle: {

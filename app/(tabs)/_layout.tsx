@@ -1,19 +1,38 @@
+import UserService from "@/api/services/user.service";
 import RNIcon from "@/components/shared/RNIcon";
+import { ACCESS_TOKEN, storage } from "@/storage";
 import { colors } from "@/theme/colors";
+import { CurrentUser } from "@/types/user.types";
 import useRecipeStore from "@/zustand/useRecipeStore";
+import useUserStore from "@/zustand/useUserStore";
 import { Tabs, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useRef } from "react";
-import { Animated, Platform, Pressable, StyleSheet } from "react-native";
+import { jwtDecode } from "jwt-decode";
+import { useEffect } from "react";
+import { Platform, Pressable, StyleSheet } from "react-native";
 export default function TabLayout() {
   const router = useRouter();
 
   const reset = useRecipeStore.use.reset();
+  const setUser = useUserStore.use.setUser();
 
   const openAddRecipeModal = () => {
     reset();
     router.navigate("add_recipe");
   };
+
+  useEffect(() => {
+    const getProfile = async () => {
+      const accessToken = storage.getString(ACCESS_TOKEN);
+      const userData = jwtDecode(accessToken!) as CurrentUser;
+
+      const newAccessToken = await UserService.getProfile(userData.id);
+      storage.set(ACCESS_TOKEN, newAccessToken);
+      setUser(userData);
+    };
+
+    getProfile();
+  }, []);
 
   return (
     <>

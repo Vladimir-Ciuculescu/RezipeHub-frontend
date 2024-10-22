@@ -37,6 +37,7 @@ export default function RnInput(props: RNInputProps) {
       multiline,
       onFocus,
       onBlur,
+
       ...rest
     } = props;
 
@@ -74,6 +75,8 @@ export default function RnInput(props: RNInputProps) {
             multiline ? styles.$multilineStyle : styles.$singlelineStyle,
             isFocused ? styles.$focusedStyle : styles.$unfocusedStyle,
             containerStyle,
+            // { minHeight: 200 },
+            // { justifyContent: "flex-start" },
           ]}
           style={[
             leftIcon && !rightIcon && styles.$hasLeftIconStyle,
@@ -118,6 +121,7 @@ const styles = StyleSheet.create({
   $multilineStyle: {
     paddingHorizontal: spacing.spacing16,
     paddingVertical: spacing.spacing16,
+    justifyContent: "flex-start",
   },
 
   $baseStyle: {

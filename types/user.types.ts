@@ -5,6 +5,8 @@ export interface UserData {
   email: string;
   firstName: string;
   lastName: string;
+  photoUrl?: string;
+  bio?: string;
   iat: number;
   exp: number;
 }
@@ -46,4 +48,12 @@ export interface ResetPasswordRequest {
   email: string;
   password: string;
   token: string;
+}
+
+export interface UpdateProfileRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  bio: string;
+  photoUrl: string;
 }
