@@ -23,6 +23,7 @@ import { useAuth, useOAuth, useUser } from "@clerk/clerk-expo";
 import { SocialProvider } from "@/types/enums";
 import useUserStore from "@/zustand/useUserStore";
 import { jwtDecode } from "jwt-decode";
+import { useQueryClient } from "@tanstack/react-query";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -34,8 +35,8 @@ enum Strategy {
 export default function Login() {
   useWarmUpBrowser();
 
+  const queryClient = useQueryClient();
   const { isSignedIn } = useAuth();
-
   const { user } = useUser();
   const navigation = useNavigation();
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -45,6 +46,7 @@ export default function Login() {
   const router = useRouter();
 
   const setUser = useUserStore.use.setUser();
+  const setLoggedStatus = useUserStore.use.setLoggedStatus();
 
   const { startOAuthFlow: googleFlow } = useOAuth({ strategy: "oauth_google" });
   const { startOAuthFlow: facebookFlow } = useOAuth({ strategy: "oauth_facebook" });
@@ -130,6 +132,8 @@ export default function Login() {
     storage.set(ACCESS_TOKEN, accessToken);
     storage.set(REFRESH_TOKEN, refreshToken);
     setUser(userData);
+    setLoggedStatus(true);
+    queryClient.invalidateQueries({ queryKey: ["recipes-per-user", "favorites"] });
   };
 
   const handleSocialLogin = async (payload: SocialLoginUserRequest) => {
