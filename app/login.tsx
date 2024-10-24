@@ -15,12 +15,14 @@ import { Feather } from "@expo/vector-icons";
 import { colors } from "@/theme/colors";
 import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import AuthService from "@/api/services/auth.service";
-import { LoginUserRequest, SocialLoginUserRequest, User } from "@/types/user.types";
+import { CurrentUser, LoginUserRequest, SocialLoginUserRequest, User } from "@/types/user.types";
 import { ACCESS_TOKEN, REFRESH_TOKEN, storage } from "@/storage";
 import * as WebBrowser from "expo-web-browser";
 import { useWarmUpBrowser } from "@/hooks/useWarmUpBrowser";
 import { useAuth, useOAuth, useUser } from "@clerk/clerk-expo";
 import { SocialProvider } from "@/types/enums";
+import useUserStore from "@/zustand/useUserStore";
+import { jwtDecode } from "jwt-decode";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -41,6 +43,8 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [provider, setProvider] = useState<SocialProvider | null>(null);
   const router = useRouter();
+
+  const setUser = useUserStore.use.setUser();
 
   const { startOAuthFlow: googleFlow } = useOAuth({ strategy: "oauth_google" });
   const { startOAuthFlow: facebookFlow } = useOAuth({ strategy: "oauth_facebook" });
@@ -121,8 +125,11 @@ export default function Login() {
   };
 
   const storeUser = (accessToken: string, refreshToken: string) => {
+    const userData = jwtDecode(accessToken!) as CurrentUser;
+
     storage.set(ACCESS_TOKEN, accessToken);
     storage.set(REFRESH_TOKEN, refreshToken);
+    setUser(userData);
   };
 
   const handleSocialLogin = async (payload: SocialLoginUserRequest) => {

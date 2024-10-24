@@ -39,7 +39,7 @@ const Profile = () => {
 
   const router = useRouter();
   // const user = useUserData();
-  const { id, firstName, lastName, photoUrl } = useUserStore.use.user();
+  const { id, firstName, lastName, photoUrl, bio } = useUserStore.use.user();
 
   const { signOut } = useAuth();
 
@@ -112,7 +112,8 @@ const Profile = () => {
             )}
             <View>
               <Text style={styles.$userNameStyle}>{firstName + " " + lastName}</Text>
-              <Text style={styles.$userDescriptionStyle}>This is a little bio about myself</Text>
+              {bio && <Text style={styles.$userDescriptionStyle}>{bio}</Text>}
+              {/* <Text style={styles.$userDescriptionStyle}>{bio}</Text> */}
             </View>
           </View>
           <RNButton

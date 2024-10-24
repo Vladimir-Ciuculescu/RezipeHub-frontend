@@ -23,12 +23,17 @@ export default function TabLayout() {
 
   useEffect(() => {
     const getProfile = async () => {
+      //TODO : Possibly need to modify this
       const accessToken = storage.getString(ACCESS_TOKEN);
       const userData = jwtDecode(accessToken!) as CurrentUser;
 
       const newAccessToken = await UserService.getProfile(userData.id);
+
+      const newUserData = jwtDecode(newAccessToken) as CurrentUser;
+
       storage.set(ACCESS_TOKEN, newAccessToken);
-      setUser(userData);
+      // setUser(userData);
+      setUser(newUserData);
     };
 
     getProfile();
