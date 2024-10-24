@@ -27,7 +27,7 @@ export const useMostPopularRecipes = (params: GetMostPopularRecipesRequest) => {
 
 export const useUserRecipes = (params: GetRecipesByUserRequest) => {
   return useQuery({
-    queryKey: ["recipes-per-user"],
+    queryKey: ["recipes-per-user", params.userId],
     queryFn: async () => await RecipeService.getRecipesByUser(params),
   });
 };

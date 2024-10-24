@@ -10,6 +10,7 @@ interface UserStoreState {
     photoUrl: string | null;
     bio: string | null;
   };
+  isLoggedIn: boolean;
 }
 
 const initialState: UserStoreState = {
@@ -21,10 +22,12 @@ const initialState: UserStoreState = {
     photoUrl: null,
     bio: null,
   },
+  isLoggedIn: false,
 };
 
 interface Action {
   setUser: (user: any) => void;
+  setLoggedStatus: (status: boolean) => void;
 }
 
 const useUserStoreBase = create<UserStoreState & Action>()((set, get) => ({
@@ -32,6 +35,10 @@ const useUserStoreBase = create<UserStoreState & Action>()((set, get) => ({
 
   setUser: (user: any) => {
     set({ user });
+  },
+
+  setLoggedStatus: (status: boolean) => {
+    set({ isLoggedIn: status });
   },
 }));
 

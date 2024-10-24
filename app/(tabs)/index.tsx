@@ -13,6 +13,7 @@ import { colors } from "@/theme/colors";
 import CategoryItem from "@/components/CategoryItem";
 import MostPopularRecipeItem from "@/components/MostPopularRecipeItem";
 import useUserStore from "@/zustand/useUserStore";
+import { useEffect, useRef } from "react";
 
 const categories = [
   {
@@ -99,6 +100,15 @@ const Home = () => {
   // const { id, firstName, lastName } = user;
 
   const userData = useUserStore.use.user();
+  const loggedStatus = useUserStore.use.isLoggedIn();
+
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  useEffect(() => {
+    if (scrollViewRef.current && loggedStatus) {
+      scrollViewRef.current.scrollTo({ y: 0, animated: false });
+    }
+  }, [loggedStatus]);
 
   const { data: latestRecipes, isLoading: areLatestRecipesLoading } = useLatestRecipes({
     page: 0,
@@ -167,6 +177,7 @@ const Home = () => {
 
   return (
     <ScrollView
+      ref={scrollViewRef}
       showsVerticalScrollIndicator={false}
       style={{ flex: 1, paddingTop: top }}
       contentContainerStyle={{ gap: spacing.spacing24, paddingBottom: paddingBottom }}

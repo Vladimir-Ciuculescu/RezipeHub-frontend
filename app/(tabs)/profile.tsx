@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -26,9 +26,13 @@ import { useFavorites } from "@/hooks/favorites.hooks";
 import FavoriteRecipeItem from "@/components/FavoriteRecipeItem";
 import FastImage from "react-native-fast-image";
 import useUserStore from "@/zustand/useUserStore";
-import { Ionicons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
+import {
+  No_favorite_recipes_placeholder,
+  No_personal_recipes_placeholder,
+} from "@/assets/illustrations";
 
-const { width: screenWidth } = Dimensions.get("window");
+const { width: screenWidth, height } = Dimensions.get("window");
 const numColumns = 2;
 const gap = spacing.spacing16;
 const paddingHorizontal = spacing.spacing24 * 2;
@@ -37,18 +41,32 @@ const itemSize = (screenWidth - paddingHorizontal - (numColumns - 1) * gap) / nu
 const Profile = () => {
   const { top } = useSafeAreaInsets();
 
+  const scrollViewRef = useRef<ScrollView>(null);
+
   const router = useRouter();
   // const user = useUserData();
   const { id, firstName, lastName, photoUrl, bio } = useUserStore.use.user();
+  const setLoggedStatus = useUserStore.use.setLoggedStatus();
+  const loggedStatus = useUserStore.use.isLoggedIn();
 
   const { signOut } = useAuth();
 
-  const { data: recipes, isLoading } = useUserRecipes({ limit: 5, page: 0, userId: id });
-  const { data: favorites, isLoading: favoritesLoading } = useFavorites({
+  const { data: recipes, isLoading: areRecipesLoading } = useUserRecipes({
     limit: 5,
     page: 0,
     userId: id,
   });
+  const { data: favorites, isLoading: areFavoritesLoading } = useFavorites({
+    limit: 5,
+    page: 0,
+    userId: id,
+  });
+
+  useEffect(() => {
+    if (scrollViewRef.current && loggedStatus) {
+      scrollViewRef.current.scrollTo({ y: 0, animated: false });
+    }
+  }, [loggedStatus]);
 
   const goToAllYourRecipes = () => {
     router.navigate("/all_personal_recipes");
@@ -60,6 +78,7 @@ const Profile = () => {
 
   const logOut = () => {
     storage.delete(ACCESS_TOKEN);
+    setLoggedStatus(false);
     signOut();
     router.navigate("/home");
   };
@@ -68,10 +87,15 @@ const Profile = () => {
     router.navigate("/edit_profile");
   };
 
+  const goToAddRecipe = () => {
+    router.navigate("add_recipe");
+  };
+
   const paddingBottom = Platform.OS === "ios" ? 210 : 190;
 
   return (
     <ScrollView
+      ref={scrollViewRef}
       style={{ paddingTop: top }}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={[styles.$scrollViewContentStyle, { paddingBottom }]}
@@ -113,7 +137,6 @@ const Profile = () => {
             <View>
               <Text style={styles.$userNameStyle}>{firstName + " " + lastName}</Text>
               {bio && <Text style={styles.$userDescriptionStyle}>{bio}</Text>}
-              {/* <Text style={styles.$userDescriptionStyle}>{bio}</Text> */}
             </View>
           </View>
           <RNButton
@@ -131,35 +154,67 @@ const Profile = () => {
       <View>
         <View style={styles.$recipesSectionStyle}>
           <Text style={styles.$sectionTitleStyle}>My Recipes</Text>
-          {recipes && recipes.length > 4 && (
+          {recipes && recipes.length > 4 ? (
             <RNButton
               onPress={goToAllYourRecipes}
               link
               label="See All"
               labelStyle={styles.$seeAllBtnStyle}
             />
+          ) : (
+            <RNButton
+              onPress={goToAddRecipe}
+              iconSource={() => (
+                <AntDesign
+                  name="plus"
+                  size={24}
+                  color={colors.accent200}
+                />
+              )}
+              link
+              labelStyle={styles.$seeAllBtnStyle}
+            />
           )}
         </View>
 
         <View style={styles.$recipesContainerStyle}>
-          {isLoading
-            ? Array(4)
-                .fill(null)
-                .map((_: number, key: number) => (
-                  <Skeleton
-                    key={key}
-                    colorMode="light"
-                    width={itemSize}
-                    height={198}
-                  />
-                ))
-            : recipes &&
-              recipes.slice(0, 4).map((item: any, key: number) => (
-                <PersonalRecipeItem
+          {areRecipesLoading ? (
+            Array(4)
+              .fill(null)
+              .map((_: number, key: number) => (
+                <Skeleton
                   key={key}
-                  item={item}
+                  colorMode="light"
+                  width={itemSize}
+                  height={198}
                 />
-              ))}
+              ))
+          ) : recipes && recipes.length ? (
+            recipes.slice(0, 4).map((item: any, key: number) => (
+              <PersonalRecipeItem
+                key={key}
+                item={item}
+              />
+            ))
+          ) : (
+            <View
+              style={{
+                width: "100%",
+                gap: spacing.spacing16,
+                paddingTop: spacing.spacing16,
+              }}
+            >
+              <View style={{ width: "100%", height: height / 5 }}>
+                <No_personal_recipes_placeholder
+                  width="100%"
+                  height="100%"
+                />
+              </View>
+              <Text style={{ color: colors.slate900, ...$sizeStyles.xl, textAlign: "center" }}>
+                Add your first recipe
+              </Text>
+            </View>
+          )}
         </View>
       </View>
       <View>
@@ -176,24 +231,43 @@ const Profile = () => {
         </View>
 
         <View style={styles.$recipesContainerStyle}>
-          {favoritesLoading
-            ? Array(4)
-                .fill(null)
-                .map((_: number, key: number) => (
-                  <Skeleton
-                    key={key}
-                    colorMode="light"
-                    width={itemSize}
-                    height={198}
-                  />
-                ))
-            : favorites &&
-              favorites.slice(0, 4).map((item: any, key: number) => (
-                <FavoriteRecipeItem
+          {areFavoritesLoading ? (
+            Array(4)
+              .fill(null)
+              .map((_: number, key: number) => (
+                <Skeleton
                   key={key}
-                  item={item}
+                  colorMode="light"
+                  width={itemSize}
+                  height={198}
                 />
-              ))}
+              ))
+          ) : favorites && favorites.length ? (
+            favorites.slice(0, 4).map((item: any, key: number) => (
+              <FavoriteRecipeItem
+                key={key}
+                item={item}
+              />
+            ))
+          ) : (
+            <View
+              style={{
+                width: "100%",
+                gap: spacing.spacing16,
+                paddingTop: spacing.spacing16,
+              }}
+            >
+              <View style={{ width: "100%", height: height / 5 }}>
+                <No_favorite_recipes_placeholder
+                  width="100%"
+                  height="100%"
+                />
+              </View>
+              <Text style={{ color: colors.slate900, ...$sizeStyles.xl, textAlign: "center" }}>
+                You haven’t added any favorites yet
+              </Text>
+            </View>
+          )}
         </View>
       </View>
 
@@ -280,7 +354,7 @@ const styles = StyleSheet.create({
   },
 
   $sectionTitleStyle: {
-    ...$sizeStyles.xl,
+    ...$sizeStyles.h3,
     color: colors.greyscale500,
   },
 
@@ -295,6 +369,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: spacing.spacing12,
     alignItems: "center",
+    paddingHorizontal: 8,
   },
 
   $recipesContainerStyle: {
