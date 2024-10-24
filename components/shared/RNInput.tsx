@@ -51,6 +51,7 @@ export default function RnInput(props: RNInputProps) {
         {label && <Text style={[$sizeStyles.n, styles.$labelStyle]}>{label}</Text>}
         {/*  @ts-ignore */}
         <TextField
+          selectTextOnFocus={false}
           keyboardAppearance="light"
           {...rest}
           placeholderTextColor={colors.greyscale300}

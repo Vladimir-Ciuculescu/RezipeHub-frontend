@@ -1,7 +1,7 @@
 import { ACCESS_TOKEN, REFRESH_TOKEN, storage } from "@/storage";
 import axios from "axios";
 
-const baseURL = "http://192.168.1.145:3000";
+const baseURL = "http://192.168.1.151:3000";
 
 const axiosPublicInstance = axios.create({
   //

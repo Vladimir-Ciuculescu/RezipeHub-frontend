@@ -25,7 +25,6 @@ import useUserStore from "@/zustand/useUserStore";
 export default function edit_profile() {
   const navigation = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
-  // const user = useUserData();
   const setUser = useUserStore.use.setUser();
   const userData = useUserStore.use.user();
 
@@ -50,7 +49,7 @@ export default function edit_profile() {
     firstName: userData.firstName,
     lastName: userData.lastName,
     email: userData.email,
-    bio: userData.bio,
+    bio: userData.bio || "",
     photoUrl: userData.photoUrl,
   };
 
@@ -79,6 +78,13 @@ export default function edit_profile() {
 
       storage.set(ACCESS_TOKEN, newAccessToken);
       setUser(userData);
+
+      Alert.alert("Success", "Profile was updated !", [
+        {
+          text: "Ok",
+          onPress: () => goBack(),
+        },
+      ]);
     } catch (error) {
       console.log(error);
       throw handleError(error);
@@ -302,5 +308,6 @@ const styles = StyleSheet.create({
     borderColor: colors.accent200,
     borderWidth: 2,
     borderStyle: "solid",
+    height: 54,
   },
 });
