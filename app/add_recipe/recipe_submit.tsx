@@ -7,6 +7,7 @@ import {
   ListRenderItem,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
@@ -191,9 +192,16 @@ export default function RecipeSubmit() {
         queryClient.invalidateQueries({ queryKey: ["recipes-per-user"] });
       }
 
-      reset();
-      router.dismissAll();
-      router.back();
+      Alert.alert("Success", "Recipe added !", [
+        {
+          text: "Ok",
+          onPress: () => {
+            reset();
+            router.dismissAll();
+            router.back();
+          },
+        },
+      ]);
     } catch (error) {
       console.error("Could not add recipe !:", error);
     }

@@ -13,8 +13,6 @@ import { ClerkProvider } from "@clerk/clerk-expo";
 import * as SecureStore from "expo-secure-store";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Toast from "react-native-toast-message";
-import toastConfig from "@/components/Toast/ToastConfing";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
@@ -40,10 +38,6 @@ const tokenCache = {
 };
 
 const clerkKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
-
-export const unstable_settings = {
-  initialRouteName: "login",
-};
 
 const queryClient = new QueryClient();
 
@@ -85,6 +79,11 @@ export default function Layout() {
                     gestureEnabled: false,
                   }}
                 />
+
+                {/* <Stack.Screen
+                  name="home"
+                  options={{ headerShown: false, gestureEnabled: false }}
+                /> */}
 
                 <Stack.Screen
                   name="register"
@@ -132,7 +131,7 @@ export default function Layout() {
                 />
                 <Stack.Screen
                   name="edit_recipe"
-                  options={{ presentation: "modal", headerShown: false }}
+                  options={{ presentation: "modal", headerShown: false, gestureEnabled: false }}
                 />
                 <Stack.Screen
                   name="(tabs)"
@@ -175,11 +174,11 @@ export default function Layout() {
                   }}
                 />
               </Stack>
-              <Toast
+              {/* <Toast
                 config={toastConfig}
                 position="bottom"
                 bottomOffset={-50}
-              />
+              /> */}
             </ClerkProvider>
           </BottomSheetModalProvider>
         </ActionSheetProvider>
