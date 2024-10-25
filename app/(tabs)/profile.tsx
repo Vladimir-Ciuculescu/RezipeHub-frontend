@@ -154,14 +154,8 @@ const Profile = () => {
       <View>
         <View style={styles.$recipesSectionStyle}>
           <Text style={styles.$sectionTitleStyle}>My Recipes</Text>
-          {recipes && recipes.length > 4 ? (
-            <RNButton
-              onPress={goToAllYourRecipes}
-              link
-              label="See All"
-              labelStyle={styles.$seeAllBtnStyle}
-            />
-          ) : (
+
+          {recipes && recipes.length === 0 ? (
             <RNButton
               onPress={goToAddRecipe}
               iconSource={() => (
@@ -174,7 +168,14 @@ const Profile = () => {
               link
               labelStyle={styles.$seeAllBtnStyle}
             />
-          )}
+          ) : recipes.length > 4 ? (
+            <RNButton
+              onPress={goToAllYourRecipes}
+              link
+              label="See All"
+              labelStyle={styles.$seeAllBtnStyle}
+            />
+          ) : null}
         </View>
 
         <View style={styles.$recipesContainerStyle}>

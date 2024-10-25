@@ -332,27 +332,30 @@ export default function RecipeEditSummary() {
       });
 
       //Update the my recipes request
-      queryClient.setQueryData(["recipes-per-user"], (oldData: RecipeBriefResponse[]) => {
-        const totalCalories = payload.recipe.ingredients!.reduce(
-          (sum, ingredient) => sum + ((ingredient["calories"] as number) || 0),
-          0,
-        );
 
-        return oldData.map((recipe) =>
-          recipe.id === recipedId
-            ? {
-                ...recipe,
-                title: payload.recipe.title,
-                servings: payload.recipe.servings,
-                preparationTime: payload.recipe.preparationTime,
-                totalCalories,
-                photoUrl: payload.recipe.photoUrl
-                  ? getImageUrlWithCacheBuster(payload.recipe.photoUrl)
-                  : "",
-              }
-            : recipe,
-        );
-      });
+      queryClient.invalidateQueries({ queryKey: ["recipes-per-user"] });
+
+      // queryClient.setQueryData(["recipes-per-user"], (oldData: RecipeBriefResponse[]) => {
+      //   const totalCalories = payload.recipe.ingredients!.reduce(
+      //     (sum, ingredient) => sum + ((ingredient["calories"] as number) || 0),
+      //     0,
+      //   );
+
+      //   return oldData.map((recipe) =>
+      //     recipe.id === recipedId
+      //       ? {
+      //           ...recipe,
+      //           title: payload.recipe.title,
+      //           servings: payload.recipe.servings,
+      //           preparationTime: payload.recipe.preparationTime,
+      //           totalCalories,
+      //           photoUrl: payload.recipe.photoUrl
+      //             ? getImageUrlWithCacheBuster(payload.recipe.photoUrl)
+      //             : "",
+      //         }
+      //       : recipe,
+      //   );
+      // });
 
       queryClient.setQueryData(
         ["all-personal-recipes"],
