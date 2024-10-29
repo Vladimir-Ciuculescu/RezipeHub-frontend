@@ -168,7 +168,7 @@ const Profile = () => {
               link
               labelStyle={styles.$seeAllBtnStyle}
             />
-          ) : recipes.length > 4 ? (
+          ) : recipes && recipes.length > 4 ? (
             <RNButton
               onPress={goToAllYourRecipes}
               link

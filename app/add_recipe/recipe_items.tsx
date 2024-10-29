@@ -76,6 +76,15 @@ export default function RecipeItems() {
     router.navigate("add_recipe/recipe_add_steps");
   };
 
+  const onEdit = (item: IngredientItem) => {
+    const payload = { ...item, quantitiy: parseInt(item.quantity as string) };
+
+    router.navigate({
+      pathname: "add_recipe/recipe_confirm_edit_ingredient",
+      params: { ingredient: JSON.stringify(payload) },
+    });
+  };
+
   const showNoIngredientsMessage = () => {
     Alert.alert("Cannot continue", "Please enter one or more ingredients", [{ text: "OK" }], {
       cancelable: false,
@@ -138,7 +147,8 @@ export default function RecipeItems() {
         <View>
           {ingredients.map((item, key: number) => (
             <SwipeableListItem
-              actions={["delete"]}
+              actions={["edit", "delete"]}
+              onEdit={() => onEdit(item)}
               key={`${item.foodId}-${key}`}
               onDelete={() => removeIngredientAction(item)}
             >

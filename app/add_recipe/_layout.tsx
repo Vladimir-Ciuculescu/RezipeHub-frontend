@@ -52,6 +52,15 @@ export default function Layout() {
           headerTitleAlign: "center",
           gestureEnabled: false,
         }}
+        name="recipe_confirm_edit_ingredient"
+      />
+      <Stack.Screen
+        options={{
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerTitleAlign: "center",
+          gestureEnabled: false,
+        }}
         name="recipe_add_steps"
       />
       <Stack.Screen

@@ -1,24 +1,23 @@
-import { Text, Pressable, ScrollView, StyleSheet, Platform, Keyboard } from "react-native";
+import { Text, Pressable, ScrollView, StyleSheet, Keyboard } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { colors } from "@/theme/colors";
 import RNIcon from "@/components/shared/RNIcon";
 import { $sizeStyles } from "@/theme/typography";
+import { AntDesign } from "@expo/vector-icons";
 import { spacing } from "@/theme/spacing";
+import RNPickerSelect from "react-native-picker-select";
+import RnInput from "@/components/shared/RNInput";
 import {
-  IngredientItem,
   Measure,
   NutrientDetail,
   NutrientResponse,
   NutrientsRequestPayload,
 } from "@/types/ingredient.types";
-import { colors } from "@/theme/colors";
-import RNPickerSelect from "react-native-picker-select";
-import FoodService from "@/api/services/food.service";
-import RnInput from "@/components/shared/RNInput";
 import RNSegmentedControl from "@/components/shared/RnSegmentedControl";
-import { formatFloatingValue } from "@/utils/formatFloatingValue";
+import FoodService from "@/api/services/food.service";
 import { View } from "react-native-ui-lib";
-import { AntDesign } from "@expo/vector-icons";
+import { formatFloatingValue } from "@/utils/formatFloatingValue";
 import useRecipeStore from "@/zustand/useRecipeStore";
 
 interface SearchParams {
@@ -70,23 +69,23 @@ const NutrientItem: React.FC<NutrientItemProps> = ({ nutrient }) => {
   );
 };
 
-export default function RecipeEditIngredient() {
+const RecipeConfirmEditIngredient = () => {
   const navigation = useNavigation();
   const router = useRouter();
-  const [segmentIndex, setSegmentIndex] = useState(0);
 
-  const [nutrientsInfo, setNutrientsInfo] = useState<NutrientResponse>();
+  const ingredients = useRecipeStore.use.ingredients();
+  const editIngredientAction = useRecipeStore.use.editIngredientAction();
+
   const { ingredient } = useLocalSearchParams<SearchParams>();
+  const parsedIngredient = JSON.parse(ingredient!);
+  const [nutrientsInfo, setNutrientsInfo] = useState<NutrientResponse>();
+  const [saveEnabled, setSaveEnabled] = useState(true);
 
   const [pickerDismissed, setPickerDismissed] = useState(true);
-  const [saveEnabled, setSaveEnabled] = useState(true);
-  const [measures, setMeasures] = useState<Measure[]>([]);
-
-  const parsedIngredient: IngredientItem = JSON.parse(ingredient!);
-
   const [measure, setMeasure] = useState<string>(parsedIngredient.measure);
+  const [measures, setMeasures] = useState<Measure[]>([]);
   const [quantity, setQuantity] = useState(parsedIngredient.quantity.toString());
-  const editIngredientAction = useRecipeStore.use.editIngredientAction();
+  const [segmentIndex, setSegmentIndex] = useState(0);
 
   useEffect(() => {
     const getIngredientMeasures = async () => {
@@ -123,13 +122,20 @@ export default function RecipeEditIngredient() {
     setSaveEnabled(true);
   });
 
+  const gotBack = () => {
+    router.back();
+  };
+
   useLayoutEffect(() => {
     const saveDisabled = !saveEnabled || !pickerDismissed;
 
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={goBack}>
-          <RNIcon name="arrow_left" />
+        <Pressable onPress={gotBack}>
+          <RNIcon
+            name="arrow_left"
+            color={colors.brandPrimary}
+          />
         </Pressable>
       ),
 
@@ -149,22 +155,6 @@ export default function RecipeEditIngredient() {
       ),
     });
   }, [navigation, quantity, measure, nutrientsInfo, saveEnabled, pickerDismissed]);
-
-  useEffect(() => {
-    if ((pickerDismissed || Platform.OS === "android") && measures.length) {
-      const currentMeasure = measures.find((unit) => unit.label === measure);
-
-      getNutritionData(
-        parsedIngredient.foodId as string,
-        currentMeasure!.uri,
-        parsedIngredient.quantity as string,
-      );
-    }
-  }, [measure, pickerDismissed]);
-
-  const goBack = () => {
-    router.back();
-  };
 
   const getNutritionData = async (foodId: string, uri: string, quantity: string) => {
     let payload: NutrientsRequestPayload | undefined;
@@ -199,6 +189,7 @@ export default function RecipeEditIngredient() {
     };
 
     editIngredientAction(payload);
+
     router.back();
   };
 
@@ -211,23 +202,27 @@ export default function RecipeEditIngredient() {
     >
       <View style={{ gap: spacing.spacing24 }}>
         <Text style={$sizeStyles.h1}>{parsedIngredient.title}</Text>
+
         <View style={styles.$baseWrapperStyle}>
           <Text style={[$sizeStyles.n, styles.$labelStyle]}>Unit measure</Text>
+
           <RNPickerSelect
             placeholder={{}}
-            doneText="Done"
+            doneText="Search"
             onOpen={() => setPickerDismissed(false)}
             onClose={() => setPickerDismissed(true)}
             value={measure}
             onValueChange={setMeasure}
             onDonePress={() => setPickerDismissed(true)}
             //@ts-ignore
+
             items={measures}
             style={{
               chevronUp: { display: "none" },
               chevronDown: { display: "none" },
               inputIOS: styles.$inputAndroidStyle,
               inputAndroid: styles.$inputIOSStyle,
+
               iconContainer: styles.$iconContainerStyle,
             }}
             useNativeAndroidPickerStyle={false}
@@ -263,7 +258,7 @@ export default function RecipeEditIngredient() {
               return (
                 <React.Fragment key={`${nutrient[0]}-${nutrient[1].quantity}-${nutrient[1].unit}`}>
                   <NutrientItem nutrient={nutrient} />
-                  {index < array.length - 1 && <View style={styles.$separatorStyle} />}
+                  {index < array.length - 1 && <View style={styles.separator} />}
                 </React.Fragment>
               );
             })}
@@ -271,7 +266,9 @@ export default function RecipeEditIngredient() {
       </View>
     </ScrollView>
   );
-}
+};
+
+export default RecipeConfirmEditIngredient;
 
 const styles = StyleSheet.create({
   $containerStyle: {
@@ -283,13 +280,25 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingBottom: 60,
   },
+
+  $pickerContainerStyle: {
+    borderRadius: 16,
+    borderStyle: "solid",
+    justifyContent: "center",
+    paddingHorizontal: 16,
+    borderColor: colors.greyscale150,
+    borderWidth: 2.5,
+    height: 54,
+    color: "red",
+  },
+
   $baseWrapperStyle: {
     gap: spacing.spacing12,
   },
-  $labelStyle: { fontFamily: "sofia800", color: colors.greyscale500 },
+
   $inputAndroidStyle: {
     height: 54,
-    borderColor: colors.greyscale200,
+    borderColor: colors.greyscale150,
     borderWidth: 2,
     fontFamily: "sofia800",
     paddingHorizontal: 16,
@@ -299,19 +308,21 @@ const styles = StyleSheet.create({
 
   $inputIOSStyle: {
     height: 54,
-    borderColor: colors.greyscale200,
+    borderColor: colors.greyscale150,
     color: colors.slate900,
     borderWidth: 2,
     fontFamily: "sofia800",
     paddingHorizontal: 16,
     borderRadius: 16,
   },
+
   $iconContainerStyle: {
     top: 14,
     right: spacing.spacing16,
   },
 
-  $separatorStyle: {
+  $labelStyle: { fontFamily: "sofia800", color: colors.greyscale500 },
+  separator: {
     height: 3,
     backgroundColor: colors.accent200,
   },
@@ -326,5 +337,13 @@ const styles = StyleSheet.create({
     ...$sizeStyles.n,
     color: colors.greyscale400,
     fontFamily: "sofia800",
+  },
+
+  $segmentStyle: {
+    height: 54,
+  },
+
+  $segmentLabelstyle: {
+    ...$sizeStyles.n,
   },
 });
