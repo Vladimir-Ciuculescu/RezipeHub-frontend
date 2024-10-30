@@ -33,6 +33,22 @@ export default function Layout() {
         }}
         name="recipe_edit_ingredient"
       />
+      <Stack.Screen
+        options={{
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerTitleAlign: "center",
+        }}
+        name="recipe_edit_add_ingredient"
+      />
+      <Stack.Screen
+        options={{
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerTitleAlign: "center",
+        }}
+        name="recipe_edit_search_ingredients"
+      />
     </Stack>
   );
 }

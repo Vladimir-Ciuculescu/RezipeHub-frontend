@@ -109,7 +109,8 @@ const RecipeService = {
 
   editRecipe: async (payload: EditRecipeRequest) => {
     try {
-      await axiosInstance.put(`/${RECIPES}/edit`, payload);
+      const { data } = await axiosInstance.put(`/${RECIPES}/edit`, payload);
+      return data;
     } catch (error) {
       throw handleError(error);
     }

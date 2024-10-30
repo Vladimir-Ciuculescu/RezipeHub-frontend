@@ -40,8 +40,9 @@ const nutrientLabels: { key: keyof Nutrient; label: string }[] = [
 
 interface IngredientAccordionProps {
   ingredient: IngredientResponse;
+  flow: "create" | "update";
 }
-const IngredientAccordion: FC<IngredientAccordionProps> = ({ ingredient }) => {
+const IngredientAccordion: FC<IngredientAccordionProps> = ({ ingredient, flow }) => {
   const router = useRouter();
 
   const fullHeight = useRef(0);
@@ -71,7 +72,10 @@ const IngredientAccordion: FC<IngredientAccordionProps> = ({ ingredient }) => {
 
   const gotToConfirmIngredient = () => {
     router.navigate({
-      pathname: "add_recipe/recipe_confirm_ingredient",
+      pathname:
+        flow === "create"
+          ? "add_recipe/recipe_confirm_ingredient"
+          : "edit_recipe/recipe_edit_add_ingredient",
       params: { ingredient: JSON.stringify(ingredient) },
     });
   };

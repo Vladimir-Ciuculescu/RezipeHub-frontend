@@ -316,6 +316,7 @@ const RecipeDetails = () => {
     {
       section: (
         <IngredientsList
+          mode="view"
           editable={false}
           loading={isLoading}
           ingredients={ingredients}

@@ -89,21 +89,7 @@ export default function RecipeEditSummary() {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerLeft: () =>
-        isLoading ? (
-          <ActivityIndicator color={colors.accent200} />
-        ) : (
-          <Pressable
-            onPress={() => {
-              if (formikRef.current) {
-                formikRef.current.submitForm();
-              }
-            }}
-          >
-            <Text style={[{ ...$sizeStyles.l }, { color: colors.accent200 }]}>Save</Text>
-          </Pressable>
-        ),
-      headerRight: () => (
+      headerLeft: () => (
         <RNButton
           onPress={cancel}
           link
@@ -117,6 +103,20 @@ export default function RecipeEditSummary() {
         />
       ),
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit recipe</Text>,
+      headerRight: () =>
+        isLoading ? (
+          <ActivityIndicator color={colors.accent200} />
+        ) : (
+          <Pressable
+            onPress={() => {
+              if (formikRef.current) {
+                formikRef.current.submitForm();
+              }
+            }}
+          >
+            <Text style={[{ ...$sizeStyles.l }, { color: colors.accent200 }]}>Save</Text>
+          </Pressable>
+        ),
     });
   }, [navigation, isLoading]);
 
@@ -148,6 +148,7 @@ export default function RecipeEditSummary() {
     {
       section: (
         <IngredientsList
+          mode="edit"
           editable
           loading={false}
           onDelete={onDeleteIngredient}
@@ -301,10 +302,29 @@ export default function RecipeEditSummary() {
         payload.stepsIds = stepsIds;
       }
 
-      await editRecipeMutation(payload);
+      const data = await editRecipeMutation(payload);
 
       //Update the recipe details screen with the new data
       queryClient.setQueryData(["recipe"], (oldData: any) => {
+        const responseIngredients = data.ingredients;
+
+        const syncedIngredients = payload.recipe.ingredients?.map((ingredient) => {
+          // Find the corresponding item in responseIngredients by foodId
+          const matchingResponseIngredient = responseIngredients.find(
+            //TODO : Remove any and use appropriate interface
+            (responseIngredient: any) => responseIngredient.foodId === ingredient.foodId,
+          );
+
+          // Return a new object with the id from responseIngredients if a match is found
+          return {
+            ...ingredient,
+            id: matchingResponseIngredient ? matchingResponseIngredient.id : undefined, // Set `id` if matched
+            allUnits: ingredient.allMeasures,
+            name: ingredient.title,
+            unit: ingredient.measure,
+          };
+        });
+
         const updatedRecipe = {
           ...oldData.recipe,
           title: payload.recipe.title,
@@ -315,12 +335,7 @@ export default function RecipeEditSummary() {
 
           preparationTime: payload.recipe.preparationTime,
 
-          ingredients: payload.recipe.ingredients?.map((ingredient) => ({
-            ...ingredient,
-            allUnits: ingredient.allMeasures,
-            name: ingredient.title,
-            unit: ingredient.measure,
-          })),
+          ingredients: syncedIngredients,
           steps: payload.recipe.steps?.map((step) => ({
             id: step.id,
             step: step.step,

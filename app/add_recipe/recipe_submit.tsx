@@ -215,6 +215,7 @@ export default function RecipeSubmit() {
     {
       section: (
         <IngredientsList
+          mode="view"
           loading={false}
           editable={false}
           ingredients={ingredients}
