@@ -8,6 +8,7 @@ import {
   Keyboard,
   NativeSyntheticEvent,
   TextInputKeyPressEventData,
+  Alert,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
@@ -28,6 +29,8 @@ export default function RecipeAddSteps() {
   const navigation = useNavigation();
   const router = useRouter();
 
+  const stepsFromStore = useRecipeStore.use.steps();
+
   const [steps, setSteps] = useState([{ description: "" }]);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -46,7 +49,6 @@ export default function RecipeAddSteps() {
           />
         </Pressable>
       ),
-
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Add steps</Text>,
       headerRight: () => (
         <Pressable onPress={confirmSteps}>
@@ -61,18 +63,23 @@ export default function RecipeAddSteps() {
   }, [navigation, steps]);
 
   useEffect(() => {
-    paginationFlatListRef.current!.scrollToIndex({
+    if (stepsFromStore.length) {
+      setSteps(stepsFromStore);
+    }
+  }, []);
+
+  useEffect(() => {
+    paginationFlatListRef.current?.scrollToIndex({
       index: activeIndex,
       animated: true,
       viewPosition: 0.5,
     });
-    inputsFlatlListRef.current!.scrollToIndex({ index: activeIndex, animated: true });
+    inputsFlatlListRef.current?.scrollToIndex({ index: activeIndex, animated: true });
   }, [activeIndex]);
 
   const confirmSteps = () => {
     const newSteps = steps.map((step, index) => ({ ...step, number: index + 1, id: index + 1 }));
     addStepsAction(newSteps);
-
     router.dismiss(1);
   };
 
@@ -81,14 +88,34 @@ export default function RecipeAddSteps() {
   };
 
   const addStep = () => {
-    const newIndex = steps.length;
-    setSteps([...steps, { description: "" }]);
-    setActiveIndex(newIndex);
+    if (!steps[steps.length - 1].description) {
+      Alert.alert("A step cannot be empty !");
+      return;
+    }
+
+    setActiveIndex(steps.length); // Set active index to the new step
+
+    const newStep = { description: "" };
+    setSteps((prevSteps) => [...prevSteps, newStep]);
+
+    setTimeout(() => {
+      inputsFlatlListRef.current?.scrollToEnd({ animated: true });
+    }, 100); // Adding a slight delay to ensure the list has updated
   };
 
   const deleteStep = () => {
-    setSteps(() => steps.filter((_, index) => index !== activeIndex));
-    setActiveIndex(activeIndex - 1);
+    if (steps.length === 1) {
+      Alert.alert("You must have at least one step.");
+      return;
+    }
+
+    setSteps((prevSteps) => {
+      const updatedSteps = prevSteps.filter((_, index) => index !== activeIndex);
+      // Adjust active index if necessary
+      const newIndex = activeIndex > 0 ? activeIndex - 1 : 0;
+      setActiveIndex(newIndex);
+      return updatedSteps;
+    });
   };
 
   const handlePagePress = (index: number) => {
@@ -96,9 +123,11 @@ export default function RecipeAddSteps() {
   };
 
   const handleTextChange = (text: string, index: number) => {
-    const newItems = [...steps];
-    newItems[index].description = text;
-    setSteps(newItems);
+    setSteps((prevSteps) => {
+      const newItems = [...prevSteps];
+      newItems[index].description = text;
+      return newItems;
+    });
   };
 
   const handleKeyPress = ({ nativeEvent }: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
@@ -162,7 +191,6 @@ export default function RecipeAddSteps() {
         />
         <FlatList
           scrollEnabled={false}
-          // pagingEnabled
           ref={inputsFlatlListRef}
           data={steps}
           horizontal
@@ -185,11 +213,9 @@ export default function RecipeAddSteps() {
                 keyboardType="default"
                 returnKeyType="done"
                 blurOnSubmit={true}
-                onSubmitEditing={() => {
-                  Keyboard.dismiss();
-                }}
+                onSubmitEditing={Keyboard.dismiss}
                 onKeyPress={handleKeyPress}
-                value={item.text}
+                value={item.description}
                 multiline
                 onChangeText={(value: string) => handleTextChange(value, index)}
               />
@@ -220,26 +246,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: spacing.spacing24,
   },
-
   $paginationContainerStyle: {
     height: 50,
     alignItems: "center",
   },
-
   $stepsContainerStyle: {
     alignItems: "flex-start",
   },
-
   $ingredientHeaderStyle: {
     ...$sizeStyles.h3,
     fontFamily: "sofia800",
     color: colors.greyscale500,
   },
-
   $paginationItemStyle: {
     marginHorizontal: spacing.spacing8,
   },
-
   $paginationViewStyle: {
     width: 40,
     height: 40,
@@ -247,19 +268,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
   $paginationItemTextStyle: {
     ...$sizeStyles.n,
     fontFamily: "sofia800",
   },
-
   $activePaginationTextStyle: {
     color: "#fff",
   },
   $inactivePaginationTextstyle: {
     color: colors.accent200,
   },
-
   $buttonsContainerstyle: {
     flexDirection: "row",
     alignItems: "center",

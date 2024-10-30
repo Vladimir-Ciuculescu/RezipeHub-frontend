@@ -1,4 +1,4 @@
-import { Text, Pressable, ScrollView, StyleSheet, Keyboard } from "react-native";
+import { Text, Pressable, ScrollView, StyleSheet, Keyboard, Platform } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { colors } from "@/theme/colors";
@@ -114,6 +114,36 @@ const RecipeConfirmEditIngredient = () => {
 
     getIngredientMeasures();
   }, []);
+
+  useEffect(() => {
+    const defaultMeasurementObject = {
+      foodId: parsedIngredient.foodId,
+      measureUri: "http://www.edamam.com/ontologies/edamam.owl#Measure_gram",
+      quantity: "0",
+    };
+
+    if (pickerDismissed || Platform.OS === "android") {
+      const currentMeasure = measures.find((item) => item.value === measure);
+
+      let payload: { foodId: string; measureUri: string; quantity: string } = {
+        foodId: "",
+        measureUri: "",
+        quantity: "0",
+      };
+
+      if (currentMeasure) {
+        payload = {
+          foodId: parsedIngredient.foodId,
+          measureUri: currentMeasure.uri,
+          quantity: quantity.toString(),
+        };
+      } else {
+        payload = defaultMeasurementObject;
+      }
+
+      getNutritionData(payload.foodId, payload.measureUri, payload.quantity);
+    }
+  }, [pickerDismissed, measure]);
 
   Keyboard.addListener("keyboardWillShow", () => {
     setSaveEnabled(false);

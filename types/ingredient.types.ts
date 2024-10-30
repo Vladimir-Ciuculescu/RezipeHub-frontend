@@ -55,6 +55,7 @@ export interface Measure {
   uri: string;
   label: string;
   weight?: number;
+  value?: string;
 }
 
 export interface Nutrient {
