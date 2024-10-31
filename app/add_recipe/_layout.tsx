@@ -2,7 +2,7 @@ import { colors } from "@/theme/colors";
 import { Stack } from "expo-router/stack";
 import { StyleSheet } from "react-native";
 
-export default function Layout() {
+const Layout = () => {
   return (
     <Stack
       screenOptions={{
@@ -61,6 +61,15 @@ export default function Layout() {
           headerTitleAlign: "center",
           gestureEnabled: false,
         }}
+        name="recipe_confirm_edit_step"
+      />
+      <Stack.Screen
+        options={{
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerTitleAlign: "center",
+          gestureEnabled: false,
+        }}
         name="recipe_add_steps"
       />
       <Stack.Screen
@@ -74,7 +83,9 @@ export default function Layout() {
       />
     </Stack>
   );
-}
+};
+
+export default Layout;
 
 const styles = StyleSheet.create({
   $stackContainerStyle: { backgroundColor: colors.neutral100 },

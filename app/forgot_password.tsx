@@ -15,7 +15,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { Text, View } from "react-native-ui-lib";
 import { router } from "expo-router";
 
-export default function ForgotPassword() {
+const ForgotPassword = () => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
 
@@ -112,7 +112,9 @@ export default function ForgotPassword() {
       </View>
     </KeyboardAwareScrollView>
   );
-}
+};
+
+export default ForgotPassword;
 
 const styles = StyleSheet.create({
   $keyboardContainerStyle: {

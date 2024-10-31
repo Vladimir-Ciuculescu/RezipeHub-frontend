@@ -25,7 +25,7 @@ import useRecipeStore from "@/zustand/useRecipeStore";
 
 const { width: screenWidth } = Dimensions.get("window");
 
-export default function RecipeAddSteps() {
+const RecipeAddSteps = () => {
   const navigation = useNavigation();
   const router = useRouter();
 
@@ -78,6 +78,11 @@ export default function RecipeAddSteps() {
   }, [activeIndex]);
 
   const confirmSteps = () => {
+    if (!steps[steps.length - 1].description) {
+      Alert.alert("A step cannot be empty !");
+      return;
+    }
+
     const newSteps = steps.map((step, index) => ({ ...step, number: index + 1, id: index + 1 }));
     addStepsAction(newSteps);
     router.dismiss(1);
@@ -237,7 +242,9 @@ export default function RecipeAddSteps() {
       </View>
     </KeyboardAwareScrollView>
   );
-}
+};
+
+export default RecipeAddSteps;
 
 const styles = StyleSheet.create({
   $stepViewStyle: {

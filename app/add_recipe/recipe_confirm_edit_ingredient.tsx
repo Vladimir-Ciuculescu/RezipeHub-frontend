@@ -134,7 +134,7 @@ const RecipeConfirmEditIngredient = () => {
       if (currentMeasure) {
         payload = {
           foodId: parsedIngredient.foodId,
-          measureUri: currentMeasure.uri,
+          measureUri: currentMeasure.uri!,
           quantity: quantity.toString(),
         };
       } else {
@@ -204,7 +204,7 @@ const RecipeConfirmEditIngredient = () => {
 
   const submitQuantity = async () => {
     const currentMeasure = measures.find((unit) => unit.label === measure);
-    getNutritionData(parsedIngredient.foodId as string, currentMeasure!.uri, quantity);
+    getNutritionData(parsedIngredient.foodId as string, currentMeasure!.uri!, quantity);
   };
 
   const handleSave = () => {

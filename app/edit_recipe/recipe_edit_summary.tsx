@@ -7,6 +7,7 @@ import {
   Dimensions,
   Platform,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
@@ -53,7 +54,7 @@ export const getImageUrlWithCacheBuster = (url: string) => {
   return `${url}?t=${timestamp}`;
 };
 
-export default function RecipeEditSummary() {
+const RecipeEditSummary = () => {
   const router = useRouter();
   const navigation = useNavigation();
   const queryClient = useQueryClient();
@@ -102,7 +103,7 @@ export default function RecipeEditSummary() {
           )}
         />
       ),
-      headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit recipe</Text>,
+      headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit recipeee</Text>,
       headerRight: () =>
         isLoading ? (
           <ActivityIndicator color={colors.accent200} />
@@ -139,7 +140,7 @@ export default function RecipeEditSummary() {
 
   const onEditStep = (step: Step) => {
     router.navigate({
-      pathname: "edit_recipe/recipe_edit_step",
+      pathname: "edit_recipe/recipe_edit_edit_step",
       params: { step: JSON.stringify(step) },
     });
   };
@@ -406,7 +407,14 @@ export default function RecipeEditSummary() {
         },
       );
 
-      router.back();
+      Alert.alert("Success", "Recipe updated !", [
+        {
+          text: "OK",
+          onPress: () => {
+            router.back();
+          },
+        },
+      ]);
     } catch (error) {
       console.error("Could not edit recipe !:", error);
     }
@@ -556,7 +564,9 @@ export default function RecipeEditSummary() {
       />
     </>
   );
-}
+};
+
+export default RecipeEditSummary;
 
 const styles = StyleSheet.create({
   $containerStyle: {

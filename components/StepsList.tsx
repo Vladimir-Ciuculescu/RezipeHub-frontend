@@ -28,7 +28,7 @@ const StepListItem: React.FC<StepListItemProps> = ({
 }) => {
   return swipeable ? (
     <SwipeableListItem
-      actions={["delete", "edit"]}
+      actions={["edit", "delete"]}
       onEdit={() => onEdit!(step)}
       onDelete={() => onDelete!(step)}
     >

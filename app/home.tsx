@@ -8,7 +8,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet } from "react-native";
 import { Text, View } from "react-native-ui-lib";
 
-export default function Home() {
+const Home = () => {
   const goToLogin = () => {
     router.navigate("login");
   };
@@ -44,7 +44,7 @@ export default function Home() {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   $containerstyle: {
@@ -73,3 +73,5 @@ const styles = StyleSheet.create({
     color: colors.neutral100,
   },
 });
+
+export default Home;

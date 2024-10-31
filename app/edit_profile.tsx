@@ -22,7 +22,7 @@ import { ACCESS_TOKEN, storage } from "@/storage";
 import { jwtDecode } from "jwt-decode";
 import useUserStore from "@/zustand/useUserStore";
 
-export default function edit_profile() {
+const EditProfile = () => {
   const navigation = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
   const setUser = useUserStore.use.setUser();
@@ -299,7 +299,9 @@ export default function edit_profile() {
       </Formik>
     </KeyboardAwareScrollView>
   );
-}
+};
+
+export default EditProfile;
 
 const styles = StyleSheet.create({
   $updateBtnStyle: {

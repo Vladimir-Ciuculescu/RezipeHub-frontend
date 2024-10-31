@@ -60,7 +60,7 @@ const OtpInput = memo((props: OtpInputProps) => {
   );
 });
 
-export default function OtpVerification() {
+const OtpVerification = () => {
   const navigation = useNavigation();
   const { userId, email } = useLocalSearchParams<SearchParams>();
 
@@ -265,7 +265,9 @@ export default function OtpVerification() {
       </View>
     </KeyboardAwareScrollView>
   );
-}
+};
+
+export default OtpVerification;
 
 const styles = StyleSheet.create({
   $otpInput: {

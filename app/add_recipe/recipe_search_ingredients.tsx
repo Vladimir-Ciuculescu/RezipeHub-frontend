@@ -11,7 +11,7 @@ import FoodService from "@/api/services/food.service";
 import { colors } from "@/theme/colors";
 import IngredientAccordion from "@/components/IngredientAccordion";
 
-export default function RecipeSearchIngredients() {
+const RecipeSearchIngredients = () => {
   const navigation = useNavigation();
   const router = useRouter();
   const [text, setText] = useState("");
@@ -90,7 +90,9 @@ export default function RecipeSearchIngredients() {
       </View>
     </View>
   );
-}
+};
+
+export default RecipeSearchIngredients;
 
 const styles = StyleSheet.create({
   $containerstyle: {

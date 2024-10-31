@@ -43,7 +43,7 @@ const { height, width } = Dimensions.get("screen");
 const HEADER_HEIGHT = height / 4;
 const SEGMENTS: SegmentItem[] = [{ label: "Ingredients" }, { label: "Instructions" }];
 
-export default function RecipeSubmit() {
+const RecipeSubmit = () => {
   const queryClient = useQueryClient();
 
   const navigation = useNavigation();
@@ -324,7 +324,9 @@ export default function RecipeSubmit() {
       </View>
     </Animated.ScrollView>
   );
-}
+};
+
+export default RecipeSubmit;
 
 const styles = StyleSheet.create({
   $containerStyle: {

@@ -10,7 +10,7 @@ import RnInput from "@/components/shared/RNInput";
 import FoodService from "@/api/services/food.service";
 import { AntDesign } from "@expo/vector-icons";
 
-export default function recipe_edit_search_ingredients() {
+const RecipeEditSearchIngredients = () => {
   const navigation = useNavigation();
   const router = useRouter();
   const [text, setText] = useState("");
@@ -89,7 +89,9 @@ export default function recipe_edit_search_ingredients() {
       </View>
     </View>
   );
-}
+};
+
+export default RecipeEditSearchIngredients;
 
 const styles = StyleSheet.create({
   $containerstyle: {

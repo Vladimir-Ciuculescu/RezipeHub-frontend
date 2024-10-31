@@ -21,7 +21,7 @@ interface RNInputProps extends TextInputProps {
   onBlur?: TextInputProps["onFocus"];
 }
 
-export default function RnInput(props: RNInputProps) {
+const RnInput: React.FC<RNInputProps> = (props) => {
   {
     const {
       leftIcon,
@@ -99,7 +99,9 @@ export default function RnInput(props: RNInputProps) {
       </View>
     );
   }
-}
+};
+
+export default RnInput;
 
 const styles = StyleSheet.create({
   $baseWrapperStyle: {

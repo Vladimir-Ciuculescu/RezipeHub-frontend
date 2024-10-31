@@ -15,7 +15,7 @@ import { registerSchema } from "@/yup/register.schema";
 import AuthService from "@/api/services/auth.service";
 import { RegisterUserRequest } from "@/types/user.types";
 
-export default function Register() {
+const Register = () => {
   const navigation = useNavigation();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [repeatPasswordVisible, setRepeatPasswordVisible] = useState(false);
@@ -195,7 +195,9 @@ export default function Register() {
       </Formik>
     </KeyboardAwareScrollView>
   );
-}
+};
+
+export default Register;
 
 const styles = StyleSheet.create({
   $containerStyle: {

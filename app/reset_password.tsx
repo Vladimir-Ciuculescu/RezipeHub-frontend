@@ -18,7 +18,7 @@ interface SearchParams {
   email: string;
 }
 
-export default function ResetPassword() {
+const ResetPassword = () => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
   const { email } = useLocalSearchParams<SearchParams>();
@@ -152,7 +152,9 @@ export default function ResetPassword() {
       </Formik>
     </KeyboardAwareScrollView>
   );
-}
+};
+
+export default ResetPassword;
 
 const styles = StyleSheet.create({
   $keyboardContainerStyle: {

@@ -32,7 +32,7 @@ enum Strategy {
   Facebook = "oauth_facebook",
 }
 
-export default function Login() {
+const Login = () => {
   useWarmUpBrowser();
 
   const queryClient = useQueryClient();
@@ -277,7 +277,9 @@ export default function Login() {
       </View>
     </KeyboardAwareScrollView>
   );
-}
+};
+
+export default Login;
 
 const styles = StyleSheet.create({
   $keyboardContainerStyle: {

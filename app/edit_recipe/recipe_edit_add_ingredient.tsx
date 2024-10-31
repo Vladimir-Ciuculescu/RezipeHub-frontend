@@ -62,7 +62,7 @@ const NutrientItem: React.FC<NutrientItemProps> = ({ nutrient }) => {
   );
 };
 
-export default function recipe_edit_add_ingredient() {
+const RecipeEditAddIngredient = () => {
   const navigation = useNavigation();
   const router = useRouter();
   const [nutrientsInfo, setNutrientsInfo] = useState<NutrientResponse>();
@@ -146,11 +146,7 @@ export default function recipe_edit_add_ingredient() {
   }, [pickerDismissed, unitMeasure]);
 
   const addIngredient = () => {
-    // console.log(4444, parsedIngredient);
-
     const currentMeasure = parsedIngredient.measures.find((item) => item.label === unitMeasure);
-
-    // console.log(333, currentMeasure?.uri);
 
     const measures = parsedIngredient.measures.map((measure) => ({
       uri: measure.uri,
@@ -271,7 +267,9 @@ export default function recipe_edit_add_ingredient() {
       </View>
     </ScrollView>
   );
-}
+};
+
+export default RecipeEditAddIngredient;
 
 const styles = StyleSheet.create({
   $containerStyle: {

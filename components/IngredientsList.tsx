@@ -30,7 +30,7 @@ const IngredientListItem: React.FC<IngredientListItemProps> = ({
   return editable ? (
     <SwipeableListItem
       onEdit={() => onEdit!(ingredient)}
-      actions={["delete", "edit"]}
+      actions={["edit", "delete"]}
       onDelete={() => onDelete!(ingredient)}
     >
       <View style={styles.$ingredientContainerStyle}>

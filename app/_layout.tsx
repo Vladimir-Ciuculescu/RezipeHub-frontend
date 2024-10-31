@@ -41,7 +41,7 @@ const clerkKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 const queryClient = new QueryClient();
 
-export default function Layout() {
+const Layout = () => {
   let [fontsLoaded] = useFonts(fontsToLoad);
 
   if (!fontsLoaded) return null;
@@ -185,7 +185,9 @@ export default function Layout() {
       </QueryClientProvider>
     </GestureHandlerRootView>
   );
-}
+};
+
+export default Layout;
 
 const styles = StyleSheet.create({
   $stackContainerStyle: { backgroundColor: colors.neutral100 },

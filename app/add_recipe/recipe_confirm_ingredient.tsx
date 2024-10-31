@@ -93,7 +93,7 @@ const NutrientItem: FC<NutrientItemProps> = ({ nutrient }) => {
   );
 };
 
-export default function RecipeConfirmIngredient() {
+const RecipeConfirmIngredient = () => {
   const { ingredient } = useLocalSearchParams<any>();
   const navigation = useNavigation();
   const router = useRouter();
@@ -280,7 +280,9 @@ export default function RecipeConfirmIngredient() {
       </View>
     </ScrollView>
   );
-}
+};
+
+export default RecipeConfirmIngredient;
 
 const styles = StyleSheet.create({
   $containerStyle: {
