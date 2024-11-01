@@ -1,4 +1,4 @@
-import { Text, Dimensions, StyleSheet } from "react-native";
+import { Text, Dimensions, StyleSheet, Pressable } from "react-native";
 import React from "react";
 import { View } from "react-native-ui-lib";
 import { spacing } from "@/theme/spacing";
@@ -10,6 +10,7 @@ import Animated from "react-native-reanimated";
 import SwipeableListItem from "./SwipeableItem";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
 import { AntDesign } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 const { width } = Dimensions.get("screen");
 
@@ -29,7 +30,7 @@ const IngredientListItem: React.FC<IngredientListItemProps> = ({
   return editable ? (
     <SwipeableListItem
       onEdit={() => onEdit!(ingredient)}
-      actions={["delete", "edit"]}
+      actions={["edit", "delete"]}
       onDelete={() => onDelete!(ingredient)}
     >
       <View style={styles.$ingredientContainerStyle}>
@@ -66,9 +67,9 @@ interface IngredientsListProps {
   ingredients: IngredientItem[];
   editable: boolean;
   onDelete?: (ingredient: IngredientItem) => void;
-
   onEdit?: (ingreidient: IngredientItem) => void;
   loading: boolean;
+  mode: "edit" | "view";
 }
 
 const IngredientsList: React.FC<IngredientsListProps> = ({
@@ -77,44 +78,61 @@ const IngredientsList: React.FC<IngredientsListProps> = ({
   editable,
   onDelete,
   onEdit,
+  mode,
 }) => {
   const isNotEditable = !editable;
 
+  const router = useRouter();
+
+  const goToSearchIngredient = () => {
+    router.navigate("edit_recipe/recipe_edit_search_ingredients");
+  };
+
   return (
     <View style={[styles.$containerStyle, isNotEditable && styles.$notEditableContainerStyle]}>
-      {ingredients.length ? (
-        <>
-          <View
-            row
-            style={styles.$ingredientsContainerStyle}
-          >
-            <Text style={[$sizeStyles.l]}>Ingredients</Text>
-            <Text style={[$sizeStyles.n, { color: colors.greyscale350 }]}>
-              {ingredients.length} items
+      <View
+        row
+        style={styles.$ingredientsContainerStyle}
+      >
+        <Text style={[$sizeStyles.l]}>
+          Ingredients{"  "}
+          {mode !== "view" && (
+            <Text style={{ ...$sizeStyles.l, color: colors.greyscale300 }}>
+              ({ingredients.length})
             </Text>
-          </View>
-          <React.Fragment>
-            {ingredients.map((ingredient, key) => (
-              <IngredientListItem
-                onDelete={onDelete}
-                //@ts-ignore
-                onEdit={onEdit}
-                editable={editable}
-                ingredient={ingredient}
-                key={`${ingredient.foodId}-${key}`}
-              />
-            ))}
-          </React.Fragment>
-        </>
+          )}
+        </Text>
+
+        {mode === "view" ? (
+          <Text style={[$sizeStyles.n, { color: colors.greyscale350 }]}>
+            {ingredients.length} items
+          </Text>
+        ) : (
+          <Pressable onPress={goToSearchIngredient}>
+            <AntDesign
+              name="plus"
+              size={24}
+              color={colors.accent200}
+            />
+          </Pressable>
+        )}
+      </View>
+
+      {ingredients.length ? (
+        <React.Fragment>
+          {ingredients.map((ingredient, key) => (
+            <IngredientListItem
+              onDelete={onDelete}
+              //@ts-ignore
+              onEdit={onEdit}
+              editable={editable}
+              ingredient={ingredient}
+              key={`${ingredient.foodId}-${key}`}
+            />
+          ))}
+        </React.Fragment>
       ) : loading ? (
         <Skeleton.Group show>
-          <View
-            row
-            style={{ justifyContent: "space-between" }}
-          >
-            <Text style={[$sizeStyles.l]}>Ingredients</Text>
-          </View>
-
           {Array(5)
             .fill(null)
             .map((_, key) => {

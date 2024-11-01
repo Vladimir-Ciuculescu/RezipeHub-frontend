@@ -1,17 +1,16 @@
-import { Pressable, StyleSheet, Keyboard, FlatList } from "react-native";
+import { View, Text, Pressable, StyleSheet, FlatList, Keyboard } from "react-native";
 import React, { useLayoutEffect, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
-import { $sizeStyles } from "@/theme/typography";
 import RNIcon from "@/components/shared/RNIcon";
+import { $sizeStyles } from "@/theme/typography";
 import { spacing } from "@/theme/spacing";
-import RnInput from "@/components/shared/RNInput";
-import { Text, View } from "react-native-ui-lib";
-import { AntDesign } from "@expo/vector-icons";
-import FoodService from "@/api/services/food.service";
 import { colors } from "@/theme/colors";
 import IngredientAccordion from "@/components/IngredientAccordion";
+import RnInput from "@/components/shared/RNInput";
+import FoodService from "@/api/services/food.service";
+import { AntDesign } from "@expo/vector-icons";
 
-const RecipeSearchIngredients = () => {
+const RecipeEditSearchIngredients = () => {
   const navigation = useNavigation();
   const router = useRouter();
   const [text, setText] = useState("");
@@ -20,21 +19,21 @@ const RecipeSearchIngredients = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={gotBack}>
+        <Pressable onPress={goBack}>
           <RNIcon name="arrow_left" />
         </Pressable>
       ),
 
-      headerTitle: () => <Text style={[$sizeStyles.h3]}>Search ingredients</Text>,
+      headerTitle: () => <Text style={[$sizeStyles.h3]}>Search ingredient</Text>,
     });
   }, [navigation]);
 
-  const gotBack = () => {
-    router.back();
-  };
-
   const clearSearch = () => {
     setText("");
+  };
+
+  const goBack = () => {
+    router.back();
   };
 
   const fetchResults = async () => {
@@ -81,7 +80,7 @@ const RecipeSearchIngredients = () => {
           contentContainerStyle={styles.$flatListContainerStyle}
           renderItem={({ item, index }) => (
             <IngredientAccordion
-              flow="create"
+              flow="update"
               key={index}
               ingredient={item}
             />
@@ -92,7 +91,7 @@ const RecipeSearchIngredients = () => {
   );
 };
 
-export default RecipeSearchIngredients;
+export default RecipeEditSearchIngredients;
 
 const styles = StyleSheet.create({
   $containerstyle: {

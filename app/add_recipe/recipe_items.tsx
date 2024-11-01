@@ -24,7 +24,7 @@ interface StepRowProps {
   index: number;
 }
 
-export default function RecipeItems() {
+const RecipeItems = () => {
   const router = useRouter();
   const navigation = useNavigation();
 
@@ -74,6 +74,22 @@ export default function RecipeItems() {
 
   const gotToAddSteps = () => {
     router.navigate("add_recipe/recipe_add_steps");
+  };
+
+  const onEditIngredient = (ingredient: IngredientItem) => {
+    const payload = { ...ingredient, quantitiy: parseInt(ingredient.quantity as string) };
+
+    router.navigate({
+      pathname: "add_recipe/recipe_confirm_edit_ingredient",
+      params: { ingredient: JSON.stringify(payload) },
+    });
+  };
+
+  const onEditStep = (step: Step) => {
+    router.navigate({
+      pathname: "add_recipe/recipe_confirm_edit_step",
+      params: { step: JSON.stringify(step) },
+    });
   };
 
   const showNoIngredientsMessage = () => {
@@ -138,7 +154,8 @@ export default function RecipeItems() {
         <View>
           {ingredients.map((item, key: number) => (
             <SwipeableListItem
-              actions={["delete"]}
+              actions={["edit", "delete"]}
+              onEdit={() => onEditIngredient(item)}
               key={`${item.foodId}-${key}`}
               onDelete={() => removeIngredientAction(item)}
             >
@@ -160,8 +177,9 @@ export default function RecipeItems() {
         <View>
           {steps.map((item, key: number) => (
             <SwipeableListItem
-              actions={["delete"]}
+              actions={["edit", "delete"]}
               key={`${item.id}-${key}`}
+              onEdit={() => onEditStep(item)}
               onDelete={() => removeStepAction(item)}
             >
               <StepRow
@@ -186,7 +204,9 @@ export default function RecipeItems() {
       </View>
     </ScrollView>
   );
-}
+};
+
+export default RecipeItems;
 
 const styles = StyleSheet.create({
   $ingredientRowContainerStyle: {

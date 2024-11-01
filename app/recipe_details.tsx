@@ -316,6 +316,7 @@ const RecipeDetails = () => {
     {
       section: (
         <IngredientsList
+          mode="view"
           editable={false}
           loading={isLoading}
           ingredients={ingredients}
@@ -325,6 +326,7 @@ const RecipeDetails = () => {
     {
       section: (
         <StepsList
+          mode="view"
           loading={isLoading}
           swipeable={false}
           steps={steps}

@@ -7,6 +7,7 @@ import {
   Dimensions,
   Platform,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
@@ -53,7 +54,7 @@ export const getImageUrlWithCacheBuster = (url: string) => {
   return `${url}?t=${timestamp}`;
 };
 
-export default function RecipeEditSummary() {
+const RecipeEditSummary = () => {
   const router = useRouter();
   const navigation = useNavigation();
   const queryClient = useQueryClient();
@@ -89,7 +90,21 @@ export default function RecipeEditSummary() {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerLeft: () =>
+      headerLeft: () => (
+        <RNButton
+          onPress={cancel}
+          link
+          iconSource={() => (
+            <AntDesign
+              name="close"
+              size={24}
+              color="black"
+            />
+          )}
+        />
+      ),
+      headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit recipeee</Text>,
+      headerRight: () =>
         isLoading ? (
           <ActivityIndicator color={colors.accent200} />
         ) : (
@@ -103,20 +118,6 @@ export default function RecipeEditSummary() {
             <Text style={[{ ...$sizeStyles.l }, { color: colors.accent200 }]}>Save</Text>
           </Pressable>
         ),
-      headerRight: () => (
-        <RNButton
-          onPress={cancel}
-          link
-          iconSource={() => (
-            <AntDesign
-              name="close"
-              size={24}
-              color="black"
-            />
-          )}
-        />
-      ),
-      headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit recipe</Text>,
     });
   }, [navigation, isLoading]);
 
@@ -139,7 +140,7 @@ export default function RecipeEditSummary() {
 
   const onEditStep = (step: Step) => {
     router.navigate({
-      pathname: "edit_recipe/recipe_edit_step",
+      pathname: "edit_recipe/recipe_edit_edit_step",
       params: { step: JSON.stringify(step) },
     });
   };
@@ -148,6 +149,7 @@ export default function RecipeEditSummary() {
     {
       section: (
         <IngredientsList
+          mode="edit"
           editable
           loading={false}
           onDelete={onDeleteIngredient}
@@ -159,6 +161,7 @@ export default function RecipeEditSummary() {
     {
       section: (
         <StepsList
+          mode="edit"
           onDelete={onDeleteStep}
           onEdit={onEditStep}
           swipeable
@@ -301,10 +304,29 @@ export default function RecipeEditSummary() {
         payload.stepsIds = stepsIds;
       }
 
-      await editRecipeMutation(payload);
+      const data = await editRecipeMutation(payload);
 
       //Update the recipe details screen with the new data
       queryClient.setQueryData(["recipe"], (oldData: any) => {
+        const responseIngredients = data.ingredients;
+
+        const syncedIngredients = payload.recipe.ingredients?.map((ingredient) => {
+          // Find the corresponding item in responseIngredients by foodId
+          const matchingResponseIngredient = responseIngredients.find(
+            //TODO : Remove any and use appropriate interface
+            (responseIngredient: any) => responseIngredient.foodId === ingredient.foodId,
+          );
+
+          // Return a new object with the id from responseIngredients if a match is found
+          return {
+            ...ingredient,
+            id: matchingResponseIngredient ? matchingResponseIngredient.id : undefined, // Set `id` if matched
+            allUnits: ingredient.allMeasures,
+            name: ingredient.title,
+            unit: ingredient.measure,
+          };
+        });
+
         const updatedRecipe = {
           ...oldData.recipe,
           title: payload.recipe.title,
@@ -315,12 +337,7 @@ export default function RecipeEditSummary() {
 
           preparationTime: payload.recipe.preparationTime,
 
-          ingredients: payload.recipe.ingredients?.map((ingredient) => ({
-            ...ingredient,
-            allUnits: ingredient.allMeasures,
-            name: ingredient.title,
-            unit: ingredient.measure,
-          })),
+          ingredients: syncedIngredients,
           steps: payload.recipe.steps?.map((step) => ({
             id: step.id,
             step: step.step,
@@ -391,7 +408,14 @@ export default function RecipeEditSummary() {
         },
       );
 
-      router.back();
+      Alert.alert("Success", "Recipe updated !", [
+        {
+          text: "OK",
+          onPress: () => {
+            router.back();
+          },
+        },
+      ]);
     } catch (error) {
       console.error("Could not edit recipe !:", error);
     }
@@ -541,7 +565,9 @@ export default function RecipeEditSummary() {
       />
     </>
   );
-}
+};
+
+export default RecipeEditSummary;
 
 const styles = StyleSheet.create({
   $containerStyle: {

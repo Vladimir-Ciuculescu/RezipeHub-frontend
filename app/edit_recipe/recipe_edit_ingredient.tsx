@@ -70,7 +70,7 @@ const NutrientItem: React.FC<NutrientItemProps> = ({ nutrient }) => {
   );
 };
 
-export default function RecipeEditIngredient() {
+const RecipeEditIngredient = () => {
   const navigation = useNavigation();
   const router = useRouter();
   const [segmentIndex, setSegmentIndex] = useState(0);
@@ -83,6 +83,7 @@ export default function RecipeEditIngredient() {
   const [measures, setMeasures] = useState<Measure[]>([]);
 
   const parsedIngredient: IngredientItem = JSON.parse(ingredient!);
+
   const [measure, setMeasure] = useState<string>(parsedIngredient.measure);
   const [quantity, setQuantity] = useState(parsedIngredient.quantity.toString());
   const editIngredientAction = useRecipeStore.use.editIngredientAction();
@@ -155,7 +156,7 @@ export default function RecipeEditIngredient() {
 
       getNutritionData(
         parsedIngredient.foodId as string,
-        currentMeasure!.uri,
+        currentMeasure!.uri!,
         parsedIngredient.quantity as string,
       );
     }
@@ -183,7 +184,7 @@ export default function RecipeEditIngredient() {
 
   const submitQuantity = async () => {
     const currentMeasure = measures.find((unit) => unit.label === measure);
-    getNutritionData(parsedIngredient.foodId as string, currentMeasure!.uri, quantity);
+    getNutritionData(parsedIngredient.foodId as string, currentMeasure!.uri!, quantity);
   };
 
   const handleSave = () => {
@@ -270,7 +271,9 @@ export default function RecipeEditIngredient() {
       </View>
     </ScrollView>
   );
-}
+};
+
+export default RecipeEditIngredient;
 
 const styles = StyleSheet.create({
   $containerStyle: {

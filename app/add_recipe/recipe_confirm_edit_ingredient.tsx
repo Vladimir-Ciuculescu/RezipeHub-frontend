@@ -1,24 +1,33 @@
-import { Text, Pressable, StyleSheet, ScrollView, Platform } from "react-native";
-import React, { FC, useEffect, useLayoutEffect, useState } from "react";
+import { Text, Pressable, ScrollView, StyleSheet, Keyboard, Platform } from "react-native";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import FoodService from "@/api/services/food.service";
+import { colors } from "@/theme/colors";
 import RNIcon from "@/components/shared/RNIcon";
 import { $sizeStyles } from "@/theme/typography";
+import { AntDesign } from "@expo/vector-icons";
+import { spacing } from "@/theme/spacing";
+import RNPickerSelect from "react-native-picker-select";
+import RnInput from "@/components/shared/RNInput";
 import {
-  IngredientResponse,
+  Measure,
   NutrientDetail,
   NutrientResponse,
   NutrientsRequestPayload,
 } from "@/types/ingredient.types";
-import { AntDesign } from "@expo/vector-icons";
-import { spacing } from "@/theme/spacing";
-import { View } from "react-native-ui-lib";
-import { colors } from "@/theme/colors";
-import RnInput from "@/components/shared/RNInput";
-import { formatFloatingValue } from "@/utils/formatFloatingValue";
-import RNPickerSelect from "react-native-picker-select";
-import useRecipeStore from "@/zustand/useRecipeStore";
 import RNSegmentedControl from "@/components/shared/RnSegmentedControl";
+import FoodService from "@/api/services/food.service";
+import { View } from "react-native-ui-lib";
+import { formatFloatingValue } from "@/utils/formatFloatingValue";
+import useRecipeStore from "@/zustand/useRecipeStore";
+
+interface SearchParams {
+  [key: string]: string;
+  ingredient: string;
+}
+
+interface NutrientItemProps {
+  nutrient: [string, NutrientDetail];
+}
 
 const nutrientsLabelMapping: any = {
   ENERC_KCAL: "Calories",
@@ -39,42 +48,9 @@ const nutrientsLabelMapping: any = {
   VITD: "Vitamin D",
 };
 
-const getMeasureAbbreviation = (measure: string) => {
-  const measureMap: any = {
-    Serving: "serving",
-    Ounce: "oz",
-    Spray: "spr",
-    Gram: "g",
-    Grain: "gr",
-    Pound: "lb",
-    Kilogram: "kg",
-    Strip: "strip",
-    Pinch: "pinch",
-    Liter: "L",
-    Slice: "slice",
-    Handful: "handful",
-    Whole: "whole",
-    "Fluid ounce": "fl oz",
-    Gallon: "gal",
-    Pint: "pt",
-    Quart: "qt",
-    Milliliter: "mL",
-    Drop: "drop",
-    Cup: "cup",
-    Tablespoon: "tbsp",
-    Teaspoon: "tsp",
-  };
-
-  return measureMap[measure] || null;
-};
-
-interface NutrientItemProps {
-  nutrient: [string, NutrientDetail];
-}
-
 const segments = [{ label: "Measures" }, { label: "Percentage" }];
 
-const NutrientItem: FC<NutrientItemProps> = ({ nutrient }) => {
+const NutrientItem: React.FC<NutrientItemProps> = ({ nutrient }) => {
   const label = nutrient[0];
   const quantity = nutrient[1].quantity;
   const unitMeasure = nutrient[1].unit;
@@ -93,34 +69,96 @@ const NutrientItem: FC<NutrientItemProps> = ({ nutrient }) => {
   );
 };
 
-const RecipeConfirmIngredient = () => {
-  const { ingredient } = useLocalSearchParams<any>();
+const RecipeConfirmEditIngredient = () => {
   const navigation = useNavigation();
   const router = useRouter();
+
+  const ingredients = useRecipeStore.use.ingredients();
+  const editIngredientAction = useRecipeStore.use.editIngredientAction();
+
+  const { ingredient } = useLocalSearchParams<SearchParams>();
+  const parsedIngredient = JSON.parse(ingredient!);
   const [nutrientsInfo, setNutrientsInfo] = useState<NutrientResponse>();
-  const [unitMeasure, setUnitMeasure] = useState("Gram");
+  const [saveEnabled, setSaveEnabled] = useState(true);
+
   const [pickerDismissed, setPickerDismissed] = useState(true);
+  const [measure, setMeasure] = useState<string>(parsedIngredient.measure);
+  const [measures, setMeasures] = useState<Measure[]>([]);
+  const [quantity, setQuantity] = useState(parsedIngredient.quantity.toString());
   const [segmentIndex, setSegmentIndex] = useState(0);
-  const [quantity, setQuantity] = useState("100");
-  const addIngredientAction = useRecipeStore.use.addIngredientAction();
 
-  const parsedIngredient: IngredientResponse = JSON.parse(ingredient);
+  useEffect(() => {
+    const getIngredientMeasures = async () => {
+      try {
+        const result = await FoodService.searchFood(parsedIngredient.foodId as string);
+        const measureItems = result.hints[0].measures.map((measure: Measure) => ({
+          uri: measure.uri,
+          label: measure.label,
+          value: measure.label,
+        }));
 
-  const defaultMeasurementObject = {
-    foodId: parsedIngredient.food.foodId,
-    measureURI: "http://www.edamam.com/ontologies/edamam.owl#Measure_gram",
-    quantity: 100,
+        //@ts-ignore
+        const currentMeasure = measureItems.find((unit) => unit.label === measure);
+
+        getNutritionData(
+          parsedIngredient.foodId as string,
+          currentMeasure!.uri,
+          parsedIngredient.quantity as string,
+        );
+
+        setMeasures(measureItems);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getIngredientMeasures();
+  }, []);
+
+  useEffect(() => {
+    const defaultMeasurementObject = {
+      foodId: parsedIngredient.foodId,
+      measureUri: "http://www.edamam.com/ontologies/edamam.owl#Measure_gram",
+      quantity: "0",
+    };
+
+    if (pickerDismissed || Platform.OS === "android") {
+      const currentMeasure = measures.find((item) => item.value === measure);
+
+      let payload: { foodId: string; measureUri: string; quantity: string } = {
+        foodId: "",
+        measureUri: "",
+        quantity: "0",
+      };
+
+      if (currentMeasure) {
+        payload = {
+          foodId: parsedIngredient.foodId,
+          measureUri: currentMeasure.uri!,
+          quantity: quantity.toString(),
+        };
+      } else {
+        payload = defaultMeasurementObject;
+      }
+
+      getNutritionData(payload.foodId, payload.measureUri, payload.quantity);
+    }
+  }, [pickerDismissed, measure]);
+
+  Keyboard.addListener("keyboardWillShow", () => {
+    setSaveEnabled(false);
+  });
+  Keyboard.addListener("keyboardWillHide", () => {
+    setSaveEnabled(true);
+  });
+
+  const gotBack = () => {
+    router.back();
   };
 
-  const measures = parsedIngredient.measures
-    .filter((measure) => measure.label)
-    .map((measure) => ({
-      label: `${measure.label}`,
-      value: measure.label,
-      uri: measure.uri,
-    }));
-
   useLayoutEffect(() => {
+    const saveDisabled = !saveEnabled || !pickerDismissed;
+
     navigation.setOptions({
       headerLeft: () => (
         <Pressable onPress={gotBack}>
@@ -131,67 +169,32 @@ const RecipeConfirmIngredient = () => {
         </Pressable>
       ),
 
-      headerTitle: () => <Text style={[$sizeStyles.h3]}>Confirm ingredient</Text>,
+      headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit ingredient</Text>,
       headerRight: () => (
-        <Pressable onPress={addIngredient}>
+        <Pressable
+          disabled={saveDisabled}
+          onPress={handleSave}
+        >
           <AntDesign
+            style={saveDisabled && { opacity: 0.4 }}
             name="check"
             size={24}
-            color={colors.accent200}
+            color={colors.accent300}
           />
         </Pressable>
       ),
     });
-  }, [navigation, unitMeasure, quantity, nutrientsInfo]);
+  }, [navigation, quantity, measure, nutrientsInfo, saveEnabled, pickerDismissed]);
 
-  useEffect(() => {
-    if (pickerDismissed || Platform.OS === "android") {
-      const measure = measures.find((item) => item.value === unitMeasure);
-
-      let payload: any = {};
-
-      if (measure) {
-        payload = {
-          foodId: parsedIngredient.food.foodId,
-          measureUri: measure!.uri,
-          quantity: parseInt(quantity),
-        };
-      } else {
-        payload = defaultMeasurementObject;
-      }
-
-      getNutritionData(payload.foodId, payload.measureUri, payload.quantity);
-    }
-  }, [pickerDismissed, unitMeasure]);
-
-  const addIngredient = () => {
-    const measures = parsedIngredient.measures.map((measure) => ({
-      uri: measure.uri,
-      label: measure.label,
-      weight: measure.weight,
-    }));
-
-    const payload = {
-      foodId: parsedIngredient.food.foodId,
-      title: parsedIngredient.food.label,
-      measure: unitMeasure,
-      quantity: quantity,
-      calories: nutrientsInfo?.totalNutrients.ENERC_KCAL!.quantity!,
-      carbs: nutrientsInfo?.totalNutrients.CHOCDF!.quantity,
-      proteins: nutrientsInfo?.totalNutrients.PROCNT!.quantity,
-      fats: nutrientsInfo?.totalNutrients.FAT?.quantity,
-      measures,
-    };
-
-    addIngredientAction(payload);
-    router.dismiss(2);
-  };
-
-  const getNutritionData = async (foodId: string, uri: string, quantity: number) => {
+  const getNutritionData = async (foodId: string, uri: string, quantity: string) => {
     let payload: NutrientsRequestPayload | undefined;
 
     try {
-      payload = { foodId, measureURI: uri, quantity };
+      payload = {
+        foodId,
+        measureURI: uri,
+        quantity: parseInt(quantity),
+      };
       const data = await FoodService.getNutritionData(payload);
       setNutrientsInfo(data);
     } catch (error) {
@@ -199,14 +202,25 @@ const RecipeConfirmIngredient = () => {
     }
   };
 
-  const gotBack = () => {
-    router.back();
+  const submitQuantity = async () => {
+    const currentMeasure = measures.find((unit) => unit.label === measure);
+    getNutritionData(parsedIngredient.foodId as string, currentMeasure!.uri!, quantity);
   };
 
-  const submitQuantity = async () => {
-    const measure = measures.find((item) => item.value === unitMeasure);
+  const handleSave = () => {
+    const payload = {
+      ...parsedIngredient,
+      quantity: parseInt(quantity),
+      measure,
+      calories: nutrientsInfo?.totalNutrients.ENERC_KCAL!.quantity!,
+      carbs: nutrientsInfo?.totalNutrients.CHOCDF!.quantity,
+      proteins: nutrientsInfo?.totalNutrients.PROCNT!.quantity,
+      fats: nutrientsInfo?.totalNutrients.FAT?.quantity,
+    };
 
-    getNutritionData(parsedIngredient.food.foodId, measure!.uri, parseInt(quantity));
+    editIngredientAction(payload);
+
+    router.back();
   };
 
   return (
@@ -217,7 +231,7 @@ const RecipeConfirmIngredient = () => {
       style={styles.$containerStyle}
     >
       <View style={{ gap: spacing.spacing24 }}>
-        <Text style={$sizeStyles.h1}>{parsedIngredient.food.label}</Text>
+        <Text style={$sizeStyles.h1}>{parsedIngredient.title}</Text>
 
         <View style={styles.$baseWrapperStyle}>
           <Text style={[$sizeStyles.n, styles.$labelStyle]}>Unit measure</Text>
@@ -227,9 +241,11 @@ const RecipeConfirmIngredient = () => {
             doneText="Search"
             onOpen={() => setPickerDismissed(false)}
             onClose={() => setPickerDismissed(true)}
-            value={unitMeasure}
-            onValueChange={setUnitMeasure}
+            value={measure}
+            onValueChange={setMeasure}
             onDonePress={() => setPickerDismissed(true)}
+            //@ts-ignore
+
             items={measures}
             style={{
               chevronUp: { display: "none" },
@@ -282,7 +298,7 @@ const RecipeConfirmIngredient = () => {
   );
 };
 
-export default RecipeConfirmIngredient;
+export default RecipeConfirmEditIngredient;
 
 const styles = StyleSheet.create({
   $containerStyle: {

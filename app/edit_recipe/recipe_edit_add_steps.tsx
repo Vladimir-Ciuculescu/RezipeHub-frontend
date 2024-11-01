@@ -1,35 +1,38 @@
 import {
   View,
   Text,
-  StyleSheet,
   Pressable,
-  Dimensions,
   FlatList,
+  StyleSheet,
   Keyboard,
+  Alert,
   NativeSyntheticEvent,
   TextInputKeyPressEventData,
-  Alert,
+  Dimensions,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import { colors } from "@/theme/colors";
-import { AntDesign } from "@expo/vector-icons";
 import { $sizeStyles } from "@/theme/typography";
+import { AntDesign } from "@expo/vector-icons";
+import useRecipeStore from "@/zustand/useRecipeStore";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { spacing } from "@/theme/spacing";
 import { MotiView } from "moti";
-import RnInput from "@/components/shared/RNInput";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import RNButton from "@/components/shared/RNButton";
-import useRecipeStore from "@/zustand/useRecipeStore";
+import RnInput from "@/components/shared/RNInput";
 
 const { width: screenWidth } = Dimensions.get("window");
 
-const RecipeAddSteps = () => {
+const RecipeEditAddSteps = () => {
   const navigation = useNavigation();
+
   const router = useRouter();
 
   const stepsFromStore = useRecipeStore.use.steps();
+
+  const addStepsAction = useRecipeStore.use.addStepsAction();
 
   const [steps, setSteps] = useState([{ description: "" }]);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -37,7 +40,9 @@ const RecipeAddSteps = () => {
   const paginationFlatListRef = useRef<FlatList>(null);
   const inputsFlatlListRef = useRef<FlatList>(null);
 
-  const addStepsAction = useRecipeStore.use.addStepsAction();
+  const gotBack = () => {
+    router.back();
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -49,7 +54,7 @@ const RecipeAddSteps = () => {
           />
         </Pressable>
       ),
-      headerTitle: () => <Text style={[$sizeStyles.h3]}>Add steps</Text>,
+      headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit steps</Text>,
       headerRight: () => (
         <Pressable onPress={confirmSteps}>
           <AntDesign
@@ -64,7 +69,7 @@ const RecipeAddSteps = () => {
 
   useEffect(() => {
     if (stepsFromStore.length) {
-      setSteps(stepsFromStore);
+      setSteps(stepsFromStore.map((item, index) => ({ ...item, step: index + 1 })));
     }
   }, []);
 
@@ -82,14 +87,10 @@ const RecipeAddSteps = () => {
       Alert.alert("A step cannot be empty !");
       return;
     }
+    const newSteps = steps.map((step, index) => ({ ...step, number: index + 1 }));
 
-    const newSteps = steps.map((step, index) => ({ ...step, number: index + 1, id: index + 1 }));
     addStepsAction(newSteps);
     router.dismiss(1);
-  };
-
-  const gotBack = () => {
-    router.back();
   };
 
   const addStep = () => {
@@ -100,7 +101,7 @@ const RecipeAddSteps = () => {
 
     setActiveIndex(steps.length); // Set active index to the new step
 
-    const newStep = { description: "" };
+    const newStep = { description: "", step: steps.length + 1 };
     setSteps((prevSteps) => [...prevSteps, newStep]);
 
     setTimeout(() => {
@@ -244,7 +245,7 @@ const RecipeAddSteps = () => {
   );
 };
 
-export default RecipeAddSteps;
+export default RecipeEditAddSteps;
 
 const styles = StyleSheet.create({
   $stepViewStyle: {

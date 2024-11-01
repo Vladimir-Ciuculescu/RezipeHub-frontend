@@ -10,7 +10,8 @@ import { StatusBar } from "expo-status-bar";
 import { jwtDecode } from "jwt-decode";
 import { useEffect } from "react";
 import { Platform, Pressable, StyleSheet } from "react-native";
-export default function TabLayout() {
+
+const TabLayout = () => {
   const router = useRouter();
 
   const reset = useRecipeStore.use.reset();
@@ -111,7 +112,9 @@ export default function TabLayout() {
       </Tabs>
     </>
   );
-}
+};
+
+export default TabLayout;
 
 const styles = StyleSheet.create({
   $tabBarStyle: {

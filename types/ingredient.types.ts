@@ -52,9 +52,10 @@ interface Food {
 }
 
 export interface Measure {
-  uri: string;
+  uri?: string;
   label: string;
   weight?: number;
+  value?: string;
 }
 
 export interface Nutrient {

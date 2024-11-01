@@ -33,7 +33,7 @@ const { width, height } = Dimensions.get("screen");
 const GRID_CONTAINER_SIZE = width * 0.4;
 const GRID_COLUMNS = 2;
 
-export default function all_favorite_recipes() {
+const AllFavoriteRecipes = () => {
   const navigation = useNavigation();
 
   const router = useRouter();
@@ -514,7 +514,9 @@ export default function all_favorite_recipes() {
       )}
     </SafeAreaView>
   );
-}
+};
+
+export default AllFavoriteRecipes;
 
 const styles = StyleSheet.create({
   $segmentLabelStyle: {

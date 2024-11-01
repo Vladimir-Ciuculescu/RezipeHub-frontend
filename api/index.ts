@@ -2,7 +2,7 @@ import { ACCESS_TOKEN, REFRESH_TOKEN, storage } from "@/storage";
 import axios from "axios";
 import { Platform } from "react-native";
 
-const baseURL = "http://192.168.0.1:3000";
+const baseURL = "http://192.168.1.151:3000";
 const iosBaseUrL = "http://localhost:3000";
 const andrdoidBaseUrl = "http://192.168.0.1:3000";
 
@@ -10,7 +10,8 @@ const axiosPublicInstance = axios.create({
   //
 
   //baseURL: "http://localhost:3000", // Replace with your API base URL
-  baseURL: Platform.OS === "ios" ? iosBaseUrL : andrdoidBaseUrl,
+  //baseURL: Platform.OS === "ios" ? iosBaseUrL : andrdoidBaseUrl,
+  baseURL,
 
   timeout: 10000,
   headers: {
@@ -26,8 +27,8 @@ axiosPublicInstance.interceptors.request.use((config) => {
 
 const axiosInstance = axios.create({
   //baseURL: "http://localhost:3000", // Replace with your API base URL
-  //baseURL,
-  baseURL: Platform.OS === "ios" ? iosBaseUrL : andrdoidBaseUrl,
+  baseURL,
+  // baseURL: Platform.OS === "ios" ? iosBaseUrL : andrdoidBaseUrl,
 
   timeout: 10000,
   headers: {

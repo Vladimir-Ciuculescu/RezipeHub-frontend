@@ -59,7 +59,8 @@ export const useEditRecipeMutation = () => {
   return useMutation({
     mutationFn: async (payload: EditRecipeRequest) => {
       try {
-        await RecipeService.editRecipe(payload);
+        const data = await RecipeService.editRecipe(payload);
+        return data;
       } catch (error) {
         console.error("Error during mutation:", error);
       }

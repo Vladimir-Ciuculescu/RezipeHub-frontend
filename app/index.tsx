@@ -79,7 +79,7 @@ const steps: Step[] = [
   },
 ];
 
-export default function Onboarding() {
+const Onboarding = () => {
   const router = useRouter();
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -181,7 +181,9 @@ export default function Onboarding() {
       </View>
     </SafeAreaView>
   );
-}
+};
+
+export default Onboarding;
 
 const styles = StyleSheet.create({
   $safeContainerstyle: {

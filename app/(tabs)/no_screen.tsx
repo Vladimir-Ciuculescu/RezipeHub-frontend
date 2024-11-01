@@ -1,6 +1,7 @@
 import React from "react";
 import { Text, View } from "react-native-ui-lib";
 
-export default function NoScreen() {
+const NoScreen = () => {
   return <></>;
-}
+};
+export default NoScreen;
