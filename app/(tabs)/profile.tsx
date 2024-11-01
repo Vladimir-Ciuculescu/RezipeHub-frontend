@@ -110,45 +110,44 @@ const Profile = () => {
         </TouchableOpacity>
       </View>
 
-      <Pressable onPress={goToEditProfile}>
-        <RNShadowView style={styles.$profileContainerStyle}>
-          <View style={styles.$profileDetailsStyle}>
-            {photoUrl ? (
-              <View style={styles.$imageStyle}>
-                <FastImage
-                  source={{
-                    uri: photoUrl,
-                    priority: FastImage.priority.high,
-                    cache: FastImage.cacheControl.web,
-                  }}
-                  style={{ flex: 1 }}
-                />
-              </View>
-            ) : (
-              <View style={styles.$placeholderstyle}>
-                <Feather
-                  name="user"
-                  size={24}
-                  color={colors.greyscale50}
-                />
-              </View>
-            )}
-            <View>
-              <Text style={styles.$userNameStyle}>{firstName + " " + lastName}</Text>
-              {bio && <Text style={styles.$userDescriptionStyle}>{bio}</Text>}
+      <RNShadowView style={styles.$profileContainerStyle}>
+        <View style={styles.$profileDetailsStyle}>
+          {photoUrl ? (
+            <View style={styles.$imageStyle}>
+              <FastImage
+                source={{
+                  uri: photoUrl,
+                  priority: FastImage.priority.high,
+                  cache: FastImage.cacheControl.web,
+                }}
+                style={{ flex: 1 }}
+              />
             </View>
-          </View>
-          <RNButton
-            style={styles.$userDetailsBtnStyle}
-            iconSource={() => (
-              <RNIcon
-                name="arrow_right"
+          ) : (
+            <View style={styles.$placeholderstyle}>
+              <Feather
+                name="user"
+                size={24}
                 color={colors.greyscale50}
               />
-            )}
-          />
-        </RNShadowView>
-      </Pressable>
+            </View>
+          )}
+          <View>
+            <Text style={styles.$userNameStyle}>{firstName + " " + lastName}</Text>
+            {bio && <Text style={styles.$userDescriptionStyle}>{bio}</Text>}
+          </View>
+        </View>
+        <RNButton
+          onPress={goToEditProfile}
+          style={styles.$userDetailsBtnStyle}
+          iconSource={() => (
+            <RNIcon
+              name="arrow_right"
+              color={colors.greyscale50}
+            />
+          )}
+        />
+      </RNShadowView>
 
       <View>
         <View style={styles.$recipesSectionStyle}>
