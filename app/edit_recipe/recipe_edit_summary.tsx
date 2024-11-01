@@ -103,7 +103,7 @@ const RecipeEditSummary = () => {
           )}
         />
       ),
-      headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit recipeee</Text>,
+      headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit recipe</Text>,
       headerRight: () =>
         isLoading ? (
           <ActivityIndicator color={colors.accent200} />

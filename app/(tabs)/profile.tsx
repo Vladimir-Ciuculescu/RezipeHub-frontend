@@ -44,7 +44,6 @@ const Profile = () => {
   const scrollViewRef = useRef<ScrollView>(null);
 
   const router = useRouter();
-  // const user = useUserData();
   const { id, firstName, lastName, photoUrl, bio } = useUserStore.use.user();
   const setLoggedStatus = useUserStore.use.setLoggedStatus();
   const loggedStatus = useUserStore.use.isLoggedIn();
