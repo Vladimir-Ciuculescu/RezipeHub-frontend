@@ -39,7 +39,7 @@ const RecipeEditEditStep = () => {
         </Pressable>
       ),
 
-      headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit Step</Text>,
+      headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit Steppp</Text>,
       headerRight: () => (
         <Pressable onPress={handleSave}>
           <AntDesign
@@ -85,6 +85,7 @@ const RecipeEditEditStep = () => {
         <RnInput
           value={stepInput}
           onChangeText={setStepInput}
+          multiline
         />
       </View>
     </KeyboardAwareScrollView>

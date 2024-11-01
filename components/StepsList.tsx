@@ -1,4 +1,4 @@
-import { Text, Dimensions, StyleSheet } from "react-native";
+import { Text, Dimensions, StyleSheet, Pressable } from "react-native";
 import React from "react";
 import { View } from "react-native-ui-lib";
 import { spacing } from "@/theme/spacing";
@@ -8,6 +8,8 @@ import { Step } from "@/types/step.types";
 import { Skeleton } from "moti/skeleton";
 
 import SwipeableListItem from "./SwipeableItem";
+import { AntDesign } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 const { width } = Dimensions.get("screen");
 
@@ -70,61 +72,79 @@ interface StepsListProps {
   onDelete?: (step: Step) => void;
   onEdit?: (step: Step) => void;
   loading: boolean;
+  mode: "view" | "edit";
 }
 
-const StepsList: React.FC<StepsListProps> = ({ steps, swipeable, loading, onDelete, onEdit }) => {
+const StepsList: React.FC<StepsListProps> = ({
+  steps,
+  swipeable,
+  loading,
+  onDelete,
+  onEdit,
+  mode,
+}) => {
   const isNotEditable = !swipeable;
+
+  const router = useRouter();
+
+  const goToAddSteps = () => {
+    router.navigate("edit_recipe/recipe_edit_add_steps");
+  };
 
   return (
     <View style={[styles.$containerStyle, isNotEditable && styles.$notEditableContainerStyle]}>
-      {steps.length ? (
-        <>
-          <View
-            row
-            style={styles.$stepContainer}
-          >
-            <Text style={[$sizeStyles.l]}>Steps</Text>
-            <Text style={[$sizeStyles.n, { color: colors.greyscale350 }]}>
-              {steps.length} items
-            </Text>
-          </View>
+      <View
+        row
+        style={styles.$stepContainer}
+      >
+        <Text style={[$sizeStyles.l]}>
+          Steps{"  "}
+          {mode !== "view" && (
+            <Text style={{ ...$sizeStyles.l, color: colors.greyscale300 }}>({steps.length})</Text>
+          )}
+        </Text>
+        {mode === "view" ? (
+          <Text style={[$sizeStyles.n, { color: colors.greyscale350 }]}>{steps.length} items</Text>
+        ) : (
+          <Pressable onPress={() => goToAddSteps()}>
+            <AntDesign
+              name="plus"
+              size={24}
+              color={colors.accent200}
+            />
+          </Pressable>
+        )}
+      </View>
 
-          <React.Fragment>
-            {steps.map((step, index) => {
-              return (
-                <StepListItem
-                  onDelete={onDelete}
-                  onEdit={onEdit}
-                  swipeable={swipeable}
-                  step={step}
-                  key={swipeable ? step.id : index}
-                  number={index}
-                />
-              );
-            })}
-          </React.Fragment>
-        </>
+      {steps.length ? (
+        <React.Fragment>
+          {steps.map((step, index) => (
+            <StepListItem
+              onDelete={onDelete}
+              onEdit={onEdit}
+              swipeable={swipeable}
+              step={step}
+              key={
+                swipeable && step.id
+                  ? `${step.id}-${step.description}`
+                  : `${index}-${step.description}`
+              }
+              number={index}
+            />
+          ))}
+        </React.Fragment>
       ) : loading ? (
         <Skeleton.Group show>
-          <View
-            row
-            style={{ justifyContent: "space-between" }}
-          >
-            <Text style={[$sizeStyles.l]}>Steps</Text>
-          </View>
-
           {Array(5)
             .fill(null)
-            .map((_, key) => {
-              return (
-                <Skeleton
-                  key={key}
-                  colorMode="light"
-                  height={80}
-                  width="100%"
-                />
-              );
-            })}
+            .map((_, key) => (
+              <Skeleton
+                key={key}
+                colorMode="light"
+                height={80}
+                width="100%"
+              />
+            ))}
         </Skeleton.Group>
       ) : null}
     </View>
@@ -190,5 +210,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: spacing.spacing16,
     marginBottom: spacing.spacing16,
+  },
+  noStepsText: {
+    paddingHorizontal: spacing.spacing16,
+    color: colors.greyscale350,
+    fontStyle: "italic",
   },
 });

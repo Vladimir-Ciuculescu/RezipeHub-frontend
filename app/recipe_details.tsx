@@ -326,6 +326,7 @@ const RecipeDetails = () => {
     {
       section: (
         <StepsList
+          mode="view"
           loading={isLoading}
           swipeable={false}
           steps={steps}

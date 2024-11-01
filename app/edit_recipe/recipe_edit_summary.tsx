@@ -161,6 +161,7 @@ const RecipeEditSummary = () => {
     {
       section: (
         <StepsList
+          mode="edit"
           onDelete={onDeleteStep}
           onEdit={onEditStep}
           swipeable

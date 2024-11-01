@@ -225,6 +225,7 @@ const RecipeSubmit = () => {
     {
       section: (
         <StepsList
+          mode="view"
           loading={false}
           swipeable={false}
           steps={steps}

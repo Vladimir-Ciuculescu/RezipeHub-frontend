@@ -47,6 +47,14 @@ const Layout = () => {
           headerShadowVisible: false,
           headerTitleAlign: "center",
         }}
+        name="recipe_edit_add_steps"
+      />
+      <Stack.Screen
+        options={{
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerTitleAlign: "center",
+        }}
         name="recipe_edit_search_ingredients"
       />
     </Stack>
