@@ -1,11 +1,17 @@
+import TokenService from "@/api/services/token.service";
+import UserService from "@/api/services/user.service";
 import { Onboarding_1, Onboarding_2, Onboarding_3 } from "@/assets/illustrations";
 import RNButton from "@/components/shared/RNButton";
 import { ACCESS_TOKEN, ONBOARDED, storage } from "@/storage";
 import { colors } from "@/theme/colors";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
+import { CurrentUser, LoginUserResponse } from "@/types/user.types";
+import useUserStore from "@/zustand/useUserStore";
+import { useAuth } from "@clerk/clerk-expo";
 import { Redirect, router, useRootNavigationState, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { jwtDecode } from "jwt-decode";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, FlatList, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -81,6 +87,10 @@ const steps: Step[] = [
 
 const Onboarding = () => {
   const router = useRouter();
+  const { isSignedIn, isLoaded } = useAuth();
+  const rootNavigationState = useRootNavigationState();
+
+  const setUser = useUserStore.use.setUser();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -123,16 +133,75 @@ const Onboarding = () => {
     );
   };
 
-  const onboarded = storage.getBoolean(ONBOARDED);
-  const user = storage.getString(ACCESS_TOKEN);
+  // useEffect(() => {
+  //   const accessToken = storage.getString(ACCESS_TOKEN);
 
-  if (onboarded) {
-    if (user) {
-      return <Redirect href="(tabs)" />;
-    } else {
-      return <Redirect href="home" />;
-    }
-  }
+  //   if (!isLoaded) {
+  //     return;
+  //   }
+
+  //   if (isSignedIn && accessToken) {
+  //     // const accessToken = storage.getString(ACCESS_TOKEN);
+  //     // const userData = jwtDecode(accessToken!) as LoginUserResponse;
+
+  //     // if (userData.isVerified) {
+  //     //   router.replace("(tabs)");
+  //     // } else {
+  //     //   router.replace({
+  //     //     pathname: "otp_verification",
+  //     //     params: { userId: userData.id, email: userData.email },
+  //     //   });
+  //     // }
+
+  //     getProfile();
+  //   } else {
+  //     router.replace("home");
+  //   }
+  // }, [isSignedIn]);
+
+  // const getProfile = async () => {
+  //   const accessToken = storage.getString(ACCESS_TOKEN);
+
+  //   console.log(1111);
+
+  //   const userData = jwtDecode(accessToken!) as CurrentUser;
+
+  //   const newAccessToken = await UserService.getProfile(userData.id);
+
+  //   const newUserData = jwtDecode(newAccessToken) as CurrentUser;
+
+  //   storage.set(ACCESS_TOKEN, newAccessToken);
+  //   setUser(newUserData);
+
+  //   if (newUserData.isVerified) {
+  //     router.replace("(tabs)");
+  //   } else {
+  //     console.log(7777);
+
+  //     router.replace({
+  //       pathname: "otp_verification",
+  //       params: { userId: newUserData.id, email: newUserData.email },
+  //     });
+
+  //     const payload = { userId: newUserData.id, email: newUserData.email as string };
+  //     await TokenService.resendToken(payload);
+  //   }
+  // };
+
+  // const onboarded = storage.getBoolean(ONBOARDED);
+  // const user = storage.getString(ACCESS_TOKEN);
+
+  // const loggedStatus = useUserStore.use.isLoggedIn();
+
+  // if (onboarded) {
+  //   console.log(33333, user);
+
+  //   if (loggedStatus) {
+  //     return <Redirect href="(tabs)" />;
+  //   } else {
+  //     return <Redirect href="home" />;
+  //   }
+  // }
 
   return (
     <SafeAreaView

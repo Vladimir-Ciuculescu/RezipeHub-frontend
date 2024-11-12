@@ -19,6 +19,8 @@ export const useLatestRecipes = (params: GetLatestRecipesRequest) => {
 };
 
 export const useMostPopularRecipes = (params: GetMostPopularRecipesRequest) => {
+  console.log(params);
+
   return useQuery({
     queryKey: ["most-popular-recipes"],
     queryFn: async () => await RecipeService.getMostPopularRecipes(params),

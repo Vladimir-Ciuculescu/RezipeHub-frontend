@@ -1,13 +1,19 @@
 import TokenService from "@/api/services/token.service";
 import RNButton from "@/components/shared/RNButton";
 import RNIcon from "@/components/shared/RNIcon";
+import { ACCESS_TOKEN, storage } from "@/storage";
 import { colors } from "@/theme/colors";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
+import { LoginUserResponse } from "@/types/user.types";
 import { hideEmail } from "@/utils/hideEmail";
+import useUserStore from "@/zustand/useUserStore";
+import { useAuth } from "@clerk/clerk-expo";
+import { Feather } from "@expo/vector-icons";
 import { useLocalSearchParams, useNavigation, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React, { useState, useRef, memo, useLayoutEffect } from "react";
+import { jwtDecode } from "jwt-decode";
+import React, { useState, useRef, memo, useLayoutEffect, useEffect } from "react";
 import { TouchableOpacity, StyleSheet, Pressable, FlatList, Alert, ScrollView } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { TextField, TextFieldRef, Text, View } from "react-native-ui-lib";
@@ -68,18 +74,55 @@ const OtpVerification = () => {
   const [otp, setOtp] = useState(["", "", "", ""]);
 
   const inputs = useRef<(TextFieldRef | null)[]>([]);
+  const setLoggedStatus = useUserStore.use.setLoggedStatus();
+
+  console.log(2222, "access token");
+
+  const accessToken = storage.getString(ACCESS_TOKEN);
+  console.log(333, accessToken);
+
+  const userData = jwtDecode(accessToken!) as LoginUserResponse;
+
+  const { isSignedIn, isLoaded, signOut } = useAuth();
+  const setUser = useUserStore.use.setUser();
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerLeft: () => (
-        <Pressable onPress={goBack}>
-          <RNIcon name="arrow_left" />
-        </Pressable>
-      ),
+      // headerLeft: () => (
+      // <Pressable onPress={goBack}>
+      //   <RNIcon name="arrow_left" />
+      // </Pressable>
+      // ),
 
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Enter OTP Code</Text>,
+      headerRight: () =>
+        isSignedIn ? (
+          <Pressable onPress={logOut}>
+            <Feather
+              name="log-in"
+              size={24}
+              color={colors.accent300}
+            />
+          </Pressable>
+        ) : null,
     });
   }, [navigation]);
+
+  const logOut = async () => {
+    // storage.delete(ACCESS_TOKEN);
+    // setLoggedStatus(false);
+    // signOut();
+    // router.navigate("/home");
+    try {
+      router.navigate("home"); // Navigate back to the home screen
+      await signOut(); // Sign out from Clerk
+      storage.delete(ACCESS_TOKEN);
+      setLoggedStatus(false);
+      setUser(null); // Reset user state in Zustand
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
 
   const goBack = () => {
     navigation.goBack();

@@ -225,7 +225,7 @@ const RecipeDetails = () => {
                 height: 50,
                 width: 50,
               }}
-              source={require("../assets/gifs/heart.json")}
+              source={require("../../assets/gifs/heart.json")}
             />
           </Pressable>
         ),

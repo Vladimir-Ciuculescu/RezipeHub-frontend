@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Yumhub",
+    "name": "YumHub",
     "slug": "test",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,22 +12,22 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "packagerOpts": {
-      "config": "metro.config.js",
-      "sourceExts": [
-        "expo.ts",
-        "expo.tsx",
-        "expo.js",
-        "expo.jsx",
-        "ts",
-        "tsx",
-        "js",
-        "jsx",
-        "json",
-        "wasm",
-        "svg"
-      ]
-    },
+    // "packagerOpts": {
+    //   "config": "metro.config.js",
+    //   "sourceExts": [
+    //     "expo.ts",
+    //     "expo.tsx",
+    //     "expo.js",
+    //     "expo.jsx",
+    //     "ts",
+    //     "tsx",
+    //     "js",
+    //     "jsx",
+    //     "json",
+    //     "wasm",
+    //     "svg"
+    //   ]
+    // },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.youmhub.test"

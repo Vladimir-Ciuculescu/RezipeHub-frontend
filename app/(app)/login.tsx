@@ -15,7 +15,13 @@ import { Feather } from "@expo/vector-icons";
 import { colors } from "@/theme/colors";
 import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import AuthService from "@/api/services/auth.service";
-import { CurrentUser, LoginUserRequest, SocialLoginUserRequest, User } from "@/types/user.types";
+import {
+  CurrentUser,
+  LoginUserRequest,
+  LoginUserResponse,
+  SocialLoginUserRequest,
+  User,
+} from "@/types/user.types";
 import { ACCESS_TOKEN, REFRESH_TOKEN, storage } from "@/storage";
 import * as WebBrowser from "expo-web-browser";
 import { useWarmUpBrowser } from "@/hooks/useWarmUpBrowser";
@@ -24,6 +30,8 @@ import { SocialProvider } from "@/types/enums";
 import useUserStore from "@/zustand/useUserStore";
 import { jwtDecode } from "jwt-decode";
 import { useQueryClient } from "@tanstack/react-query";
+import * as Linking from "expo-linking";
+import TokenService from "@/api/services/token.service";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -36,7 +44,7 @@ const Login = () => {
   useWarmUpBrowser();
 
   const queryClient = useQueryClient();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, signOut } = useAuth();
   const { user } = useUser();
   const navigation = useNavigation();
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -74,6 +82,8 @@ const Login = () => {
         lastName: lastName!,
       };
 
+      console.log(5555, "here");
+
       handleSocialLogin(payload);
     }
   }, [isSignedIn, loggedIn]);
@@ -106,7 +116,9 @@ const Login = () => {
     }
 
     try {
-      const { createdSessionId, setActive } = await selectedAuth();
+      const redirectUrl = Linking.createURL("/");
+
+      const { createdSessionId, setActive } = await selectedAuth({ redirectUrl });
 
       if (createdSessionId) {
         await setActive!({ session: createdSessionId });
@@ -114,6 +126,7 @@ const Login = () => {
       }
     } catch (error) {
       console.log("Oauth error:", error);
+      signOut();
     }
   };
 
@@ -122,11 +135,25 @@ const Login = () => {
     password: "",
   };
 
-  const goToApp = () => {
+  const goToApp = async (user: LoginUserResponse) => {
+    // if (user.isVerified) {
+    //   router.navigate("(tabs)");
+    // } else {
+    //   console.log(888);
+
+    //   router.navigate({
+    //     pathname: "otp_verification",
+    //     params: { userId: user.id, email: user.email },
+    //   });
+
+    //   const payload = { userId: user.id, email: user.email as string };
+    //   await TokenService.resendToken(payload);
+    // }
     router.navigate("(tabs)");
   };
 
   const storeUser = (accessToken: string, refreshToken: string) => {
+    console.log(99999);
     const userData = jwtDecode(accessToken!) as CurrentUser;
 
     storage.set(ACCESS_TOKEN, accessToken);
@@ -141,7 +168,7 @@ const Login = () => {
       const data = await AuthService.socialLoginUser(payload);
 
       storeUser(data.access_token, data.refresh_token);
-      goToApp();
+      goToApp(data.user);
     } catch (error: any) {
       console.log(error);
       Alert.alert(
@@ -163,7 +190,7 @@ const Login = () => {
       const data = await AuthService.loginUser(payload);
 
       storeUser(data.access_token, data.refresh_token);
-      goToApp();
+      goToApp(data.user);
     } catch (error: any) {
       Alert.alert(
         "Error",
