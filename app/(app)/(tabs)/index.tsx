@@ -4,7 +4,6 @@ import dayjs from "dayjs";
 import { Platform, ScrollView, StyleSheet, Text } from "react-native";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
-import useUserData from "@/hooks/useUserData";
 import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useLatestRecipes, useMostPopularRecipes } from "@/hooks/recipes.hooks";
 import LatestRecipeItem from "@/components/LatestRecipeItem";

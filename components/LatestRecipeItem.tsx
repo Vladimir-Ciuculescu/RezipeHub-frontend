@@ -18,14 +18,6 @@ interface LatestRecipeItemProps {
 const LatestRecipeItem: React.FC<LatestRecipeItemProps> = ({ item }) => {
   const { id, photoUrl, user, isInFavorites } = item;
 
-  // const queryClient = useQueryClient();
-
-  // const [isFavorite, setIsFavorite] = useState(isInFavorites);
-
-  // const heartRef = useRef<LottieView>(null);
-
-  // const userData = useUserData();
-
   const router = useRouter();
 
   const goToRecipe = () => {

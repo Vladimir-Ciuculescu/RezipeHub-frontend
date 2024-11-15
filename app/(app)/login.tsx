@@ -22,7 +22,7 @@ import {
   SocialLoginUserRequest,
   User,
 } from "@/types/user.types";
-import { ACCESS_TOKEN, REFRESH_TOKEN, storage } from "@/storage";
+import { ACCESS_TOKEN, IS_LOGGED_IN, REFRESH_TOKEN, storage } from "@/storage";
 import * as WebBrowser from "expo-web-browser";
 import { useWarmUpBrowser } from "@/hooks/useWarmUpBrowser";
 import { useAuth, useOAuth, useUser } from "@clerk/clerk-expo";
@@ -82,8 +82,6 @@ const Login = () => {
         lastName: lastName!,
       };
 
-      console.log(5555, "here");
-
       handleSocialLogin(payload);
     }
   }, [isSignedIn, loggedIn]);
@@ -97,11 +95,6 @@ const Login = () => {
   };
 
   const onSelectAuth = async (strategy: Strategy) => {
-    //TODO : Keep in mind for the future
-    // if (isSignedIn) {
-    //   signOut();
-    // }
-
     const selectedAuth = {
       [Strategy.Google]: googleFlow,
       [Strategy.Facebook]: facebookFlow,
@@ -136,24 +129,19 @@ const Login = () => {
   };
 
   const goToApp = async (user: LoginUserResponse) => {
-    // if (user.isVerified) {
-    //   router.navigate("(tabs)");
-    // } else {
-    //   console.log(888);
-
-    //   router.navigate({
-    //     pathname: "otp_verification",
-    //     params: { userId: user.id, email: user.email },
-    //   });
-
-    //   const payload = { userId: user.id, email: user.email as string };
-    //   await TokenService.resendToken(payload);
-    // }
-    router.navigate("(tabs)");
+    if (user.isVerified) {
+      router.navigate("(tabs)");
+    } else {
+      const payload = { userId: user.id, email: user.email as string };
+      await TokenService.resendToken(payload);
+      router.navigate({
+        pathname: "otp_verification",
+        params: { userId: user.id, email: user.email },
+      });
+    }
   };
 
   const storeUser = (accessToken: string, refreshToken: string) => {
-    console.log(99999);
     const userData = jwtDecode(accessToken!) as CurrentUser;
 
     storage.set(ACCESS_TOKEN, accessToken);
@@ -168,6 +156,9 @@ const Login = () => {
       const data = await AuthService.socialLoginUser(payload);
 
       storeUser(data.access_token, data.refresh_token);
+
+      storage.set(IS_LOGGED_IN, true);
+
       goToApp(data.user);
     } catch (error: any) {
       console.log(error);
@@ -190,6 +181,8 @@ const Login = () => {
       const data = await AuthService.loginUser(payload);
 
       storeUser(data.access_token, data.refresh_token);
+      storage.set(IS_LOGGED_IN, true);
+
       goToApp(data.user);
     } catch (error: any) {
       Alert.alert(
