@@ -9,7 +9,7 @@ import {
 } from "@/types/recipe.types";
 import { handleError } from "../handleError";
 import { axiosInstance } from "..";
-import { RECIPES } from "../constants";
+import { FAVORITES, RECIPES } from "../constants";
 import { QueryKeyType } from "@/types/query";
 import { CategoryItem } from "@/types/category.types";
 
@@ -67,6 +67,21 @@ const RecipeService = {
   getLatestRecipes: async (params: GetLatestRecipesRequest) => {
     try {
       const { data } = await axiosInstance.get(`${RECIPES}/latest`, { params });
+      return data;
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+
+  getPaginatedLatestRecipes: async (params: any) => {
+    try {
+      const payload = {
+        page: params.pageParam.page,
+        userId: params.pageParam.userId,
+        limit: 10,
+      };
+
+      const { data } = await axiosInstance.get(`${RECIPES}/latest`, { params: payload });
       return data;
     } catch (error) {
       throw handleError(error);

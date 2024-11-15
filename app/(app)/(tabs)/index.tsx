@@ -1,7 +1,7 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "react-native-ui-lib";
 import dayjs from "dayjs";
-import { Platform, ScrollView, StyleSheet, Text } from "react-native";
+import { Platform, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
 import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -13,6 +13,8 @@ import CategoryItem from "@/components/CategoryItem";
 import MostPopularRecipeItem from "@/components/MostPopularRecipeItem";
 import useUserStore from "@/zustand/useUserStore";
 import { useEffect, useRef } from "react";
+import RNButton from "@/components/shared/RNButton";
+import { router } from "expo-router";
 
 const categories = [
   {
@@ -94,10 +96,6 @@ const categories = [
 ];
 
 const Home = () => {
-  // const user = useUserData();
-
-  // const { id, firstName, lastName } = user;
-
   const userData = useUserStore.use.user();
   const loggedStatus = useUserStore.use.isLoggedIn();
 
@@ -174,6 +172,10 @@ const Home = () => {
 
   const paddingBottom = Platform.OS === "ios" ? 210 : 190;
 
+  const goToAllLatestRecipes = () => {
+    router.push("all_latest_recipes");
+  };
+
   return (
     <ScrollView
       ref={scrollViewRef}
@@ -202,7 +204,10 @@ const Home = () => {
           }}
         >
           <Text style={styles.$sectionTitleStyle}>Latest</Text>
-          <Text style={styles.$seeAllBtnStyle}>See All</Text>
+
+          <Pressable onPress={goToAllLatestRecipes}>
+            <Text style={styles.$seeAllBtnStyle}>See All</Text>
+          </Pressable>
         </View>
         <ScrollView
           showsHorizontalScrollIndicator={false}
