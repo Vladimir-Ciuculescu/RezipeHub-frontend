@@ -176,6 +176,10 @@ const Home = () => {
     router.push("all_latest_recipes");
   };
 
+  const goToAllMostPopularRecipes = () => {
+    router.push("all_most_popular_recipes");
+  };
+
   return (
     <ScrollView
       ref={scrollViewRef}
@@ -261,7 +265,10 @@ const Home = () => {
           }}
         >
           <Text style={styles.$sectionTitleStyle}>Most Popular</Text>
-          <Text style={styles.$seeAllBtnStyle}>See All</Text>
+          {/* <Text style={styles.$seeAllBtnStyle}>See All</Text> */}
+          <Pressable onPress={goToAllMostPopularRecipes}>
+            <Text style={styles.$seeAllBtnStyle}>See All</Text>
+          </Pressable>
         </View>
         <ScrollView
           showsHorizontalScrollIndicator={false}

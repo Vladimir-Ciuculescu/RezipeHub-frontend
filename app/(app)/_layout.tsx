@@ -110,6 +110,17 @@ const AppLayout = () => {
         }}
       />
       <Stack.Screen
+        name="all_most_popular_recipes"
+        options={{
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerTitleAlign: "center",
+          headerStyle: { backgroundColor: colors.greyscale150 },
+          contentStyle: { backgroundColor: colors.greyscale150 },
+          gestureEnabled: false,
+        }}
+      />
+      <Stack.Screen
         options={{ headerShown: false, gestureEnabled: false, animation: "fade" }}
         name="onboarding"
       />

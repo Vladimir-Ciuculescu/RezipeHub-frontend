@@ -1,48 +1,40 @@
-import { Text, StyleSheet, Pressable, FlatList, ActivityIndicator, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+  Dimensions,
+} from "react-native";
 import React, { useLayoutEffect, useMemo } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation, useRouter } from "expo-router";
+import RNIcon from "@/components/shared/RNIcon";
+import { $sizeStyles } from "@/theme/typography";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import RecipeService from "@/api/services/recipe.service";
 import useUserData from "@/hooks/useUserData";
-import RNIcon from "@/components/shared/RNIcon";
-import { $sizeStyles } from "@/theme/typography";
-import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "@/theme/colors";
-import { No_results } from "@/assets/illustrations";
-import { spacing } from "@/theme/spacing";
-import { Feather, Ionicons } from "@expo/vector-icons";
 import RNShadowView from "@/components/shared/RNShadowView";
 import FastImage from "react-native-fast-image";
-import { View } from "react-native-ui-lib";
-import { LatestRecipeResponse } from "@/types/recipe.types";
-import { router } from "expo-router";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import { spacing } from "@/theme/spacing";
+import { MostPopularRecipeResponse } from "@/types/recipe.types";
 
-const { width, height } = Dimensions.get("screen");
+const { width } = Dimensions.get("screen");
 
 const GRID_CONTAINER_SIZE = width * 0.4;
 const GRID_COLUMNS = 2;
 
-const AllLatestRecipes = () => {
-  const user = useUserData();
-
+const AllMostPopularRecipes = () => {
   const navigation = useNavigation();
+  const user = useUserData();
+  const router = useRouter();
 
-  const {
-    data: latestRecipes,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["all-latest-recipes"],
-    queryFn: RecipeService.getPaginatedLatestRecipes,
-    initialPageParam: { page: 0, userId: user.id },
-
-    getNextPageParam: (lastPage, allPages, lastPageParam) => {
-      return !lastPage || !lastPage.length
-        ? undefined
-        : { ...lastPageParam, page: lastPageParam.page + 1 };
-    },
-  });
+  const goBack = () => {
+    navigation.goBack();
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -51,13 +43,35 @@ const AllLatestRecipes = () => {
           <RNIcon name="arrow_left" />
         </Pressable>
       ),
-      headerTitle: () => <Text style={$sizeStyles.h2}>Latest recipes</Text>,
+      headerTitle: () => <Text style={styles.$headerTitleStyle}>Most popular</Text>,
     });
   }, [navigation]);
 
-  const goBack = () => {
-    navigation.goBack();
-  };
+  const {
+    data: mostPopularRecipes,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["all-most-popular-recipes"],
+    queryFn: RecipeService.getPaginatedMostPopularRecipes,
+    initialPageParam: { page: 0, userId: user.id },
+    getNextPageParam: (lastPage, allPages, lastPageParam) => {
+      return !lastPage || !lastPage.length
+        ? undefined
+        : { ...lastPageParam, page: lastPageParam.page + 1 };
+    },
+  });
+
+  const getItems = useMemo(() => {
+    if (mostPopularRecipes && mostPopularRecipes.pages) {
+      const allItems = mostPopularRecipes.pages.flatMap((page) => page);
+
+      return allItems;
+    }
+
+    return [];
+  }, [mostPopularRecipes]);
 
   const loadNextPage = () => {
     if (hasNextPage) {
@@ -65,17 +79,7 @@ const AllLatestRecipes = () => {
     }
   };
 
-  const getItems = useMemo(() => {
-    if (latestRecipes && latestRecipes.pages) {
-      const allItems = latestRecipes.pages.flatMap((page) => page);
-
-      return allItems;
-    }
-
-    return [];
-  }, [latestRecipes]);
-
-  const goToRecipeDetails = (item: LatestRecipeResponse) => {
+  const goToRecipeDetails = (item: MostPopularRecipeResponse) => {
     router.navigate({
       pathname: "/recipe_details",
       params: { id: item.id, userId: item.user.id, owner: JSON.stringify(item.user) },
@@ -108,7 +112,7 @@ const AllLatestRecipes = () => {
                     />
                   </View>
                 )}
-                <View style={styles.$contentDetailsStyle}>
+                <View style={styles.$contentColumnStyle}>
                   <Text
                     numberOfLines={3}
                     style={styles.$rowTextStyle}
@@ -194,18 +198,12 @@ const AllLatestRecipes = () => {
             ) : null
           }
         />
-      ) : (
-        <View style={styles.$noResultsContainerStyle}>
-          <No_results
-            height={height / 3}
-            width={width}
-          />
-          <Text style={styles.$noResultsTextStyle}>Add meals to favorites !</Text>
-        </View>
-      )}
+      ) : null}
     </SafeAreaView>
   );
 };
+
+export default AllMostPopularRecipes;
 
 const styles = StyleSheet.create({
   $containerStyle: {
@@ -217,6 +215,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: spacing.spacing24,
     paddingTop: spacing.spacing32,
+  },
+  $headerTitleStyle: {
+    ...$sizeStyles.h2,
+  },
+  $flexStyle: {
+    flex: 1,
   },
   $emptyContainerStyle: {
     width: GRID_CONTAINER_SIZE * GRID_COLUMNS,
@@ -278,10 +282,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  $flexStyle: {
-    flex: 1,
-  },
-  $contentDetailsStyle: {
+  $contentColumnStyle: {
     flex: 1,
     paddingHorizontal: spacing.spacing4,
     flexDirection: "column",
@@ -351,16 +352,4 @@ const styles = StyleSheet.create({
     ...$sizeStyles.s,
     color: colors.greyscale300,
   },
-  $noResultsContainerStyle: {
-    alignItems: "center",
-    flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: spacing.spacing12,
-  },
-  $noResultsTextStyle: {
-    color: colors.slate900,
-    ...$sizeStyles.h2,
-  },
 });
-
-export default AllLatestRecipes;

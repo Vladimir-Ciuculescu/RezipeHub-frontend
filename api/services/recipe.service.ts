@@ -97,6 +97,21 @@ const RecipeService = {
     }
   },
 
+  getPaginatedMostPopularRecipes: async (params: any) => {
+    try {
+      const payload = {
+        page: params.pageParam.page,
+        userId: params.pageParam.userId,
+        limit: 10,
+      };
+
+      const { data } = await axiosInstance.get(`${RECIPES}/most-popular`, { params: payload });
+      return data;
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+
   getRecipes: async (params: QueryKeyType) => {
     const [_, filters] = params.queryKey;
 
