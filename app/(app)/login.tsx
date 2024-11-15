@@ -15,8 +15,14 @@ import { Feather } from "@expo/vector-icons";
 import { colors } from "@/theme/colors";
 import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import AuthService from "@/api/services/auth.service";
-import { CurrentUser, LoginUserRequest, SocialLoginUserRequest, User } from "@/types/user.types";
-import { ACCESS_TOKEN, REFRESH_TOKEN, storage } from "@/storage";
+import {
+  CurrentUser,
+  LoginUserRequest,
+  LoginUserResponse,
+  SocialLoginUserRequest,
+  User,
+} from "@/types/user.types";
+import { ACCESS_TOKEN, IS_LOGGED_IN, REFRESH_TOKEN, storage } from "@/storage";
 import * as WebBrowser from "expo-web-browser";
 import { useWarmUpBrowser } from "@/hooks/useWarmUpBrowser";
 import { useAuth, useOAuth, useUser } from "@clerk/clerk-expo";
@@ -24,6 +30,8 @@ import { SocialProvider } from "@/types/enums";
 import useUserStore from "@/zustand/useUserStore";
 import { jwtDecode } from "jwt-decode";
 import { useQueryClient } from "@tanstack/react-query";
+import * as Linking from "expo-linking";
+import TokenService from "@/api/services/token.service";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -36,7 +44,7 @@ const Login = () => {
   useWarmUpBrowser();
 
   const queryClient = useQueryClient();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, signOut } = useAuth();
   const { user } = useUser();
   const navigation = useNavigation();
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -87,11 +95,6 @@ const Login = () => {
   };
 
   const onSelectAuth = async (strategy: Strategy) => {
-    //TODO : Keep in mind for the future
-    // if (isSignedIn) {
-    //   signOut();
-    // }
-
     const selectedAuth = {
       [Strategy.Google]: googleFlow,
       [Strategy.Facebook]: facebookFlow,
@@ -106,7 +109,9 @@ const Login = () => {
     }
 
     try {
-      const { createdSessionId, setActive } = await selectedAuth();
+      const redirectUrl = Linking.createURL("/");
+
+      const { createdSessionId, setActive } = await selectedAuth({ redirectUrl });
 
       if (createdSessionId) {
         await setActive!({ session: createdSessionId });
@@ -114,6 +119,7 @@ const Login = () => {
       }
     } catch (error) {
       console.log("Oauth error:", error);
+      signOut();
     }
   };
 
@@ -122,8 +128,17 @@ const Login = () => {
     password: "",
   };
 
-  const goToApp = () => {
-    router.navigate("(tabs)");
+  const goToApp = async (user: LoginUserResponse) => {
+    if (user.isVerified) {
+      router.navigate("(tabs)");
+    } else {
+      const payload = { userId: user.id, email: user.email as string };
+      await TokenService.resendToken(payload);
+      router.navigate({
+        pathname: "otp_verification",
+        params: { userId: user.id, email: user.email },
+      });
+    }
   };
 
   const storeUser = (accessToken: string, refreshToken: string) => {
@@ -141,7 +156,10 @@ const Login = () => {
       const data = await AuthService.socialLoginUser(payload);
 
       storeUser(data.access_token, data.refresh_token);
-      goToApp();
+
+      storage.set(IS_LOGGED_IN, true);
+
+      goToApp(data.user);
     } catch (error: any) {
       console.log(error);
       Alert.alert(
@@ -163,7 +181,9 @@ const Login = () => {
       const data = await AuthService.loginUser(payload);
 
       storeUser(data.access_token, data.refresh_token);
-      goToApp();
+      storage.set(IS_LOGGED_IN, true);
+
+      goToApp(data.user);
     } catch (error: any) {
       Alert.alert(
         "Error",

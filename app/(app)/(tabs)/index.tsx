@@ -4,7 +4,6 @@ import dayjs from "dayjs";
 import { Platform, ScrollView, StyleSheet, Text } from "react-native";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
-import useUserData from "@/hooks/useUserData";
 import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useLatestRecipes, useMostPopularRecipes } from "@/hooks/recipes.hooks";
 import LatestRecipeItem from "@/components/LatestRecipeItem";
@@ -17,79 +16,79 @@ import { useEffect, useRef } from "react";
 
 const categories = [
   {
-    path: require("../../assets/images/categories/pizza.png"),
+    path: require("../../../assets/images/categories/pizza.png"),
     title: "Pizza",
   },
   {
-    path: require("../../assets/images/categories/hamburger.png"),
+    path: require("../../../assets/images/categories/hamburger.png"),
     title: "Hamburger",
   },
   {
-    path: require("../../assets/images/categories/ramen.png"),
+    path: require("../../../assets/images/categories/ramen.png"),
     title: "Asiatic",
   },
   {
-    path: require("../../assets/images/categories/burito.png"),
+    path: require("../../../assets/images/categories/burito.png"),
     title: "Burrito",
   },
   {
-    path: require("../../assets/images/categories/noodles.png"),
+    path: require("../../../assets/images/categories/noodles.png"),
     title: "Noodles",
   },
   {
-    path: require("../../assets/images/categories/pasta.png"),
+    path: require("../../../assets/images/categories/pasta.png"),
     title: "Pasta",
   },
   {
-    path: require("../../assets/images/categories/barbecue.png"),
+    path: require("../../../assets/images/categories/barbecue.png"),
     title: "Barbecue",
   },
   {
-    path: require("../../assets/images/categories/fish.png"),
+    path: require("../../../assets/images/categories/fish.png"),
     title: "Fish",
   },
   {
-    path: require("../../assets/images/categories/salad.png"),
+    path: require("../../../assets/images/categories/salad.png"),
     title: "Salad",
   },
   {
-    path: require("../../assets/images/categories/appetizer.png"),
+    path: require("../../../assets/images/categories/appetizer.png"),
     title: "Appetizer",
   },
   {
-    path: require("../../assets/images/categories/kebab.png"),
+    path: require("../../../assets/images/categories/kebab.png"),
     title: "Kebab",
   },
   {
-    path: require("../../assets/images/categories/sushi.png"),
+    path: require("../../../assets/images/categories/sushi.png"),
     title: "Sushi",
   },
   {
-    path: require("../../assets/images/categories/brunch.png"),
+    path: require("../../../assets/images/categories/brunch.png"),
     title: "Brunch",
   },
   {
-    path: require("../../assets/images/categories/sandwich.png"),
+    path: require("../../../assets/images/categories/sandwich.png"),
     title: "Sandwich",
   },
   {
-    path: require("../../assets/images/categories/coffee.png"),
+    path: require("../../../assets/images/categories/coffee.png"),
     title: "Coffee",
   },
   {
-    path: require("../../assets/images/categories/taco.png"),
+    path: require("../../../assets/images/categories/taco.png"),
     title: "Taco",
   },
   {
-    path: require("../../assets/images/categories/broccoli.png"),
+    path: require("../../../assets/images/categories/broccoli.png"),
     title: "Vegetarian",
   },
   {
-    path: require("../../assets/images/categories/vegan.png"),
+    path: require("../../../assets/images/categories/vegan.png"),
     title: "Vegan",
   },
   {
-    path: require("../../assets/images/categories/other.png"),
+    path: require("../../../assets/images/categories/other.png"),
     title: "Other",
   },
 ];

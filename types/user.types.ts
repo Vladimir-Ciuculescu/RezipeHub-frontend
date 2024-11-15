@@ -21,6 +21,7 @@ export interface User {
 export interface CurrentUser extends User {
   iat: number;
   exp: number;
+  isVerified: boolean;
 }
 
 export interface RegisterUserRequest {
@@ -42,6 +43,16 @@ export interface SocialLoginUserRequest {
 export interface LoginUserRequest {
   email: string;
   password: string;
+}
+
+export interface LoginUserResponse {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  isVerified: boolean;
+  photoUrl?: string;
+  bio: string;
 }
 
 export interface ResetPasswordRequest {

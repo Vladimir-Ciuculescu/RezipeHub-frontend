@@ -18,10 +18,7 @@ const Home = () => {
   };
 
   return (
-    <View
-      flex
-      style={styles.$containerstyle}
-    >
+    <View style={styles.$containerstyle}>
       <StatusBar style="light" />
 
       <Home_food />
@@ -52,6 +49,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     gap: spacing.spacing64,
+    flex: 1,
   },
 
   $textContainerStyle: {

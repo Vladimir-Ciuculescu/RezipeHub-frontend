@@ -1,14 +1,18 @@
 import TokenService from "@/api/services/token.service";
 import RNButton from "@/components/shared/RNButton";
 import RNIcon from "@/components/shared/RNIcon";
+import { ACCESS_TOKEN, IS_LOGGED_IN, storage } from "@/storage";
 import { colors } from "@/theme/colors";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
 import { hideEmail } from "@/utils/hideEmail";
+import useUserStore from "@/zustand/useUserStore";
+import { useAuth } from "@clerk/clerk-expo";
+import { Feather } from "@expo/vector-icons";
 import { useLocalSearchParams, useNavigation, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useState, useRef, memo, useLayoutEffect } from "react";
-import { TouchableOpacity, StyleSheet, Pressable, FlatList, Alert, ScrollView } from "react-native";
+import { TouchableOpacity, StyleSheet, FlatList, Alert } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { TextField, TextFieldRef, Text, View } from "react-native-ui-lib";
 
@@ -68,18 +72,37 @@ const OtpVerification = () => {
   const [otp, setOtp] = useState(["", "", "", ""]);
 
   const inputs = useRef<(TextFieldRef | null)[]>([]);
+  const setLoggedStatus = useUserStore.use.setLoggedStatus();
+
+  const isLoggedIn = storage.getBoolean(IS_LOGGED_IN);
+
+  const { signOut } = useAuth();
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerLeft: () => (
-        <Pressable onPress={goBack}>
-          <RNIcon name="arrow_left" />
-        </Pressable>
-      ),
-
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Enter OTP Code</Text>,
+
+      headerRight: () =>
+        isLoggedIn ? (
+          <TouchableOpacity onPress={logOut}>
+            <Feather
+              name="log-in"
+              size={24}
+              color={colors.accent300}
+            />
+          </TouchableOpacity>
+        ) : null,
     });
   }, [navigation]);
+
+  const logOut = async () => {
+    await signOut();
+
+    storage.delete(ACCESS_TOKEN);
+    storage.delete(IS_LOGGED_IN);
+    setLoggedStatus(false);
+    router.replace("home");
+  };
 
   const goBack = () => {
     navigation.goBack();
@@ -176,7 +199,7 @@ const OtpVerification = () => {
     Alert.alert(
       "Validation Successful",
       "Your token has been successfully validated. Welcome!",
-      [{ text: "OK", onPress: goToLogin }],
+      [{ text: "OK", onPress: goNext }],
       { cancelable: false, userInterfaceStyle: "light" },
     );
   };
@@ -186,6 +209,10 @@ const OtpVerification = () => {
       cancelable: false,
       userInterfaceStyle: "light",
     });
+  };
+
+  const goNext = () => {
+    router.replace(isLoggedIn ? "(tabs)" : "login");
   };
 
   const goToLogin = () => {
@@ -213,7 +240,8 @@ const OtpVerification = () => {
       <StatusBar style="dark" />
       <View style={{ gap: spacing.spacing64 }}>
         <Text style={styles.$labelStyle}>
-          We Already have sent you verification e-mail to {hiddenEmail}, please check it
+          We've sent a verification code to {hiddenEmail}. Please check your email and enter the
+          code below
         </Text>
         <View
           row

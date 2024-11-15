@@ -1,20 +1,15 @@
 import { Text, Pressable, StyleSheet } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import RNShadowView from "./shared/RNShadowView";
 import FastImage from "react-native-fast-image";
 import { spacing } from "@/theme/spacing";
 import RNIcon from "./shared/RNIcon";
-import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { colors } from "@/theme/colors";
 import { View } from "react-native-ui-lib";
 import { $sizeStyles } from "@/theme/typography";
 import { LatestRecipeResponse } from "@/types/recipe.types";
 import { useRouter } from "expo-router";
-import LottieView from "lottie-react-native";
-import useUserData from "@/hooks/useUserData";
-import Toast from "react-native-toast-message";
-import FavoritesService from "@/api/services/favorites.service";
-import { useQueryClient } from "@tanstack/react-query";
 
 interface LatestRecipeItemProps {
   item: LatestRecipeResponse;
@@ -22,14 +17,6 @@ interface LatestRecipeItemProps {
 
 const LatestRecipeItem: React.FC<LatestRecipeItemProps> = ({ item }) => {
   const { id, photoUrl, user, isInFavorites } = item;
-
-  // const queryClient = useQueryClient();
-
-  // const [isFavorite, setIsFavorite] = useState(isInFavorites);
-
-  // const heartRef = useRef<LottieView>(null);
-
-  // const userData = useUserData();
 
   const router = useRouter();
 
@@ -39,44 +26,6 @@ const LatestRecipeItem: React.FC<LatestRecipeItemProps> = ({ item }) => {
       params: { id, userId: user.id, owner: JSON.stringify(user) },
     });
   };
-
-  // useEffect(() => {
-  //   if (isFavorite) {
-  //     heartRef.current?.play(140, 144);
-  //   } else {
-  //     heartRef.current?.reset();
-  //   }
-  // }, [item]);
-
-  // const toggleFavorite = async () => {
-  //   const payload = { recipeId: id, userId: userData.id };
-
-  //   await FavoritesService.toggleFavoriteRecipe(payload);
-
-  //   queryClient.invalidateQueries({ queryKey: ["favorites"] });
-
-  //   if (isFavorite) {
-  //     heartRef.current?.reset();
-  //   } else {
-  //     heartRef.current?.play(30, 144);
-  //   }
-
-  //   setIsFavorite((oldValue) => !oldValue);
-
-  //   Toast.show({
-  //     type: "success",
-  //     props: {
-  //       title: isFavorite ? "Recipe removed from favorites !" : "Recipe added to favorites !",
-  //       icon: (
-  //         <AntDesign
-  //           name="check"
-  //           size={24}
-  //           color={colors.greyscale50}
-  //         />
-  //       ),
-  //     },
-  //   });
-  // };
 
   return (
     <Pressable onPress={goToRecipe}>
@@ -91,31 +40,6 @@ const LatestRecipeItem: React.FC<LatestRecipeItemProps> = ({ item }) => {
               }}
               style={{ flex: 1 }}
             />
-            {/* <Pressable
-              onPress={toggleFavorite}
-              style={{
-                height: 40,
-                width: 40,
-                backgroundColor: colors.greyscale50,
-                position: "absolute",
-                borderRadius: spacing.spacing12,
-                justifyContent: "center",
-                alignItems: "center",
-                right: spacing.spacing8,
-                top: spacing.spacing8,
-              }}
-            >
-              <LottieView
-                loop={false}
-                ref={heartRef}
-                autoPlay={false}
-                style={{
-                  height: 50,
-                  width: 50,
-                }}
-                source={require("../assets/gifs/heart.json")}
-              />
-            </Pressable> */}
           </View>
         ) : (
           <View style={styles.$placeholderstyle}>
@@ -124,31 +48,6 @@ const LatestRecipeItem: React.FC<LatestRecipeItemProps> = ({ item }) => {
               size={35}
               color={colors.greyscale400}
             />
-            {/* <Pressable
-              onPress={toggleFavorite}
-              style={{
-                height: 40,
-                width: 40,
-                backgroundColor: colors.greyscale50,
-                position: "absolute",
-                borderRadius: spacing.spacing12,
-                justifyContent: "center",
-                alignItems: "center",
-                right: spacing.spacing8,
-                top: spacing.spacing8,
-              }}
-            >
-              <LottieView
-                loop={false}
-                ref={heartRef}
-                autoPlay={false}
-                style={{
-                  height: 50,
-                  width: 50,
-                }}
-                source={require("../assets/gifs/heart.json")}
-              />
-            </Pressable> */}
           </View>
         )}
 

@@ -13,7 +13,7 @@ import Feather from "@expo/vector-icons/Feather";
 import { colors } from "@/theme/colors";
 import RNButton from "@/components/shared/RNButton";
 import RNIcon from "@/components/shared/RNIcon";
-import { ACCESS_TOKEN, storage } from "@/storage";
+import { ACCESS_TOKEN, IS_LOGGED_IN, storage } from "@/storage";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
 import { useAuth } from "@clerk/clerk-expo";
@@ -75,11 +75,13 @@ const Profile = () => {
     router.navigate("/all_favorite_recipes");
   };
 
-  const logOut = () => {
+  const logOut = async () => {
+    await signOut();
+
     storage.delete(ACCESS_TOKEN);
+    storage.delete(IS_LOGGED_IN);
     setLoggedStatus(false);
-    signOut();
-    router.navigate("/home");
+    router.replace("home");
   };
 
   const goToEditProfile = () => {

@@ -1,11 +1,17 @@
+import TokenService from "@/api/services/token.service";
+import UserService from "@/api/services/user.service";
 import { Onboarding_1, Onboarding_2, Onboarding_3 } from "@/assets/illustrations";
 import RNButton from "@/components/shared/RNButton";
 import { ACCESS_TOKEN, ONBOARDED, storage } from "@/storage";
 import { colors } from "@/theme/colors";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
+import { CurrentUser, LoginUserResponse } from "@/types/user.types";
+import useUserStore from "@/zustand/useUserStore";
+import { useAuth } from "@clerk/clerk-expo";
 import { Redirect, router, useRootNavigationState, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { jwtDecode } from "jwt-decode";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, FlatList, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -81,6 +87,10 @@ const steps: Step[] = [
 
 const Onboarding = () => {
   const router = useRouter();
+  const { isSignedIn, isLoaded } = useAuth();
+  const rootNavigationState = useRootNavigationState();
+
+  const setUser = useUserStore.use.setUser();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -122,17 +132,6 @@ const Onboarding = () => {
       { useNativeDriver: false },
     );
   };
-
-  const onboarded = storage.getBoolean(ONBOARDED);
-  const user = storage.getString(ACCESS_TOKEN);
-
-  if (onboarded) {
-    if (user) {
-      return <Redirect href="(tabs)" />;
-    } else {
-      return <Redirect href="home" />;
-    }
-  }
 
   return (
     <SafeAreaView

@@ -1,14 +1,11 @@
-import UserService from "@/api/services/user.service";
 import RNIcon from "@/components/shared/RNIcon";
 import { ACCESS_TOKEN, storage } from "@/storage";
 import { colors } from "@/theme/colors";
-import { CurrentUser } from "@/types/user.types";
 import useRecipeStore from "@/zustand/useRecipeStore";
 import useUserStore from "@/zustand/useUserStore";
+import { useAuth } from "@clerk/clerk-expo";
 import { Tabs, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { jwtDecode } from "jwt-decode";
-import { useEffect } from "react";
 import { Platform, Pressable, StyleSheet } from "react-native";
 
 const TabLayout = () => {
@@ -21,24 +18,6 @@ const TabLayout = () => {
     reset();
     router.navigate("add_recipe");
   };
-
-  useEffect(() => {
-    const getProfile = async () => {
-      //TODO : Possibly need to modify this
-      const accessToken = storage.getString(ACCESS_TOKEN);
-      const userData = jwtDecode(accessToken!) as CurrentUser;
-
-      const newAccessToken = await UserService.getProfile(userData.id);
-
-      const newUserData = jwtDecode(newAccessToken) as CurrentUser;
-
-      storage.set(ACCESS_TOKEN, newAccessToken);
-      // setUser(userData);
-      setUser(newUserData);
-    };
-
-    getProfile();
-  }, []);
 
   return (
     <>
