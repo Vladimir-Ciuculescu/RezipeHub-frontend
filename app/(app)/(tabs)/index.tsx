@@ -26,11 +26,11 @@ const categories = [
     title: "Hamburger",
   },
   {
-    path: require("../../../assets/images/categories/ramen.png"),
+    path: require("../../../assets/images/categories/asiatic.png"),
     title: "Asiatic",
   },
   {
-    path: require("../../../assets/images/categories/burito.png"),
+    path: require("../../../assets/images/categories/burrito.png"),
     title: "Burrito",
   },
   {
@@ -82,7 +82,7 @@ const categories = [
     title: "Taco",
   },
   {
-    path: require("../../../assets/images/categories/broccoli.png"),
+    path: require("../../../assets/images/categories/vegetarian.png"),
     title: "Vegetarian",
   },
   {
@@ -265,7 +265,6 @@ const Home = () => {
           }}
         >
           <Text style={styles.$sectionTitleStyle}>Most Popular</Text>
-          {/* <Text style={styles.$seeAllBtnStyle}>See All</Text> */}
           <Pressable onPress={goToAllMostPopularRecipes}>
             <Text style={styles.$seeAllBtnStyle}>See All</Text>
           </Pressable>

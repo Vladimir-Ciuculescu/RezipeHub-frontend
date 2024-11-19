@@ -1,48 +1,100 @@
-import { Text, StyleSheet, Pressable, FlatList, ActivityIndicator, Dimensions } from "react-native";
+import { Text, Pressable, StyleSheet, FlatList, ActivityIndicator, Dimensions } from "react-native";
 import React, { useLayoutEffect, useMemo } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import RNIcon from "@/components/shared/RNIcon";
+import { $sizeStyles } from "@/theme/typography";
+import FastImage from "react-native-fast-image";
+import { View } from "react-native-ui-lib";
+import { spacing } from "@/theme/spacing";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import RecipeService from "@/api/services/recipe.service";
 import useUserData from "@/hooks/useUserData";
-import RNIcon from "@/components/shared/RNIcon";
-import { $sizeStyles } from "@/theme/typography";
-import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "@/theme/colors";
 import { No_results } from "@/assets/illustrations";
-import { spacing } from "@/theme/spacing";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import RNShadowView from "@/components/shared/RNShadowView";
-import FastImage from "react-native-fast-image";
-import { View } from "react-native-ui-lib";
-import { LatestRecipeResponse } from "@/types/recipe.types";
-import { router } from "expo-router";
+
+interface SearchParams {
+  [key: string]: string;
+  category: string;
+}
 
 const { width, height } = Dimensions.get("screen");
 
 const GRID_CONTAINER_SIZE = width * 0.4;
 const GRID_COLUMNS = 2;
 
-const AllLatestRecipes = () => {
-  const user = useUserData();
-
+const AllByCategoryRecipes = () => {
   const navigation = useNavigation();
 
+  const { category } = useLocalSearchParams<SearchParams>();
+
+  const user = useUserData();
+
   const {
-    data: latestRecipes,
+    data: byCategoryRecipes,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
   } = useInfiniteQuery({
-    queryKey: ["all-latest-recipes"],
-    queryFn: RecipeService.getPaginatedLatestRecipes,
-    initialPageParam: { page: 0, userId: user.id },
-
+    queryKey: ["all-by-category-recipes", category], // Added category to query key
+    queryFn: RecipeService.getPaginatedByCategoryRecipes,
+    initialPageParam: { page: 0, userId: user.id, category },
     getNextPageParam: (lastPage, allPages, lastPageParam) => {
       return !lastPage || !lastPage.length
         ? undefined
         : { ...lastPageParam, page: lastPageParam.page + 1 };
     },
   });
+
+  const categoryType = category!.charAt(0).toLowerCase() + category!.slice(1);
+
+  const getCategoryImage = (category: string) => {
+    switch (category) {
+      case "pizza":
+        return require("../../assets/images/categories/pizza.png");
+      case "hamburger":
+        return require("../../assets/images/categories/hamburger.png");
+      case "asiatic":
+        return require("../../assets/images/categories/asiatic.png");
+      case "burrito":
+        return require("../../assets/images/categories/burrito.png");
+      case "noodles":
+        return require("../../assets/images/categories/noodles.png");
+      case "pasta":
+        return require("../../assets/images/categories/pasta.png");
+      case "barbecue":
+        return require("../../assets/images/categories/barbecue.png");
+      case "fish":
+        return require("../../assets/images/categories/fish.png");
+      case "salad":
+        return require("../../assets/images/categories/salad.png");
+      case "appetizer":
+        return require("../../assets/images/categories/appetizer.png");
+      case "kebab":
+        return require("../../assets/images/categories/kebab.png");
+      case "sushi":
+        return require("../../assets/images/categories/sushi.png");
+      case "brunch":
+        return require("../../assets/images/categories/brunch.png");
+      case "sandwich":
+        return require("../../assets/images/categories/sandwich.png");
+      case "coffee":
+        return require("../../assets/images/categories/coffee.png");
+      case "taco":
+        return require("../../assets/images/categories/taco.png");
+      case "vegetarian":
+        return require("../../assets/images/categories/vegetarian.png");
+      case "vegan":
+        return require("../../assets/images/categories/vegan.png");
+      case "other":
+        return require("../../assets/images/categories/other.png");
+      default:
+        return null;
+    }
+  };
+  const path = getCategoryImage(categoryType);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -51,7 +103,18 @@ const AllLatestRecipes = () => {
           <RNIcon name="arrow_left" />
         </Pressable>
       ),
-      headerTitle: () => <Text style={$sizeStyles.h2}>Latest recipes</Text>,
+      headerTitle: () => (
+        <View
+          row
+          style={{ justifyContent: "center", alignItems: "center", gap: spacing.spacing8 }}
+        >
+          <FastImage
+            style={{ width: 25, height: 25 }}
+            source={path}
+          />
+          <Text style={$sizeStyles.h2}>{category}</Text>
+        </View>
+      ),
     });
   }, [navigation]);
 
@@ -59,23 +122,23 @@ const AllLatestRecipes = () => {
     navigation.goBack();
   };
 
+  const getItems = useMemo(() => {
+    if (byCategoryRecipes && byCategoryRecipes.pages) {
+      const allItems = byCategoryRecipes.pages.flatMap((page) => page);
+
+      return allItems;
+    }
+
+    return [];
+  }, [byCategoryRecipes]);
+
   const loadNextPage = () => {
     if (hasNextPage) {
       fetchNextPage();
     }
   };
 
-  const getItems = useMemo(() => {
-    if (latestRecipes && latestRecipes.pages) {
-      const allItems = latestRecipes.pages.flatMap((page) => page);
-
-      return allItems;
-    }
-
-    return [];
-  }, [latestRecipes]);
-
-  const goToRecipeDetails = (item: LatestRecipeResponse) => {
+  const goToRecipeDetails = (item: any) => {
     router.navigate({
       pathname: "/recipe_details",
       params: { id: item.id, userId: item.user.id, owner: JSON.stringify(item.user) },
@@ -200,17 +263,18 @@ const AllLatestRecipes = () => {
             height={height / 3}
             width={width}
           />
-          <Text style={styles.$noResultsTextStyle}>No results found !</Text>
+          <Text style={styles.$noResultsTextStyle}>No results found!</Text>
         </View>
       )}
     </SafeAreaView>
   );
 };
 
+export default AllByCategoryRecipes;
+
 const styles = StyleSheet.create({
   $containerStyle: {
     flex: 1,
-    backgroundColor: colors.greyscale150,
   },
   $contentContainerStyle: {
     alignItems: "center",
@@ -362,5 +426,3 @@ const styles = StyleSheet.create({
     ...$sizeStyles.h2,
   },
 });
-
-export default AllLatestRecipes;

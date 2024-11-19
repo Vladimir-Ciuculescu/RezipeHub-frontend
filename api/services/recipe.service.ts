@@ -2,6 +2,7 @@ import {
   AddRecipeRequest,
   EditRecipePhotoRequest,
   EditRecipeRequest,
+  GetByCategoryRecipesRequest,
   GetLatestRecipesRequest,
   GetMostPopularRecipesRequest,
   GetRecipesByUserRequest,
@@ -82,6 +83,23 @@ const RecipeService = {
       };
 
       const { data } = await axiosInstance.get(`${RECIPES}/latest`, { params: payload });
+      return data;
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+
+  getPaginatedByCategoryRecipes: async (params: any) => {
+    try {
+      const payload = {
+        page: params.pageParam.page,
+        userId: params.pageParam.userId,
+        limit: 10,
+        category: params.pageParam.category,
+      };
+
+      const { data } = await axiosInstance.get(`${RECIPES}/by-category`, { params: payload });
+
       return data;
     } catch (error) {
       throw handleError(error);
