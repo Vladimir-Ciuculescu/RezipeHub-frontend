@@ -4,13 +4,23 @@ import { spacing } from "@/theme/spacing";
 import { colors } from "@/theme/colors";
 import FastImage from "react-native-fast-image";
 import { $sizeStyles } from "@/theme/typography";
+import { useRouter } from "expo-router";
 
 const CategoryItem: React.FC<any> = ({ category }) => {
   const { path, title } = category;
 
+  const router = useRouter();
+
+  const goToAllByCategoryRecipes = () => {
+    router.push(`all_by_category_recipes?category=${title}`);
+  };
+
   return (
     <View style={{ alignItems: "center", gap: spacing.spacing8 }}>
-      <Pressable style={styles.$containerStyle}>
+      <Pressable
+        onPress={goToAllByCategoryRecipes}
+        style={styles.$containerStyle}
+      >
         <FastImage
           source={path}
           style={{ width: 25, height: 25 }}

@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
 
   $containerStyle: {
     flex: 1,
-    backgroundColor: colors.greyscale75,
+    // backgroundColor: colors.greyscale75,
   },
   $contentContainerStyle: {
     alignItems: "center",

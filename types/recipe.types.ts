@@ -35,23 +35,19 @@ export interface EditRecipeRequest {
   stepsIds?: number[];
 }
 
-export interface GetLatestRecipesRequest {
+export interface GetPaginatedRecipes {
   page: number;
   limit: number;
   userId: number;
 }
 
-export interface GetMostPopularRecipesRequest {
-  page: number;
-  limit: number;
-  userId: number;
-}
+export interface GetLatestRecipesRequest extends GetPaginatedRecipes {}
 
-export interface GetRecipesByUserRequest {
-  page: number;
-  limit: number;
-  userId: number;
-}
+export interface GetMostPopularRecipesRequest extends GetPaginatedRecipes {}
+
+export interface GetByCategoryRecipesRequest extends GetPaginatedRecipes {}
+
+export interface GetRecipesByUserRequest extends GetPaginatedRecipes {}
 
 export interface GetRecipesRequest {
   userId: number;

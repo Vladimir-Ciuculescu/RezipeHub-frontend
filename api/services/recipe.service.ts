@@ -2,6 +2,7 @@ import {
   AddRecipeRequest,
   EditRecipePhotoRequest,
   EditRecipeRequest,
+  GetByCategoryRecipesRequest,
   GetLatestRecipesRequest,
   GetMostPopularRecipesRequest,
   GetRecipesByUserRequest,
@@ -9,7 +10,7 @@ import {
 } from "@/types/recipe.types";
 import { handleError } from "../handleError";
 import { axiosInstance } from "..";
-import { RECIPES } from "../constants";
+import { FAVORITES, RECIPES } from "../constants";
 import { QueryKeyType } from "@/types/query";
 import { CategoryItem } from "@/types/category.types";
 
@@ -73,9 +74,56 @@ const RecipeService = {
     }
   },
 
+  getPaginatedLatestRecipes: async (params: any) => {
+    try {
+      const payload = {
+        page: params.pageParam.page,
+        userId: params.pageParam.userId,
+        limit: 10,
+      };
+
+      const { data } = await axiosInstance.get(`${RECIPES}/latest`, { params: payload });
+      return data;
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+
+  getPaginatedByCategoryRecipes: async (params: any) => {
+    try {
+      const payload = {
+        page: params.pageParam.page,
+        userId: params.pageParam.userId,
+        limit: 10,
+        category: params.pageParam.category,
+      };
+
+      const { data } = await axiosInstance.get(`${RECIPES}/by-category`, { params: payload });
+
+      return data;
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+
   getMostPopularRecipes: async (params: GetMostPopularRecipesRequest) => {
     try {
       const { data } = await axiosInstance.get(`${RECIPES}/most-popular`, { params });
+      return data;
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+
+  getPaginatedMostPopularRecipes: async (params: any) => {
+    try {
+      const payload = {
+        page: params.pageParam.page,
+        userId: params.pageParam.userId,
+        limit: 10,
+      };
+
+      const { data } = await axiosInstance.get(`${RECIPES}/most-popular`, { params: payload });
       return data;
     } catch (error) {
       throw handleError(error);
