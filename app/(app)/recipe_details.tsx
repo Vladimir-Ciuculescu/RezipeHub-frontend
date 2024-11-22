@@ -39,6 +39,7 @@ import { useIsFavorite } from "@/hooks/favorites.hooks";
 import FavoritesService from "@/api/services/favorites.service";
 import Toast from "react-native-toast-message";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -54,16 +55,14 @@ interface MenuItem {
 const RecipeDetails = () => {
   const ITEMS: MenuItem[] = [
     { label: "Edit", key: "edit", iosIcon: "pencil", onSelect: () => openEditModal() },
-    {
-      label: "Add to favorites",
-      key: "favorites",
-      iosIcon: "heart",
-      onSelect: () => openAddToFavoritesAlert(),
-    },
+
     { label: "Delete", key: "trash", iosIcon: "trash", onSelect: () => openDeleteAlert() },
   ];
 
+  const { bottom } = useSafeAreaInsets();
+
   const [index, setIndex] = useState(0);
+
   const [segmentIndex, setSegmentIndex] = useState(0);
   const addInfoAction = useRecipeStore.use.addInfoAction();
   const setIngredientsAction = useRecipeStore.use.setIngredientsAction();
@@ -143,26 +142,18 @@ const RecipeDetails = () => {
 
     Toast.show({
       type: "success",
-      text1: "ad",
-      text2: "awdaw",
-      text1Style: {
-        color: "red",
+      bottomOffset: -bottom,
+      props: {
+        title: isFavorite ? "Recipe removed from favorites !" : "Recipe added to favorites !",
+        icon: (
+          <AntDesign
+            name="check"
+            size={24}
+            color={colors.greyscale50}
+          />
+        ),
       },
-      // props: {
-      //   title: isFavorite ? "Recipe removed from favorites !" : "Recipe added to favorites !",
-      //   icon: (
-      //     <AntDesign
-      //       name="check"
-      //       size={24}
-      //       color={colors.greyscale50}
-      //     />
-      //   ),
-      // },
     });
-    // Toast.show({
-    //   type: "success",
-    //   text2: "awda",
-    // });
   };
 
   useLayoutEffect(() => {
