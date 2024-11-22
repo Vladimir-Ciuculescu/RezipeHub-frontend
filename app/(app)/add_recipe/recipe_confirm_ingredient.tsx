@@ -206,7 +206,7 @@ const RecipeConfirmIngredient = () => {
   const submitQuantity = async () => {
     const measure = measures.find((item) => item.value === unitMeasure);
 
-    getNutritionData(parsedIngredient.food.foodId, measure!.uri, parseInt(quantity));
+    getNutritionData(parsedIngredient.food.foodId, measure!.uri as string, parseInt(quantity));
   };
 
   return (
@@ -234,8 +234,8 @@ const RecipeConfirmIngredient = () => {
             style={{
               chevronUp: { display: "none" },
               chevronDown: { display: "none" },
-              inputIOS: styles.$inputAndroidStyle,
-              inputAndroid: styles.$inputIOSStyle,
+              inputIOS: styles.$inputIOSStyle,
+              inputAndroid: styles.$inputAndroidStyle,
 
               iconContainer: styles.$iconContainerStyle,
             }}
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
 
   $inputAndroidStyle: {
     height: 54,
-    borderColor: colors.greyscale150,
+    borderColor: colors.greyscale200,
     borderWidth: 2,
     fontFamily: "sofia800",
     paddingHorizontal: 16,
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
 
   $inputIOSStyle: {
     height: 54,
-    borderColor: colors.greyscale150,
+    borderColor: colors.greyscale200,
     color: colors.slate900,
     borderWidth: 2,
     fontFamily: "sofia800",

@@ -7,6 +7,9 @@ const Layout = () => {
     <Stack
       screenOptions={{
         contentStyle: styles.$stackContainerStyle,
+        headerStyle: {
+          backgroundColor: colors.greyscale75,
+        },
       }}
     >
       <Stack.Screen
@@ -88,5 +91,7 @@ const Layout = () => {
 export default Layout;
 
 const styles = StyleSheet.create({
-  $stackContainerStyle: { backgroundColor: colors.neutral100 },
+  $stackContainerStyle: {
+    backgroundColor: colors.greyscale75,
+  },
 });
