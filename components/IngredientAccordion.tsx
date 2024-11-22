@@ -1,5 +1,5 @@
 import { LayoutChangeEvent, Pressable, StyleSheet, Text, View } from "react-native";
-import React, { FC, useEffect, useRef } from "react";
+import React, { FC, useRef } from "react";
 import Animated, {
   ReduceMotion,
   useAnimatedStyle,

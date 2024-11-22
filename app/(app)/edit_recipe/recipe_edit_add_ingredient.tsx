@@ -221,8 +221,8 @@ const RecipeEditAddIngredient = () => {
             style={{
               chevronUp: { display: "none" },
               chevronDown: { display: "none" },
-              inputIOS: styles.$inputAndroidStyle,
-              inputAndroid: styles.$inputIOSStyle,
+              inputIOS: styles.$inputIOSStyle,
+              inputAndroid: styles.$inputAndroidStyle,
 
               iconContainer: styles.$iconContainerStyle,
             }}
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
 
   $inputAndroidStyle: {
     height: 54,
-    borderColor: colors.greyscale150,
+    borderColor: colors.greyscale200,
     borderWidth: 2,
     fontFamily: "sofia800",
     paddingHorizontal: 16,
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
 
   $inputIOSStyle: {
     height: 54,
-    borderColor: colors.greyscale150,
+    borderColor: colors.greyscale200,
     color: colors.slate900,
     borderWidth: 2,
     fontFamily: "sofia800",
