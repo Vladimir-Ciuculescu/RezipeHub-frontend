@@ -1,3 +1,4 @@
+import toastConfig from "@/components/Toast/ToastConfing";
 import { colors } from "@/theme/colors";
 import { Stack } from "expo-router/stack";
 import { StyleSheet } from "react-native";

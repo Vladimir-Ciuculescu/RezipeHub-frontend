@@ -22,6 +22,9 @@ import { CurrentUser } from "@/types/user.types";
 import UserService from "@/api/services/user.service";
 import useUserStore from "@/zustand/useUserStore";
 import TokenService from "@/api/services/token.service";
+import Toast from "react-native-toast-message";
+import toastConfig from "@/components/Toast/ToastConfing";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 LogBox.ignoreLogs([
   "Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead.",
@@ -260,6 +263,11 @@ const Layout = () => {
               tokenCache={tokenCache as any}
             >
               <AppLayout />
+              <Toast
+                visibilityTime={2000}
+                config={toastConfig}
+                position="bottom"
+              />
             </ClerkProvider>
           </BottomSheetModalProvider>
         </ActionSheetProvider>

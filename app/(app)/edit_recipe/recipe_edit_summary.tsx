@@ -45,6 +45,7 @@ import toastConfig from "@/components/Toast/ToastConfing";
 import RNIcon from "@/components/shared/RNIcon";
 import RNPickerSelect from "react-native-picker-select";
 import { RECIPE_TYPES } from "@/constants";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("screen");
 
@@ -55,6 +56,8 @@ export const getImageUrlWithCacheBuster = (url: string) => {
 };
 
 const RecipeEditSummary = () => {
+  const { bottom } = useSafeAreaInsets();
+
   const router = useRouter();
   const navigation = useNavigation();
   const queryClient = useQueryClient();
@@ -561,7 +564,7 @@ const RecipeEditSummary = () => {
         config={toastConfig}
         visibilityTime={3000}
         position="bottom"
-        bottomOffset={-50}
+        bottomOffset={-bottom}
       />
     </>
   );
