@@ -37,6 +37,7 @@ import {
   useEditRecipePhotoMutation,
   useUploadToS3Mutation,
 } from "@/hooks/recipes.hooks";
+import RNPressable from "@/components/shared/RNPressable";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -73,24 +74,24 @@ const RecipeSubmit = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable
+        <RNPressable
           onPress={goBack}
           disabled={isLoading}
           style={isLoading ? styles.$disabledBackBtnStyle : styles.$enabledBackBtnStyle}
         >
           <RNIcon name="arrow_left" />
-        </Pressable>
+        </RNPressable>
       ),
       headerRight: () =>
         isLoading ? (
           <ActivityIndicator color={colors.accent200} />
         ) : (
-          <TouchableOpacity onPress={handleAddRecipe}>
+          <RNPressable onPress={handleAddRecipe}>
             <RNIcon
               name="bowl"
               color={colors.accent200}
             />
-          </TouchableOpacity>
+          </RNPressable>
         ),
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Confirm recipe</Text>,
     });

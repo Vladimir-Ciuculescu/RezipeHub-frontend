@@ -20,6 +20,7 @@ import { formatFloatingValue } from "@/utils/formatFloatingValue";
 import { View } from "react-native-ui-lib";
 import { AntDesign } from "@expo/vector-icons";
 import useRecipeStore from "@/zustand/useRecipeStore";
+import RNPressable from "@/components/shared/RNPressable";
 
 interface SearchParams {
   [key: string]: string;
@@ -128,14 +129,14 @@ const RecipeEditIngredient = () => {
 
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={goBack}>
+        <RNPressable onPress={goBack}>
           <RNIcon name="arrow_left" />
-        </Pressable>
+        </RNPressable>
       ),
 
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit ingredient</Text>,
       headerRight: () => (
-        <Pressable
+        <RNPressable
           disabled={saveDisabled}
           onPress={handleSave}
         >
@@ -145,7 +146,7 @@ const RecipeEditIngredient = () => {
             size={24}
             color={colors.accent300}
           />
-        </Pressable>
+        </RNPressable>
       ),
     });
   }, [navigation, quantity, measure, nutrientsInfo, saveEnabled, pickerDismissed]);

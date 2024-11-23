@@ -22,6 +22,8 @@ import RNSegmentedControl from "@/components/shared/RnSegmentedControl";
 import Toast from "react-native-toast-message";
 import toastConfig from "@/components/Toast/ToastConfing";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Skeleton } from "moti/build/skeleton";
+import RNPressable from "@/components/shared/RNPressable";
 
 const nutrientsLabelMapping: any = {
   ENERC_KCAL: "Calories",
@@ -129,23 +131,23 @@ const RecipeConfirmIngredient = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={gotBack}>
+        <RNPressable onPress={gotBack}>
           <RNIcon
             name="arrow_left"
             color={colors.brandPrimary}
           />
-        </Pressable>
+        </RNPressable>
       ),
 
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Confirm ingredient</Text>,
       headerRight: () => (
-        <Pressable onPress={addIngredient}>
+        <RNPressable onPress={addIngredient}>
           <AntDesign
             name="check"
             size={24}
             color={colors.accent200}
           />
-        </Pressable>
+        </RNPressable>
       ),
     });
   }, [navigation, unitMeasure, quantity, nutrientsInfo]);
@@ -299,7 +301,7 @@ const RecipeConfirmIngredient = () => {
               onChangeIndex={setSegmentIndex}
             />
 
-            {nutrientsInfo &&
+            {nutrientsInfo ? (
               Object.entries(
                 segmentIndex === 0 ? nutrientsInfo.totalNutrients : nutrientsInfo.totalDaily,
               ).map((nutrient, index, array) => {
@@ -311,7 +313,28 @@ const RecipeConfirmIngredient = () => {
                     {index < array.length - 1 && <View style={styles.separator} />}
                   </React.Fragment>
                 );
-              })}
+              })
+            ) : (
+              <View
+                style={{
+                  gap: spacing.spacing16,
+                  paddingTop: spacing.spacing12,
+                }}
+              >
+                <Skeleton.Group show>
+                  {Array(15)
+                    .fill(null)
+                    .map((_, index) => (
+                      <Skeleton
+                        key={index}
+                        colorMode="light"
+                        height={30}
+                        width="100%"
+                      />
+                    ))}
+                </Skeleton.Group>
+              </View>
+            )}
           </View>
         </View>
       </ScrollView>

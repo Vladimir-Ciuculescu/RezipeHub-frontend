@@ -22,6 +22,7 @@ import { AntDesign } from "@expo/vector-icons";
 import RNShadowView from "@/components/shared/RNShadowView";
 import { Skeleton } from "moti/skeleton";
 import { No_results, Search_placeholder } from "@/assets/illustrations";
+import RNPressable from "@/components/shared/RNPressable";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -37,9 +38,9 @@ const RecipeEditSearchIngredients = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={goBack}>
+        <RNPressable onPress={goBack}>
           <RNIcon name="arrow_left" />
-        </Pressable>
+        </RNPressable>
       ),
 
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Search ingredient</Text>,

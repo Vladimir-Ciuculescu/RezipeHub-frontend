@@ -14,6 +14,7 @@ import { colors } from "@/theme/colors";
 import { No_results } from "@/assets/illustrations";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import RNShadowView from "@/components/shared/RNShadowView";
+import RNPressable from "@/components/shared/RNPressable";
 
 interface SearchParams {
   [key: string]: string;
@@ -99,9 +100,9 @@ const AllByCategoryRecipes = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={goBack}>
+        <RNPressable onPress={goBack}>
           <RNIcon name="arrow_left" />
-        </Pressable>
+        </RNPressable>
       ),
       headerTitle: () => (
         <View

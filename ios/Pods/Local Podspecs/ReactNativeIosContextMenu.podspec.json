@@ -1,0 +1,37 @@
+{
+  "name": "ReactNativeIosContextMenu",
+  "version": "2.5.1",
+  "summary": "A react-native component to use context menu's (UIMenu) on iOS 13/14+",
+  "description": "A react-native component to use context menu's (UIMenu) on iOS 13/14+",
+  "license": "MIT",
+  "authors": "Dominic Go <dominic@dominicgo.dev> (https://github.com/dominicstop)",
+  "homepage": "https://github.com/dominicstop/react-native-ios-context-menu#readme",
+  "platforms": {
+    "ios": "13.0"
+  },
+  "swift_versions": "5.4",
+  "source": {
+    "git": "https://github.com/dominicstop/react-native-ios-context-menu"
+  },
+  "static_framework": true,
+  "dependencies": {
+    "ExpoModulesCore": [
+
+    ],
+    "ReactNativeIosUtilities": [
+
+    ],
+    "DGSwiftUtilities": [
+
+    ],
+    "ContextMenuAuxiliaryPreview": [
+      "~> 0.3"
+    ]
+  },
+  "pod_target_xcconfig": {
+    "DEFINES_MODULE": "YES",
+    "SWIFT_COMPILATION_MODE": "wholemodule"
+  },
+  "source_files": "ios/**/*.{h,m,swift}",
+  "swift_version": "5.4"
+}

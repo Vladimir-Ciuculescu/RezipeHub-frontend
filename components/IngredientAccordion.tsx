@@ -13,6 +13,7 @@ import { IngredientResponse, Nutrient } from "@/types/ingredient.types";
 import { $sizeStyles } from "@/theme/typography";
 import { colors } from "@/theme/colors";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
+import RNShadowView from "./shared/RNShadowView";
 
 const COLLAPSED_HEIGHT = 50;
 
@@ -83,55 +84,106 @@ const IngredientAccordion: FC<IngredientAccordionProps> = ({ ingredient, flow })
   const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
   return (
-    <View style={styles.$containerStyle}>
-      <AnimatedPressable
-        onPress={gotToConfirmIngredient}
-        onLayout={handleOnLayout}
-        style={[styles.$pressableContainerStyle, accordionAnimatedStyle]}
-      >
-        <Animated.View style={{ gap: spacing.spacing16 }}>
-          <View style={styles.header}>
-            <View style={styles.$titleContainerstyle}>
-              <AnimatedPressable
-                style={{ transform: [{ rotate: iconRotation }] }}
-                onPress={handleAccordionPress}
-              >
-                <AntDesign
-                  name="plus"
-                  size={24}
-                  color="black"
-                />
-              </AnimatedPressable>
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={styles.title}
-              >
-                {ingredient.food.label}
-              </Text>
-            </View>
-            <AntDesign
-              name="right"
-              size={24}
-              color="black"
-            />
-          </View>
+    // <View style={styles.$containerStyle}>
+    //   <AnimatedPressable
+    //     onPress={gotToConfirmIngredient}
+    //     onLayout={handleOnLayout}
+    //     style={[styles.$pressableContainerStyle, accordionAnimatedStyle]}
+    //   >
+    //     <Animated.View style={{ gap: spacing.spacing16 }}>
+    //       <View style={styles.header}>
+    //         <View style={styles.$titleContainerstyle}>
+    //           <AnimatedPressable
+    //             style={{ transform: [{ rotate: iconRotation }] }}
+    //             onPress={handleAccordionPress}
+    //           >
+    //             <AntDesign
+    //               name="plus"
+    //               size={24}
+    //               color="black"
+    //             />
+    //           </AnimatedPressable>
+    //           <Text
+    //             numberOfLines={1}
+    //             ellipsizeMode="tail"
+    //             style={styles.title}
+    //           >
+    //             {ingredient.food.label}
+    //           </Text>
+    //         </View>
+    //         <AntDesign
+    //           name="right"
+    //           size={24}
+    //           color="black"
+    //         />
+    //       </View>
 
-          {nutrientLabels.map(({ key, label }) => {
-            const value = ingredient.food.nutrients[key];
-            return value || value === 0 ? (
-              <Text
-                key={key}
-                style={styles.$nutrientInfoStyle}
-              >
-                {label}:{" "}
-                <Text style={styles.$nutrientValueStyle}>{formatFloatingValue(value)}</Text>
-              </Text>
-            ) : null;
-          })}
-        </Animated.View>
-      </AnimatedPressable>
-    </View>
+    //       {nutrientLabels.map(({ key, label }) => {
+    //         const value = ingredient.food.nutrients[key];
+    //         return value || value === 0 ? (
+    //           <Text
+    //             key={key}
+    //             style={styles.$nutrientInfoStyle}
+    //           >
+    //             {label}:{" "}
+    //             <Text style={styles.$nutrientValueStyle}>{formatFloatingValue(value)}</Text>
+    //           </Text>
+    //         ) : null;
+    //       })}
+    //     </Animated.View>
+    //   </AnimatedPressable>
+    // </View>
+    <RNShadowView>
+      <View style={styles.$containerStyle}>
+        <AnimatedPressable
+          onPress={gotToConfirmIngredient}
+          onLayout={handleOnLayout}
+          style={[styles.$pressableContainerStyle, accordionAnimatedStyle]}
+        >
+          <Animated.View style={{ gap: spacing.spacing16 }}>
+            <View style={styles.header}>
+              <View style={styles.$titleContainerstyle}>
+                <AnimatedPressable
+                  style={{ transform: [{ rotate: iconRotation }] }}
+                  onPress={handleAccordionPress}
+                >
+                  <AntDesign
+                    name="plus"
+                    size={24}
+                    color="black"
+                  />
+                </AnimatedPressable>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={styles.title}
+                >
+                  {ingredient.food.label}
+                </Text>
+              </View>
+              <AntDesign
+                name="right"
+                size={24}
+                color="black"
+              />
+            </View>
+
+            {nutrientLabels.map(({ key, label }) => {
+              const value = ingredient.food.nutrients[key];
+              return value || value === 0 ? (
+                <Text
+                  key={key}
+                  style={styles.$nutrientInfoStyle}
+                >
+                  {label}:{" "}
+                  <Text style={styles.$nutrientValueStyle}>{formatFloatingValue(value)}</Text>
+                </Text>
+              ) : null;
+            })}
+          </Animated.View>
+        </AnimatedPressable>
+      </View>
+    </RNShadowView>
   );
 };
 
@@ -146,16 +198,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.spacing12,
     backgroundColor: "white",
     borderRadius: 16,
-    shadowColor: "#171717",
-    // Shadow for iOS
-    shadowOpacity: 0.1,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowRadius: 8,
-    // Shadow for Android
-    elevation: 5,
+    // shadowColor: "#171717",
+    // // Shadow for iOS
+    // shadowOpacity: 0.1,
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowRadius: 8,
+    // // Shadow for Android
+    // elevation: 5,
   },
 
   $titleContainerstyle: {

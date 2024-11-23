@@ -3,7 +3,7 @@
 // }
 
 import React, { useEffect } from "react";
-import { LogBox, StyleSheet } from "react-native";
+import { BackHandler, LogBox, StyleSheet } from "react-native";
 import { colors } from "@/theme/colors";
 import { useFonts } from "expo-font";
 import { fontsToLoad } from "@/theme/typography";
@@ -24,10 +24,10 @@ import useUserStore from "@/zustand/useUserStore";
 import TokenService from "@/api/services/token.service";
 import Toast from "react-native-toast-message";
 import toastConfig from "@/components/Toast/ToastConfing";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import NetInfo from "@react-native-community/netinfo";
 
 LogBox.ignoreLogs([
-  "Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead.",
+  "Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead. ",
 ]);
 
 const tokenCache = {
@@ -58,6 +58,29 @@ const AppLayout = () => {
   const onboarded = storage.getBoolean(ONBOARDED);
 
   useEffect(() => {
+    // * Disable hardware back press from android bar
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+      return true;
+    });
+
+    // * Check internet connection
+    NetInfo.fetch().then((state) => {
+      console.log(state.isConnected);
+
+      if (!state.isConnected) {
+        Toast.show({
+          type: "error",
+          props: {
+            title: "No internet connection",
+          },
+        });
+      }
+    });
+
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      console.log(state);
+    });
+
     if (!onboarded) {
       router.replace("onboarding");
       return;
@@ -70,6 +93,11 @@ const AppLayout = () => {
         await getProfile();
       })();
     }
+
+    return () => {
+      unsubscribe();
+      backHandler.remove();
+    };
   }, []);
 
   const getProfile = async () => {

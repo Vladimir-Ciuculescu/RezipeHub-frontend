@@ -19,6 +19,11 @@ import RnInput from "@/components/shared/RNInput";
 import RNSegmentedControl from "@/components/shared/RnSegmentedControl";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
 import { View } from "react-native-ui-lib";
+import Toast from "react-native-toast-message";
+import toastConfig from "@/components/Toast/ToastConfing";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Skeleton } from "moti/skeleton";
+import RNPressable from "@/components/shared/RNPressable";
 
 interface NutrientItemProps {
   nutrient: [string, NutrientDetail];
@@ -63,6 +68,8 @@ const NutrientItem: React.FC<NutrientItemProps> = ({ nutrient }) => {
 };
 
 const RecipeEditAddIngredient = () => {
+  const { bottom } = useSafeAreaInsets();
+
   const navigation = useNavigation();
   const router = useRouter();
   const [nutrientsInfo, setNutrientsInfo] = useState<NutrientResponse>();
@@ -93,28 +100,23 @@ const RecipeEditAddIngredient = () => {
 
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={gotBack}>
+        <RNPressable onPress={gotBack}>
           <RNIcon
             name="arrow_left"
             color={colors.brandPrimary}
           />
-        </Pressable>
+        </RNPressable>
       ),
 
-      headerTitle: () => <Text style={[$sizeStyles.h3]}>Add Ingredientsss</Text>,
+      headerTitle: () => <Text style={[$sizeStyles.h3]}>Add Ingredients</Text>,
       headerRight: () => (
-        <Pressable
-          onPress={addIngredient}
-          // disabled={saveDisabled}
-          // onPress={handleSave}
-        >
+        <RNPressable onPress={addIngredient}>
           <AntDesign
-            // style={saveDisabled && { opacity: 0.4 }}
             name="check"
             size={24}
             color={colors.accent300}
           />
-        </Pressable>
+        </RNPressable>
       ),
     });
   }, [navigation, nutrientsInfo]);
@@ -146,30 +148,50 @@ const RecipeEditAddIngredient = () => {
   }, [pickerDismissed, unitMeasure]);
 
   const addIngredient = () => {
-    const currentMeasure = parsedIngredient.measures.find((item) => item.label === unitMeasure);
+    const existentIngredient = ingredientsFromStore.find(
+      (ingredient) => ingredient.foodId === parsedIngredient.food.foodId,
+    );
 
-    const measures = parsedIngredient.measures.map((measure) => ({
-      uri: measure.uri,
-      label: measure.label,
-      weight: measure.weight,
-    }));
+    if (existentIngredient) {
+      Toast.show({
+        type: "error",
+        props: {
+          title: "Not allowed !",
+          msg: "You have already added this ingredient !",
+          icon: (
+            <RNIcon
+              name="cook"
+              color={colors.greyscale50}
+            />
+          ),
+        },
+      });
+    } else {
+      const currentMeasure = parsedIngredient.measures.find((item) => item.label === unitMeasure);
 
-    const payload = {
-      foodId: parsedIngredient.food.foodId,
-      title: parsedIngredient.food.label,
-      measure: unitMeasure,
-      // quantity: quantity,
-      uri: currentMeasure!.uri,
-      quantity: parseInt(quantity),
-      calories: nutrientsInfo?.totalNutrients.ENERC_KCAL!.quantity!,
-      carbs: nutrientsInfo?.totalNutrients.CHOCDF!.quantity,
-      proteins: nutrientsInfo?.totalNutrients.PROCNT!.quantity,
-      fats: nutrientsInfo?.totalNutrients.FAT?.quantity,
-      measures,
-    };
+      const measures = parsedIngredient.measures.map((measure) => ({
+        uri: measure.uri,
+        label: measure.label,
+        weight: measure.weight,
+      }));
 
-    addIngredientAction(payload);
-    router.dismiss(2);
+      const payload = {
+        foodId: parsedIngredient.food.foodId,
+        title: parsedIngredient.food.label,
+        measure: unitMeasure,
+        // quantity: quantity,
+        uri: currentMeasure!.uri,
+        quantity: parseInt(quantity),
+        calories: nutrientsInfo?.totalNutrients.ENERC_KCAL!.quantity!,
+        carbs: nutrientsInfo?.totalNutrients.CHOCDF!.quantity,
+        proteins: nutrientsInfo?.totalNutrients.PROCNT!.quantity,
+        fats: nutrientsInfo?.totalNutrients.FAT?.quantity,
+        measures,
+      };
+
+      addIngredientAction(payload);
+      router.dismiss(2);
+    }
   };
 
   const getNutritionData = async (foodId: string, uri: string, quantity: number) => {
@@ -196,76 +218,109 @@ const RecipeEditAddIngredient = () => {
 
   const segments = [{ label: "Measures" }, { label: "Percentage" }];
 
+  console.log(nutrientsInfo);
+
   return (
-    <ScrollView
-      keyboardShouldPersistTaps="always"
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.$contentContainerstyle}
-      style={styles.$containerStyle}
-    >
-      <View style={{ gap: spacing.spacing24 }}>
-        <Text style={$sizeStyles.h1}>{parsedIngredient.food.label}</Text>
+    <>
+      <ScrollView
+        keyboardShouldPersistTaps="always"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.$contentContainerstyle}
+        style={styles.$containerStyle}
+      >
+        <View style={{ gap: spacing.spacing24 }}>
+          <Text style={$sizeStyles.h1}>{parsedIngredient.food.label}</Text>
 
-        <View style={styles.$baseWrapperStyle}>
-          <Text style={[$sizeStyles.n, styles.$labelStyle]}>Unit measure</Text>
+          <View style={styles.$baseWrapperStyle}>
+            <Text style={[$sizeStyles.n, styles.$labelStyle]}>Unit measure</Text>
 
-          <RNPickerSelect
-            placeholder={{}}
-            doneText="Search"
-            onOpen={() => setPickerDismissed(false)}
-            onClose={() => setPickerDismissed(true)}
-            value={unitMeasure}
-            onValueChange={setUnitMeasure}
-            onDonePress={() => setPickerDismissed(true)}
-            items={measures}
-            style={{
-              chevronUp: { display: "none" },
-              chevronDown: { display: "none" },
-              inputIOS: styles.$inputIOSStyle,
-              inputAndroid: styles.$inputAndroidStyle,
+            <RNPickerSelect
+              placeholder={{}}
+              doneText="Search"
+              onOpen={() => setPickerDismissed(false)}
+              onClose={() => setPickerDismissed(true)}
+              value={unitMeasure}
+              onValueChange={setUnitMeasure}
+              onDonePress={() => setPickerDismissed(true)}
+              items={measures}
+              style={{
+                chevronUp: { display: "none" },
+                chevronDown: { display: "none" },
+                inputIOS: styles.$inputIOSStyle,
+                inputAndroid: styles.$inputAndroidStyle,
 
-              iconContainer: styles.$iconContainerStyle,
-            }}
-            useNativeAndroidPickerStyle={false}
-            Icon={() => {
-              return <RNIcon name="cook" />;
-            }}
+                iconContainer: styles.$iconContainerStyle,
+              }}
+              useNativeAndroidPickerStyle={false}
+              Icon={() => {
+                return <RNIcon name="cook" />;
+              }}
+            />
+          </View>
+          <RnInput
+            onSubmitEditing={submitQuantity}
+            keyboardType="numeric"
+            returnKeyType="done"
+            onChangeText={(value: any) => setQuantity(value)}
+            autoCapitalize="none"
+            value={quantity}
+            label="Quantity"
+            placeholder="Enter quantity"
           />
-        </View>
-        <RnInput
-          onSubmitEditing={submitQuantity}
-          keyboardType="numeric"
-          returnKeyType="done"
-          onChangeText={(value: any) => setQuantity(value)}
-          autoCapitalize="none"
-          value={quantity}
-          label="Quantity"
-          placeholder="Enter quantity"
-        />
-        <View style={styles.$baseWrapperStyle}>
-          <Text style={[$sizeStyles.h3, styles.$labelStyle]}>Nutritional information</Text>
+          <View style={styles.$baseWrapperStyle}>
+            <Text style={[$sizeStyles.h3, styles.$labelStyle]}>Nutritional information</Text>
 
-          <RNSegmentedControl
-            borderRadius={16}
-            initialIndex={segmentIndex}
-            segments={segments}
-            onChangeIndex={setSegmentIndex}
-          />
+            <RNSegmentedControl
+              borderRadius={16}
+              initialIndex={segmentIndex}
+              segments={segments}
+              onChangeIndex={setSegmentIndex}
+            />
 
-          {nutrientsInfo &&
-            Object.entries(
-              segmentIndex === 0 ? nutrientsInfo.totalNutrients : nutrientsInfo.totalDaily,
-            ).map((nutrient, index, array) => {
-              return (
-                <React.Fragment key={`${nutrient[0]}-${nutrient[1].quantity}-${nutrient[1].unit}`}>
-                  <NutrientItem nutrient={nutrient} />
-                  {index < array.length - 1 && <View style={styles.separator} />}
-                </React.Fragment>
-              );
-            })}
+            {nutrientsInfo ? (
+              Object.entries(
+                segmentIndex === 0 ? nutrientsInfo.totalNutrients : nutrientsInfo.totalDaily,
+              ).map((nutrient, index, array) => {
+                return (
+                  <React.Fragment
+                    key={`${nutrient[0]}-${nutrient[1].quantity}-${nutrient[1].unit}`}
+                  >
+                    <NutrientItem nutrient={nutrient} />
+                    {index < array.length - 1 && <View style={styles.separator} />}
+                  </React.Fragment>
+                );
+              })
+            ) : (
+              <View
+                style={{
+                  gap: spacing.spacing16,
+                  paddingTop: spacing.spacing12,
+                }}
+              >
+                <Skeleton.Group show>
+                  {Array(15)
+                    .fill(null)
+                    .map((_, index) => (
+                      <Skeleton
+                        key={index}
+                        colorMode="light"
+                        height={30}
+                        width="100%"
+                      />
+                    ))}
+                </Skeleton.Group>
+              </View>
+            )}
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+      <Toast
+        config={toastConfig}
+        visibilityTime={3000}
+        position="bottom"
+        bottomOffset={-bottom}
+      />
+    </>
   );
 };
 

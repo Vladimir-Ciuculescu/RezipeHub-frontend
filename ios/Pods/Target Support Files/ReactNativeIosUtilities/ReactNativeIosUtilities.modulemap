@@ -1,0 +1,6 @@
+module ReactNativeIosUtilities {
+  umbrella header "ReactNativeIosUtilities-umbrella.h"
+
+  export *
+  module * { export * }
+}

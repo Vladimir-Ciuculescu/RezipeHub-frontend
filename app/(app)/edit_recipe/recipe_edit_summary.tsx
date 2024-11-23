@@ -46,6 +46,7 @@ import RNIcon from "@/components/shared/RNIcon";
 import RNPickerSelect from "react-native-picker-select";
 import { RECIPE_TYPES } from "@/constants";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import RNPressable from "@/components/shared/RNPressable";
 
 const { width } = Dimensions.get("screen");
 
@@ -94,24 +95,20 @@ const RecipeEditSummary = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <RNButton
-          onPress={cancel}
-          link
-          iconSource={() => (
-            <AntDesign
-              name="close"
-              size={24}
-              color="black"
-            />
-          )}
-        />
+        <RNPressable onPress={cancel}>
+          <AntDesign
+            name="close"
+            size={24}
+            color="black"
+          />
+        </RNPressable>
       ),
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit recipe</Text>,
       headerRight: () =>
         isLoading ? (
           <ActivityIndicator color={colors.accent200} />
         ) : (
-          <Pressable
+          <RNPressable
             onPress={() => {
               if (formikRef.current) {
                 formikRef.current.submitForm();
@@ -119,7 +116,7 @@ const RecipeEditSummary = () => {
             }}
           >
             <Text style={[{ ...$sizeStyles.l }, { color: colors.accent200 }]}>Save</Text>
-          </Pressable>
+          </RNPressable>
         ),
     });
   }, [navigation, isLoading]);

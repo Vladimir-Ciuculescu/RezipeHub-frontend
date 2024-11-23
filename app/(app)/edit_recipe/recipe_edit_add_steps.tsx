@@ -22,6 +22,7 @@ import { spacing } from "@/theme/spacing";
 import { MotiView } from "moti";
 import RNButton from "@/components/shared/RNButton";
 import RnInput from "@/components/shared/RNInput";
+import RNPressable from "@/components/shared/RNPressable";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -47,22 +48,22 @@ const RecipeEditAddSteps = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={gotBack}>
+        <RNPressable onPress={gotBack}>
           <RNIcon
             name="arrow_left"
             color={colors.brandPrimary}
           />
-        </Pressable>
+        </RNPressable>
       ),
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit steps</Text>,
       headerRight: () => (
-        <Pressable onPress={confirmSteps}>
+        <RNPressable onPress={confirmSteps}>
           <AntDesign
             name="check"
             size={24}
             color={colors.accent200}
           />
-        </Pressable>
+        </RNPressable>
       ),
     });
   }, [navigation, steps]);

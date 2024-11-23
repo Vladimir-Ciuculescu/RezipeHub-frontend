@@ -21,6 +21,7 @@ import IngredientAccordion from "@/components/IngredientAccordion";
 import { Skeleton } from "moti/skeleton";
 import RNShadowView from "@/components/shared/RNShadowView";
 import { No_results, Search_placeholder } from "@/assets/illustrations";
+import RNPressable from "@/components/shared/RNPressable";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -36,9 +37,9 @@ const RecipeSearchIngredients = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={gotBack}>
+        <RNPressable onPress={gotBack}>
           <RNIcon name="arrow_left" />
-        </Pressable>
+        </RNPressable>
       ),
 
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Search ingredients</Text>,

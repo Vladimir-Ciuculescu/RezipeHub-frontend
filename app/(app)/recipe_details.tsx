@@ -49,14 +49,27 @@ interface MenuItem {
   label: string;
   key: string;
   iosIcon: string;
+  androidIcon: string;
   onSelect: () => void;
 }
 
 const RecipeDetails = () => {
   const ITEMS: MenuItem[] = [
-    { label: "Edit", key: "edit", iosIcon: "pencil", onSelect: () => openEditModal() },
+    {
+      label: "Edit",
+      key: "edit",
+      iosIcon: "pencil",
+      androidIcon: "ic_menu_edit",
+      onSelect: () => openEditModal(),
+    },
 
-    { label: "Delete", key: "trash", iosIcon: "trash", onSelect: () => openDeleteAlert() },
+    {
+      label: "Delete",
+      key: "trash",
+      iosIcon: "trash",
+      androidIcon: "ic_menu_delete",
+      onSelect: () => openDeleteAlert(),
+    },
   ];
 
   const { bottom } = useSafeAreaInsets();
@@ -195,7 +208,10 @@ const RecipeDetails = () => {
                   key={item.key}
                 >
                   <DropdownMenu.ItemTitle>{item.label}</DropdownMenu.ItemTitle>
-                  <DropdownMenu.ItemIcon ios={{ name: item.iosIcon }} />
+                  <DropdownMenu.ItemIcon
+                    ios={{ name: item.iosIcon }}
+                    androidIconName={item.androidIcon}
+                  />
                 </DropdownMenu.Item>
               ))}
             </DropdownMenu.Content>

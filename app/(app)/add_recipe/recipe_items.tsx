@@ -14,6 +14,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { IngredientItem } from "@/types/ingredient.types";
 import { Step } from "@/types/step.types";
 import SwipeableListItem from "@/components/SwipeableItem";
+import RNPressable from "@/components/shared/RNPressable";
 
 interface IngredientRowProps {
   ingredient: IngredientItem;
@@ -37,14 +38,14 @@ const RecipeItems = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={cancel}>
+        <RNPressable onPress={cancel}>
           <RNIcon name="arrow_left" />
-        </Pressable>
+        </RNPressable>
       ),
       headerRight: () => (
-        <Pressable onPress={goNext}>
+        <RNPressable onPress={goNext}>
           <RNIcon name="arrow_right" />
-        </Pressable>
+        </RNPressable>
       ),
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Add ingredients</Text>,
     });

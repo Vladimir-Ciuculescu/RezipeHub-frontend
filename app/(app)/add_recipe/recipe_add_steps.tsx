@@ -22,6 +22,7 @@ import RnInput from "@/components/shared/RNInput";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import RNButton from "@/components/shared/RNButton";
 import useRecipeStore from "@/zustand/useRecipeStore";
+import RNPressable from "@/components/shared/RNPressable";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -42,22 +43,22 @@ const RecipeAddSteps = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={gotBack}>
+        <RNPressable onPress={gotBack}>
           <RNIcon
             name="arrow_left"
             color={colors.brandPrimary}
           />
-        </Pressable>
+        </RNPressable>
       ),
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Add steps</Text>,
       headerRight: () => (
-        <Pressable onPress={confirmSteps}>
+        <RNPressable onPress={confirmSteps}>
           <AntDesign
             name="check"
             size={24}
             color={colors.accent200}
           />
-        </Pressable>
+        </RNPressable>
       ),
     });
   }, [navigation, steps]);

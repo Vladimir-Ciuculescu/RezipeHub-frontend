@@ -19,6 +19,7 @@ import FastImage from "react-native-fast-image";
 import RNPickerSelect from "react-native-picker-select";
 import { RecipeType } from "@/types/enums";
 import { RECIPE_TYPES } from "@/constants";
+import RNPressable from "@/components/shared/RNPressable";
 
 function RecipeTitle() {
   const { showActionSheetWithOptions } = useActionSheet();
@@ -43,18 +44,18 @@ function RecipeTitle() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={cancel}>
+        <RNPressable onPress={cancel}>
           <AntDesign
             name="close"
             size={24}
             color="black"
           />
-        </Pressable>
+        </RNPressable>
       ),
       headerRight: () => (
-        <Pressable onPress={goNext}>
+        <RNPressable onPress={goNext}>
           <RNIcon name="arrow_right" />
-        </Pressable>
+        </RNPressable>
       ),
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Add Recipe</Text>,
     });
