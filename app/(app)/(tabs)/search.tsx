@@ -18,8 +18,13 @@ import { colors } from "@/theme/colors";
 import RNShadowView from "@/components/shared/RNShadowView";
 import RnInput from "@/components/shared/RNInput";
 import RNIcon from "@/components/shared/RNIcon";
-import { BottomSheetModal, useBottomSheetModal } from "@gorhom/bottom-sheet";
-import FiltersBottomSheet from "@/components/FiltersBottomSheet";
+import {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetScrollView,
+  useBottomSheetModal,
+} from "@gorhom/bottom-sheet";
+// import FiltersBottomSheet from "@/components/FiltersBottomSheet";
 import CategoryFilter from "@/components/CategoryFilter";
 import { MAX_CALORIES, MAX_PREPARATION_TIME, RECIPE_TYPES } from "@/constants";
 import useFilterStore from "@/zustand/useFilterStore";
@@ -33,6 +38,7 @@ import { CategoryItem } from "@/types/category.types";
 import { isEqual } from "lodash";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useUserData from "@/hooks/useUserData";
+import RNPressable from "@/components/shared/RNPressable";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -44,6 +50,19 @@ const SearchScreen = () => {
   const user = useUserData();
 
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const snapPoints = useMemo(() => ["85%", "85%"], []);
+
+  const renderBackDrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        {...props}
+      />
+    ),
+    [],
+  );
 
   const { dismiss } = useBottomSheetModal();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
@@ -305,12 +324,12 @@ const SearchScreen = () => {
                   />
                 }
                 rightIcon={
-                  <TouchableOpacity onPress={openBottomSheetFilters}>
+                  <RNPressable onPress={openBottomSheetFilters}>
                     <RNIcon
                       color={colors.accent200}
                       name={"filter"}
                     />
-                  </TouchableOpacity>
+                  </RNPressable>
                 }
               />
             </RNShadowView>
@@ -364,87 +383,100 @@ const SearchScreen = () => {
           </View>
         )}
 
-        <FiltersBottomSheet
-          onDismiss={onDismissBottomSheet}
+        <BottomSheetModal
+          index={0}
+          snapPoints={snapPoints}
           ref={bottomSheetRef}
+          onDismiss={onDismissBottomSheet}
+          backdropComponent={renderBackDrop}
+          handleIndicatorStyle={{ backgroundColor: colors.greyscale300, width: 50, height: 5 }}
+          backgroundStyle={{ borderRadius: spacing.spacing24 }}
         >
-          <View style={styles.$bottomSheetContainerStyle}>
-            <View>
-              <Text style={styles.$bottomSheetTitleStyle}>Filters</Text>
-              <View style={{ gap: spacing.spacing32 }}>
-                <View style={{ gap: spacing.spacing16 }}>
-                  <Text
-                    style={[styles.$bottomSheetSectionStyle, { paddingLeft: spacing.spacing24 }]}
-                  >
-                    Category
-                  </Text>
-
-                  <View style={styles.listContainer}>
-                    {filters.categories.map((category) => {
-                      return (
-                        <CategoryFilter
-                          key={category.id}
-                          label={category.label}
-                          checked={category.checked}
-                          onPress={() => {
-                            toggleCategory(category.id);
-                          }}
-                        />
-                      );
-                    })}
-                  </View>
-                </View>
+          <BottomSheetScrollView
+            contentContainerStyle={{
+              paddingBottom: spacing.spacing32,
+            }}
+            style={{ flex: 1, height: "100%" }}
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={styles.$bottomSheetContainerStyle}>
+              <View>
+                <Text style={styles.$bottomSheetTitleStyle}>Filters</Text>
                 <View style={{ gap: spacing.spacing32 }}>
-                  <RNSlider
-                    label="Calories"
-                    unit="Kcal"
-                    minValue={0}
-                    maxValue={MAX_CALORIES}
-                    lowerValue={filters.minCalories}
-                    greaterValue={filters.maxCalories}
-                    onChangeMinValue={(minCalories) =>
-                      setFilters((prev) => ({ ...prev, minCalories }))
-                    }
-                    onChangeMaxValue={(maxCalories) =>
-                      setFilters((prev) => ({ ...prev, maxCalories }))
-                    }
-                  />
+                  <View style={{ gap: spacing.spacing16 }}>
+                    <Text
+                      style={[styles.$bottomSheetSectionStyle, { paddingLeft: spacing.spacing24 }]}
+                    >
+                      Category
+                    </Text>
 
-                  <RNSlider
-                    label="Preparation time"
-                    unit="minutes"
-                    minValue={0}
-                    maxValue={MAX_PREPARATION_TIME}
-                    lowerValue={filters.minPreparationTime}
-                    greaterValue={filters.maxPreparationTime}
-                    onChangeMinValue={(minTime) =>
-                      setFilters((prev) => ({ ...prev, minPreparationTime: minTime }))
-                    }
-                    onChangeMaxValue={(maxTime) =>
-                      setFilters((prev) => ({ ...prev, maxPreparationTime: maxTime }))
-                    }
-                  />
-                </View>
-                <View>
-                  <RNButton
-                    onPress={applyFilters}
-                    loading={isLoading}
-                    label="Apply Filters"
-                    style={styles.$applyBtnStyle}
-                    labelStyle={styles.$applyBtnLabelStyle}
-                  />
-                  <RNButton
-                    onPress={clearFilters}
-                    label="Clear Filters"
-                    link
-                    style={styles.$clearBtnStyle}
-                    labelStyle={styles.$clearBtnLabelStyle}
-                  />
+                    <View style={styles.listContainer}>
+                      {filters.categories.map((category) => {
+                        return (
+                          <CategoryFilter
+                            key={category.id}
+                            label={category.label}
+                            checked={category.checked}
+                            onPress={() => {
+                              toggleCategory(category.id);
+                            }}
+                          />
+                        );
+                      })}
+                    </View>
+                  </View>
+                  <View style={{ gap: spacing.spacing32 }}>
+                    <RNSlider
+                      label="Calories"
+                      unit="Kcal"
+                      minValue={0}
+                      maxValue={MAX_CALORIES}
+                      lowerValue={filters.minCalories}
+                      greaterValue={filters.maxCalories}
+                      onChangeMinValue={(minCalories) =>
+                        setFilters((prev) => ({ ...prev, minCalories }))
+                      }
+                      onChangeMaxValue={(maxCalories) =>
+                        setFilters((prev) => ({ ...prev, maxCalories }))
+                      }
+                    />
+
+                    <RNSlider
+                      label="Preparation time"
+                      unit="minutes"
+                      minValue={0}
+                      maxValue={MAX_PREPARATION_TIME}
+                      lowerValue={filters.minPreparationTime}
+                      greaterValue={filters.maxPreparationTime}
+                      onChangeMinValue={(minTime) =>
+                        setFilters((prev) => ({ ...prev, minPreparationTime: minTime }))
+                      }
+                      onChangeMaxValue={(maxTime) =>
+                        setFilters((prev) => ({ ...prev, maxPreparationTime: maxTime }))
+                      }
+                    />
+                  </View>
+                  <View>
+                    <RNButton
+                      onPress={applyFilters}
+                      loading={isLoading}
+                      label="Apply Filters"
+                      style={styles.$applyBtnStyle}
+                      labelStyle={styles.$applyBtnLabelStyle}
+                    />
+                    <RNButton
+                      onPress={clearFilters}
+                      label="Clear Filters"
+                      link
+                      style={styles.$clearBtnStyle}
+                      labelStyle={styles.$clearBtnLabelStyle}
+                    />
+                  </View>
                 </View>
               </View>
             </View>
-          </View>
-        </FiltersBottomSheet>
+          </BottomSheetScrollView>
+        </BottomSheetModal>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );

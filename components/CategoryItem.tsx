@@ -5,6 +5,7 @@ import { colors } from "@/theme/colors";
 import FastImage from "react-native-fast-image";
 import { $sizeStyles } from "@/theme/typography";
 import { useRouter } from "expo-router";
+import { moderateScale } from "@/utils/scale";
 
 const CategoryItem: React.FC<any> = ({ category }) => {
   const { path, title } = category;
@@ -23,7 +24,7 @@ const CategoryItem: React.FC<any> = ({ category }) => {
       >
         <FastImage
           source={path}
-          style={{ width: 25, height: 25 }}
+          style={{ width: moderateScale(30), height: moderateScale(30) }}
         />
       </Pressable>
       <Text style={styles.$titleStyle}>{title}</Text>
@@ -35,8 +36,8 @@ export default CategoryItem;
 
 const styles = StyleSheet.create({
   $containerStyle: {
-    height: 65,
-    width: 65,
+    height: moderateScale(64),
+    width: moderateScale(64),
     borderRadius: spacing.spacing64,
     backgroundColor: colors.accent200,
     justifyContent: "center",
@@ -44,7 +45,7 @@ const styles = StyleSheet.create({
   },
 
   $titleStyle: {
-    ...$sizeStyles.s,
+    ...$sizeStyles.xs,
     fontFamily: "sofia600",
   },
 });

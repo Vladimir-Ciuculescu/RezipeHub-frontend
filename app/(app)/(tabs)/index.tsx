@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   },
 
   $messageStyle: {
-    ...$sizeStyles.l,
+    ...$sizeStyles.xl,
   },
 
   $userNameStyle: {
@@ -323,11 +323,11 @@ const styles = StyleSheet.create({
   },
 
   $sectionTitleStyle: {
-    ...$sizeStyles.xl,
+    ...$sizeStyles.h3,
     color: colors.greyscale500,
   },
   $seeAllBtnStyle: {
-    ...$sizeStyles.n,
+    ...$sizeStyles.l,
     fontFamily: "sofia800",
     color: colors.accent200,
   },

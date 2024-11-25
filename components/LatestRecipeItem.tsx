@@ -10,13 +10,14 @@ import { View } from "react-native-ui-lib";
 import { $sizeStyles } from "@/theme/typography";
 import { LatestRecipeResponse } from "@/types/recipe.types";
 import { useRouter } from "expo-router";
+import { horizontalScale, moderateScale } from "@/utils/scale";
 
 interface LatestRecipeItemProps {
   item: LatestRecipeResponse;
 }
 
 const LatestRecipeItem: React.FC<LatestRecipeItemProps> = ({ item }) => {
-  const { id, photoUrl, user, isInFavorites } = item;
+  const { id, photoUrl, user } = item;
 
   const router = useRouter();
 
@@ -45,29 +46,24 @@ const LatestRecipeItem: React.FC<LatestRecipeItemProps> = ({ item }) => {
           <View style={styles.$placeholderstyle}>
             <Ionicons
               name="image-outline"
-              size={35}
+              size={moderateScale(48)}
               color={colors.greyscale400}
             />
           </View>
         )}
 
-        <View
-          style={{
-            paddingTop: spacing.spacing8,
-            flex: 1,
-            width: "100%",
-            justifyContent: "space-between",
-          }}
-        >
+        <View style={styles.$innerContainerStyle}>
           <Text
-            style={{ ...$sizeStyles.n, fontFamily: "sofia800" }}
+            style={{ ...$sizeStyles.s, fontFamily: "sofia800" }}
             numberOfLines={2}
           >
             {item.title}
           </Text>
           <View
             row
-            style={{ justifyContent: "space-between" }}
+            style={{
+              justifyContent: "space-between",
+            }}
           >
             <View
               row
@@ -76,29 +72,13 @@ const LatestRecipeItem: React.FC<LatestRecipeItemProps> = ({ item }) => {
               {user.photoUrl ? (
                 <FastImage
                   source={{ uri: user.photoUrl }}
-                  style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: spacing.spacing16,
-                    borderWidth: 2,
-                    borderColor: colors.accent200,
-                  }}
+                  style={styles.$userImageStyle}
                 />
               ) : (
-                <View
-                  style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: spacing.spacing16,
-
-                    backgroundColor: colors.greyscale300,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
+                <View style={styles.$userImagePlaceholderStyle}>
                   <Feather
                     name="user"
-                    size={15}
+                    size={moderateScale(16)}
                     color={colors.greyscale50}
                   />
                 </View>
@@ -106,14 +86,7 @@ const LatestRecipeItem: React.FC<LatestRecipeItemProps> = ({ item }) => {
               <Text
                 numberOfLines={1}
                 ellipsizeMode="tail"
-                style={[
-                  {
-                    ...$sizeStyles.n,
-                    fontFamily: "sofia400",
-                    color: colors.greyscale300,
-                    paddingRight: 30,
-                  },
-                ]}
+                style={styles.$ownerNameStyle}
               >
                 {`${item.user.lastName}`}
               </Text>
@@ -124,13 +97,11 @@ const LatestRecipeItem: React.FC<LatestRecipeItemProps> = ({ item }) => {
             >
               <RNIcon
                 name="clock"
-                height={20}
-                width={20}
+                height={moderateScale(18)}
+                width={moderateScale(18)}
                 style={{ color: colors.greyscale300 }}
               />
-              <Text style={{ ...$sizeStyles.s, color: colors.greyscale300 }}>
-                {item.preparationTime} Min
-              </Text>
+              <Text style={styles.$preparationTimeStyle}>{item.preparationTime}</Text>
             </View>
           </View>
         </View>
@@ -143,15 +114,16 @@ export default LatestRecipeItem;
 
 const styles = StyleSheet.create({
   $containerStyle: {
-    height: 240,
-    width: 200,
+    height: moderateScale(240),
+    width: horizontalScale(200),
     justifyContent: "space-between",
     padding: spacing.spacing16,
   },
 
   $imageStyle: {
     width: "100%",
-    height: "60%",
+    height: "50%",
+
     borderRadius: spacing.spacing16,
     display: "flex",
     overflow: "hidden",
@@ -164,5 +136,41 @@ const styles = StyleSheet.create({
     backgroundColor: colors.greyscale200,
     justifyContent: "center",
     alignItems: "center",
+  },
+
+  $innerContainerStyle: {
+    paddingTop: spacing.spacing8,
+    flex: 1,
+    width: "100%",
+    justifyContent: "space-between",
+  },
+
+  $userImageStyle: {
+    width: horizontalScale(26),
+    height: moderateScale(26),
+    borderRadius: spacing.spacing16,
+    borderWidth: 1,
+    borderColor: colors.accent200,
+  },
+
+  $userImagePlaceholderStyle: {
+    width: horizontalScale(26),
+    height: moderateScale(26),
+    borderRadius: spacing.spacing16,
+    backgroundColor: colors.greyscale300,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  $ownerNameStyle: {
+    ...$sizeStyles.xs,
+    fontFamily: "sofia400",
+    color: colors.greyscale300,
+    maxWidth: horizontalScale(90),
+  },
+
+  $preparationTimeStyle: {
+    ...$sizeStyles.xs,
+    color: colors.greyscale300,
   },
 });

@@ -218,8 +218,6 @@ const RecipeEditAddIngredient = () => {
 
   const segments = [{ label: "Measures" }, { label: "Percentage" }];
 
-  console.log(nutrientsInfo);
-
   return (
     <>
       <ScrollView

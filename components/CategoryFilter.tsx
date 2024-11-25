@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
+import { memo } from "react";
 import Animated, {
   FadeIn,
   FadeOut,
@@ -21,21 +21,23 @@ const TimingConfig = {
   duration: 150,
 };
 
-const CategoryFilter: React.FC<CategoryFilterProps> = ({ label, checked, onPress }) => {
-  const rContainerStyle = useAnimatedStyle(() => {
-    return {
+const CategoryFilter: React.FC<CategoryFilterProps> = memo(({ label, checked, onPress }) => {
+  const rContainerStyle = useAnimatedStyle(
+    () => ({
       backgroundColor: withTiming(checked ? colors.accent200 : colors.greyscale150, TimingConfig),
       borderColor: withTiming(checked ? colors.accent200 : colors.greyscale150, TimingConfig),
       paddingLeft: 20,
       paddingRight: !checked ? 20 : 14,
-    };
-  }, [checked]);
+    }),
+    [checked],
+  );
 
-  const rTextStyle = useAnimatedStyle(() => {
-    return {
+  const rTextStyle = useAnimatedStyle(
+    () => ({
       color: withTiming(checked ? colors.greyscale50 : colors.accent200, TimingConfig),
-    };
-  }, [checked]);
+    }),
+    [checked],
+  );
 
   return (
     <Animated.View
@@ -58,7 +60,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ label, checked, onPress
       )}
     </Animated.View>
   );
-};
+});
 
 export default CategoryFilter;
 
@@ -77,7 +79,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     ...$sizeStyles.s,
   },
-
   $checkedContainerStyle: {
     marginLeft: 8,
     justifyContent: "center",

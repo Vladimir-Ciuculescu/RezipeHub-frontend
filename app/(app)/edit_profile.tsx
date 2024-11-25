@@ -21,6 +21,7 @@ import { handleError } from "@/api/handleError";
 import { ACCESS_TOKEN, storage } from "@/storage";
 import { jwtDecode } from "jwt-decode";
 import useUserStore from "@/zustand/useUserStore";
+import RNPressable from "@/components/shared/RNPressable";
 
 const EditProfile = () => {
   const navigation = useNavigation();
@@ -37,9 +38,9 @@ const EditProfile = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={goBack}>
+        <RNPressable onPress={goBack}>
           <RNIcon name="arrow_left" />
-        </Pressable>
+        </RNPressable>
       ),
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit Profile</Text>,
     });
