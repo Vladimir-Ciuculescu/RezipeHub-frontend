@@ -14,6 +14,7 @@ import { Formik, FormikErrors, FormikHelpers } from "formik";
 import { registerSchema } from "@/yup/register.schema";
 import AuthService from "@/api/services/auth.service";
 import { RegisterUserRequest } from "@/types/user.types";
+import { horizontalScale, verticalScale } from "@/utils/scale";
 
 const Register = () => {
   const navigation = useNavigation();
@@ -202,10 +203,9 @@ export default Register;
 const styles = StyleSheet.create({
   $containerStyle: {
     alignItems: "center",
-    paddingBottom: 100,
     flexGrow: 1,
-    gap: spacing.spacing24,
-    paddingHorizontal: spacing.spacing24,
-    paddingTop: spacing.spacing24,
+    gap: verticalScale(spacing.spacing24),
+    paddingHorizontal: horizontalScale(spacing.spacing24),
+    paddingTop: verticalScale(spacing.spacing24),
   },
 });

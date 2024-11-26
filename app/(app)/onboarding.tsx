@@ -1,18 +1,13 @@
-import TokenService from "@/api/services/token.service";
-import UserService from "@/api/services/user.service";
 import { Onboarding_1, Onboarding_2, Onboarding_3 } from "@/assets/illustrations";
 import RNButton from "@/components/shared/RNButton";
-import { ACCESS_TOKEN, ONBOARDED, storage } from "@/storage";
+import { ONBOARDED, storage } from "@/storage";
 import { colors } from "@/theme/colors";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
-import { CurrentUser, LoginUserResponse } from "@/types/user.types";
-import useUserStore from "@/zustand/useUserStore";
-import { useAuth } from "@clerk/clerk-expo";
-import { Redirect, router, useRootNavigationState, useRouter } from "expo-router";
+import { horizontalScale, verticalScale } from "@/utils/scale";
+import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { jwtDecode } from "jwt-decode";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Animated, Dimensions, FlatList, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Text, View } from "react-native-ui-lib";
@@ -33,8 +28,8 @@ function OnboardingStep(props: OnboardingStepProps) {
     >
       {step.image}
       <View style={styles.$stepInfoContainer}>
-        <Text style={[styles.$stepTitle, $sizeStyles.h2]}>{step.title}</Text>
-        <Text style={[styles.$stepDescription, $sizeStyles.l]}>{step.description}</Text>
+        <Text style={[styles.$stepTitle]}>{step.title}</Text>
+        <Text style={[styles.$stepDescription]}>{step.description}</Text>
       </View>
     </View>
   );
@@ -87,10 +82,6 @@ const steps: Step[] = [
 
 const Onboarding = () => {
   const router = useRouter();
-  const { isSignedIn, isLoaded } = useAuth();
-  const rootNavigationState = useRootNavigationState();
-
-  const setUser = useUserStore.use.setUser();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -151,7 +142,7 @@ const Onboarding = () => {
             link
             onPress={goToHome}
             label="Skip"
-            labelStyle={[styles.$skipBtnLabel, $sizeStyles.xl]}
+            labelStyle={styles.$skipBtnLabel}
           />
         </View>
         <FlatList
@@ -189,22 +180,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   $containerStyle: {
-    paddingBottom: spacing.spacing32,
-    paddingTop: spacing.spacing32,
+    paddingBottom: verticalScale(spacing.spacing32),
+    paddingTop: verticalScale(spacing.spacing32),
   },
   $skipContainerStyle: {
     justifyContent: "flex-end",
-    paddingRight: spacing.spacing32,
+    paddingRight: horizontalScale(spacing.spacing32),
   },
 
-  $skipBtnLabel: { color: colors.greyscale500, fontFamily: "sofia800" },
+  $skipBtnLabel: {
+    ...$sizeStyles.xl,
+    color: colors.greyscale500,
+  },
 
   $listContainer: {
     height: height / 1.3,
   },
 
   $saveBtn: {
-    marginHorizontal: spacing.spacing32,
+    marginHorizontal: horizontalScale(spacing.spacing32),
   },
 
   $saveBtnLabel: {
@@ -216,20 +210,22 @@ const styles = StyleSheet.create({
     width,
   },
   $stepInfoContainer: {
-    gap: spacing.spacing16,
+    gap: horizontalScale(spacing.spacing16),
     width: "100%",
-    paddingHorizontal: spacing.spacing24,
+    paddingHorizontal: horizontalScale(spacing.spacing24),
   },
 
   $stepTitle: {
     color: colors.slate900,
-    fontFamily: "sofia800",
+
+    ...$sizeStyles.h3,
     textAlign: "center",
   },
 
   $stepDescription: {
     color: colors.greyscale300,
-    fontFamily: "sofia400",
+
     textAlign: "center",
+    ...$sizeStyles.l,
   },
 });
