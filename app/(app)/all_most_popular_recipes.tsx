@@ -21,6 +21,8 @@ import FastImage from "react-native-fast-image";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { spacing } from "@/theme/spacing";
 import { MostPopularRecipeResponse } from "@/types/recipe.types";
+import RNPressable from "@/components/shared/RNPressable";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 const { width } = Dimensions.get("screen");
 
@@ -39,9 +41,13 @@ const AllMostPopularRecipes = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={goBack}>
-          <RNIcon name="arrow_left" />
-        </Pressable>
+        <RNPressable onPress={goBack}>
+          <RNIcon
+            name="arrow_left"
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+          />
+        </RNPressable>
       ),
       headerTitle: () => <Text style={styles.$headerTitleStyle}>Most popular</Text>,
     });
@@ -92,7 +98,9 @@ const AllMostPopularRecipes = () => {
         onPress={() => goToRecipeDetails(item)}
         key={item.id}
       >
-        <RNShadowView style={[styles.$gridContainerStyle, styles.$rowContainerStyle]}>
+        <RNShadowView
+          style={[{ marginBottom: verticalScale(spacing.spacing16) }, styles.$rowContainerStyle]}
+        >
           <View style={[styles.$innerContainerStyle, styles.$innerRowContainerStyle]}>
             <View style={styles.$innerRowInfoStyle}>
               <View style={styles.$contentRowStyle}>
@@ -107,7 +115,7 @@ const AllMostPopularRecipes = () => {
                   <View style={[styles.$rowImageStyle, styles.$placeholderImageStyle]}>
                     <Ionicons
                       name="image-outline"
-                      size={35}
+                      size={moderateScale(40)}
                       color={colors.greyscale400}
                     />
                   </View>
@@ -116,6 +124,7 @@ const AllMostPopularRecipes = () => {
                   <Text
                     numberOfLines={3}
                     style={styles.$rowTextStyle}
+                    ellipsizeMode="tail"
                   >
                     {item.title}
                   </Text>
@@ -125,8 +134,8 @@ const AllMostPopularRecipes = () => {
                       <RNIcon
                         name="arrow_right"
                         color={colors.greyscale50}
-                        height={12}
-                        width={12}
+                        height={horizontalScale(12)}
+                        width={horizontalScale(12)}
                       />
                     </View>
                   </View>
@@ -142,7 +151,7 @@ const AllMostPopularRecipes = () => {
                         <View style={styles.$userAvatarPlaceholderStyle}>
                           <Feather
                             name="user"
-                            size={15}
+                            size={moderateScale(16)}
                             color={colors.greyscale50}
                           />
                         </View>
@@ -159,8 +168,8 @@ const AllMostPopularRecipes = () => {
                     <View style={styles.$timeContainerStyle}>
                       <RNIcon
                         name="clock"
-                        height={20}
-                        width={20}
+                        height={moderateScale(16)}
+                        width={moderateScale(16)}
                         style={styles.$clockIconStyle}
                       />
                       <Text style={styles.$timeTextStyle}>{item.preparationTime} Min</Text>
@@ -223,15 +232,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   $emptyContainerStyle: {
-    width: GRID_CONTAINER_SIZE * GRID_COLUMNS,
-    height: 198,
+    width: horizontalScale(GRID_CONTAINER_SIZE * GRID_COLUMNS),
+    height: moderateScale(198),
+
     justifyContent: "center",
     alignItems: "center",
   },
-  $gridContainerStyle: {
-    width: GRID_CONTAINER_SIZE,
-    marginBottom: spacing.spacing16,
-  },
+
   $rowContainerStyle: {
     width: "100%",
     justifyContent: "flex-start",
@@ -244,16 +251,13 @@ const styles = StyleSheet.create({
     borderRadius: spacing.spacing16,
     width: "100%",
   },
-  $innerGridContainerStyle: {
-    height: 198,
-    padding: spacing.spacing12,
-  },
+
   $innerRowContainerStyle: {
-    height: 100,
-    paddingLeft: spacing.spacing8,
-    paddingRight: spacing.spacing16,
-    paddingTop: spacing.spacing12,
-    paddingBottom: spacing.spacing12,
+    height: moderateScale(100),
+    paddingLeft: horizontalScale(spacing.spacing8),
+    paddingRight: horizontalScale(spacing.spacing16),
+    paddingTop: verticalScale(spacing.spacing12),
+    paddingBottom: verticalScale(spacing.spacing12),
   },
   $innerRowInfoStyle: {
     width: "100%",
@@ -265,7 +269,7 @@ const styles = StyleSheet.create({
   $contentRowStyle: {
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: spacing.spacing12,
+    gap: horizontalScale(spacing.spacing12),
     flexShrink: 1,
     height: "100%",
     width: "100%",
@@ -273,7 +277,7 @@ const styles = StyleSheet.create({
   $rowImageStyle: {
     display: "flex",
     height: "100%",
-    width: 100,
+    width: horizontalScale(100),
     borderRadius: spacing.spacing16,
     overflow: "hidden",
   },
@@ -303,8 +307,9 @@ const styles = StyleSheet.create({
   },
   $userDetailsBtnStyle: {
     backgroundColor: colors.brandPrimary,
-    height: 24,
-    width: 24,
+
+    height: horizontalScale(24),
+    width: verticalScale(24),
     justifyContent: "center",
     alignItems: "center",
     borderRadius: spacing.spacing8,
@@ -320,15 +325,15 @@ const styles = StyleSheet.create({
     gap: spacing.spacing4,
   },
   $userAvatarStyle: {
-    width: 24,
-    height: 24,
+    height: horizontalScale(24),
+    width: verticalScale(24),
     borderRadius: spacing.spacing16,
     borderWidth: 2,
     borderColor: colors.accent200,
   },
   $userAvatarPlaceholderStyle: {
-    width: 24,
-    height: 24,
+    height: horizontalScale(24),
+    width: verticalScale(24),
     borderRadius: spacing.spacing16,
     backgroundColor: colors.greyscale300,
     justifyContent: "center",
@@ -338,7 +343,7 @@ const styles = StyleSheet.create({
     ...$sizeStyles.s,
     fontFamily: "sofia400",
     color: colors.greyscale300,
-    maxWidth: 100,
+    maxWidth: horizontalScale(100),
   },
   $timeContainerStyle: {
     flexDirection: "row",

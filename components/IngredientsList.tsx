@@ -11,6 +11,9 @@ import SwipeableListItem from "./SwipeableItem";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
 import { AntDesign } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import RNShadowView from "./shared/RNShadowView";
+import RNPressable from "./shared/RNPressable";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 const { width } = Dimensions.get("screen");
 
@@ -51,7 +54,7 @@ const IngredientListItem: React.FC<IngredientListItemProps> = ({
       </View>
     </SwipeableListItem>
   ) : (
-    <View
+    <RNShadowView
       style={styles.$innerContainerStyle}
       key={`${ingredient.foodId}-${ingredient.title}`}
     >
@@ -59,7 +62,7 @@ const IngredientListItem: React.FC<IngredientListItemProps> = ({
       <Text style={[$sizeStyles.n, { fontFamily: "sofia700" }]}>
         {ingredient.quantity} {ingredient.measure}
       </Text>
-    </View>
+    </RNShadowView>
   );
 };
 
@@ -108,13 +111,13 @@ const IngredientsList: React.FC<IngredientsListProps> = ({
             {ingredients.length} items
           </Text>
         ) : (
-          <Pressable onPress={goToSearchIngredient}>
+          <RNPressable onPress={goToSearchIngredient}>
             <AntDesign
               name="plus"
-              size={24}
+              size={horizontalScale(24)}
               color={colors.accent200}
             />
-          </Pressable>
+          </RNPressable>
         )}
       </View>
 
@@ -140,7 +143,7 @@ const IngredientsList: React.FC<IngredientsListProps> = ({
                 <Skeleton
                   key={key}
                   colorMode="light"
-                  height={80}
+                  height={moderateScale(80)}
                   width="100%"
                 />
               );
@@ -159,13 +162,13 @@ const styles = StyleSheet.create({
   },
 
   $notEditableContainerStyle: {
-    padding: 10,
+    padding: verticalScale(12),
     paddingHorizontal: spacing.spacing16,
     gap: spacing.spacing12,
   },
 
   $innerContainerStyle: {
-    height: 80,
+    height: moderateScale(80),
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -173,17 +176,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.spacing24,
     backgroundColor: "white",
     borderRadius: 16,
-    shadowColor: "#171717",
-
-    // Shadow for iOS
-    shadowOpacity: 0.1,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowRadius: 8,
-    // Shadow for Android
-    elevation: 5,
   },
 
   $stepContainerStyle: {
@@ -191,13 +183,6 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     width: "100%",
     paddingRight: spacing.spacing64,
-  },
-  $stepInfoStyle: {
-    height: 28,
-    width: 28,
-    borderRadius: spacing.spacing8,
-    backgroundColor: colors.greyscale150,
-    alignItems: "center",
   },
 
   $ingredientLabelStyle: {

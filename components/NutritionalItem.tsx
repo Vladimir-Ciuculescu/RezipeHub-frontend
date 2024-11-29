@@ -1,6 +1,7 @@
 import { colors } from "@/theme/colors";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
+import { horizontalScale } from "@/utils/scale";
 import React from "react";
 import { StyleSheet } from "react-native";
 import { Text, View } from "react-native-ui-lib";
@@ -36,8 +37,8 @@ const styles = StyleSheet.create({
   $nutritionalItemContainerStyle: { alignItems: "center", gap: spacing.spacing8 },
 
   $nutritionalItemIconStyle: {
-    width: 40,
-    height: 40,
+    width: horizontalScale(40),
+    height: horizontalScale(40),
     borderRadius: spacing.spacing8,
     backgroundColor: colors.greyscale150,
     alignItems: "center",
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
   },
 
   $nutrientTextStyle: {
-    ...$sizeStyles.l,
+    ...$sizeStyles.n,
     fontFamily: "sofia400",
   },
 });

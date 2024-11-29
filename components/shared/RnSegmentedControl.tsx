@@ -1,5 +1,6 @@
 import { colors } from "@/theme/colors";
 import { $sizeStyles } from "@/theme/typography";
+import { verticalScale } from "@/utils/scale";
 import { StyleSheet } from "react-native";
 import { SegmentedControl, SegmentedControlProps } from "react-native-ui-lib";
 
@@ -47,10 +48,14 @@ export default RNSegmentedControl;
 
 const styles = StyleSheet.create({
   $segmentStyle: {
-    height: 54,
+    //TODO : Pay attention to the recipe details where you use it. There it shouldbe 54px or higher
+    height: verticalScale(44),
   },
 
   $segmentLabelstyle: {
     ...$sizeStyles.n,
+    justifyContent: "center",
+    display: "flex",
+    alignItems: "center",
   },
 });

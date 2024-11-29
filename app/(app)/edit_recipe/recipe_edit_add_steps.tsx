@@ -23,6 +23,7 @@ import { MotiView } from "moti";
 import RNButton from "@/components/shared/RNButton";
 import RnInput from "@/components/shared/RNInput";
 import RNPressable from "@/components/shared/RNPressable";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -52,6 +53,8 @@ const RecipeEditAddSteps = () => {
           <RNIcon
             name="arrow_left"
             color={colors.brandPrimary}
+            height={moderateScale(20)}
+            width={moderateScale(20)}
           />
         </RNPressable>
       ),
@@ -60,7 +63,7 @@ const RecipeEditAddSteps = () => {
         <RNPressable onPress={confirmSteps}>
           <AntDesign
             name="check"
-            size={24}
+            size={moderateScale(24)}
             color={colors.accent200}
           />
         </RNPressable>
@@ -151,8 +154,8 @@ const RecipeEditAddSteps = () => {
       contentContainerStyle={{
         flex: 1,
         justifyContent: "space-between",
-        paddingTop: spacing.spacing24,
-        paddingBottom: spacing.spacing32,
+        paddingTop: verticalScale(spacing.spacing24),
+        paddingBottom: verticalScale(spacing.spacing32),
       }}
     >
       <View style={{ gap: spacing.spacing32 }}>
@@ -250,13 +253,13 @@ export default RecipeEditAddSteps;
 
 const styles = StyleSheet.create({
   $stepViewStyle: {
-    gap: spacing.spacing16,
+    gap: verticalScale(spacing.spacing16),
     width: screenWidth,
     justifyContent: "center",
-    paddingHorizontal: spacing.spacing24,
+    paddingHorizontal: horizontalScale(spacing.spacing24),
   },
   $paginationContainerStyle: {
-    height: 50,
+    height: moderateScale(50),
     alignItems: "center",
   },
   $stepsContainerStyle: {
@@ -271,8 +274,8 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.spacing8,
   },
   $paginationViewStyle: {
-    width: 40,
-    height: 40,
+    width: horizontalScale(40),
+    height: horizontalScale(40),
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
@@ -290,7 +293,7 @@ const styles = StyleSheet.create({
   $buttonsContainerstyle: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.spacing16,
-    paddingHorizontal: spacing.spacing16,
+    gap: horizontalScale(spacing.spacing16),
+    paddingHorizontal: horizontalScale(spacing.spacing16),
   },
 });

@@ -27,6 +27,8 @@ import { View } from "react-native-ui-lib";
 import RNShadowView from "@/components/shared/RNShadowView";
 import RNButton from "@/components/shared/RNButton";
 import FastImage from "react-native-fast-image";
+import RNPressable from "@/components/shared/RNPressable";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -66,9 +68,13 @@ const AllFavoriteRecipes = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={goBack}>
-          <RNIcon name="arrow_left" />
-        </Pressable>
+        <RNPressable onPress={goBack}>
+          <RNIcon
+            name="arrow_left"
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+          />
+        </RNPressable>
       ),
       headerTitle: () => <Text style={{ ...$sizeStyles.h2 }}>Favorites</Text>,
 
@@ -85,7 +91,8 @@ const AllFavoriteRecipes = () => {
               label: (
                 <Octicons
                   name="rows"
-                  size={16}
+                  // size={16}
+                  size={moderateScale(12)}
                   color={layoutIndex === 0 ? colors.greyscale50 : colors.slate900}
                 />
               ) as any,
@@ -93,7 +100,8 @@ const AllFavoriteRecipes = () => {
             {
               label: (
                 <Feather
-                  size={16}
+                  // size={16}
+                  size={moderateScale(12)}
                   name="grid"
                   color={layoutIndex === 1 ? colors.greyscale50 : colors.slate900}
                 />
@@ -209,19 +217,7 @@ const AllFavoriteRecipes = () => {
                         source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
                         style={{ flex: 1 }}
                       />
-                      <View
-                        style={{
-                          height: 28,
-                          width: 28,
-                          backgroundColor: colors.greyscale50,
-                          position: "absolute",
-                          borderRadius: spacing.spacing12,
-                          justifyContent: "center",
-                          alignItems: "center",
-                          right: spacing.spacing8,
-                          top: spacing.spacing8,
-                        }}
-                      >
+                      <View style={styles.$hearRowContainerstyle}>
                         <RNIcon name="heart" />
                       </View>
                     </View>
@@ -236,24 +232,12 @@ const AllFavoriteRecipes = () => {
                         },
                       ]}
                     >
-                      <View
-                        style={{
-                          height: 28,
-                          width: 28,
-                          backgroundColor: colors.greyscale50,
-                          position: "absolute",
-                          borderRadius: spacing.spacing12,
-                          justifyContent: "center",
-                          alignItems: "center",
-                          right: spacing.spacing8,
-                          top: spacing.spacing8,
-                        }}
-                      >
+                      <View style={styles.$hearRowContainerstyle}>
                         <RNIcon name="heart" />
                       </View>
                       <Ionicons
                         name="image-outline"
-                        size={35}
+                        size={moderateScale(25)}
                         color={colors.greyscale400}
                       />
                     </View>
@@ -277,29 +261,13 @@ const AllFavoriteRecipes = () => {
                       {item.user.photoUrl ? (
                         <FastImage
                           source={{ uri: item.user.photoUrl }}
-                          style={{
-                            width: 24,
-                            height: 24,
-                            borderRadius: spacing.spacing16,
-                            borderWidth: 2,
-                            borderColor: colors.accent200,
-                          }}
+                          style={styles.userImageStyle}
                         />
                       ) : (
-                        <View
-                          style={{
-                            width: 24,
-                            height: 24,
-                            borderRadius: spacing.spacing16,
-
-                            backgroundColor: colors.greyscale300,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
+                        <View style={styles.$userPlaceholderStyle}>
                           <Feather
                             name="user"
-                            size={15}
+                            size={moderateScale(12)}
                             color={colors.greyscale50}
                           />
                         </View>
@@ -309,7 +277,7 @@ const AllFavoriteRecipes = () => {
                         ellipsizeMode="tail"
                         style={[
                           {
-                            ...$sizeStyles.s,
+                            ...$sizeStyles.xs,
                             fontFamily: "sofia400",
                             color: colors.greyscale300,
                             paddingRight: 30,
@@ -327,8 +295,10 @@ const AllFavoriteRecipes = () => {
                     <RNIcon
                       name="arrow_right"
                       color={colors.greyscale50}
-                      height={12}
-                      width={12}
+                      // height={12}
+                      // width={12}
+                      height={moderateScale(12)}
+                      width={moderateScale(12)}
                     />
                   )}
                 />
@@ -342,19 +312,7 @@ const AllFavoriteRecipes = () => {
                       source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
                       style={{ flex: 1 }}
                     />
-                    <View
-                      style={{
-                        height: 28,
-                        width: 28,
-                        backgroundColor: colors.greyscale50,
-                        position: "absolute",
-                        borderRadius: spacing.spacing12,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        right: spacing.spacing8,
-                        top: spacing.spacing8,
-                      }}
-                    >
+                    <View style={styles.$heartGridStyle}>
                       <RNIcon name="heart" />
                     </View>
                   </View>
@@ -369,24 +327,12 @@ const AllFavoriteRecipes = () => {
                       },
                     ]}
                   >
-                    <View
-                      style={{
-                        height: 28,
-                        width: 28,
-                        backgroundColor: colors.greyscale50,
-                        position: "absolute",
-                        borderRadius: spacing.spacing12,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        right: spacing.spacing8,
-                        top: spacing.spacing8,
-                      }}
-                    >
+                    <View style={styles.$headerGridPlaceholderStyle}>
                       <RNIcon name="heart" />
                     </View>
                     <Ionicons
                       name="image-outline"
-                      size={35}
+                      size={moderateScale(40)}
                       color={colors.greyscale400}
                     />
                   </View>
@@ -402,42 +348,16 @@ const AllFavoriteRecipes = () => {
                   <View
                     style={{ flexDirection: "row", alignItems: "center", gap: spacing.spacing8 }}
                   >
-                    {/* <FastImage
-                      source={{ uri: item.user.photoUrl }}
-                      style={{
-                        width: 24,
-                        height: 24,
-                        borderRadius: spacing.spacing16,
-                        borderWidth: 2,
-                        borderColor: colors.accent200,
-                      }}
-                    /> */}
                     {item.user.photoUrl ? (
                       <FastImage
                         source={{ uri: item.user.photoUrl }}
-                        style={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: spacing.spacing16,
-                          borderWidth: 2,
-                          borderColor: colors.accent200,
-                        }}
+                        style={styles.$userImageGridStyle}
                       />
                     ) : (
-                      <View
-                        style={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: spacing.spacing16,
-
-                          backgroundColor: colors.greyscale300,
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
+                      <View style={styles.$userImagePlaceholderGridStyle}>
                         <Feather
                           name="user"
-                          size={15}
+                          size={moderateScale(12)}
                           color={colors.greyscale50}
                         />
                       </View>
@@ -447,7 +367,7 @@ const AllFavoriteRecipes = () => {
                       ellipsizeMode="tail"
                       style={[
                         {
-                          ...$sizeStyles.s,
+                          ...$sizeStyles.xs,
                           fontFamily: "sofia400",
                           color: colors.greyscale300,
                           paddingRight: 30,
@@ -524,12 +444,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   $segmentStyle: {
-    height: 34,
+    // height: moderateScale(44),
   },
 
   $containerStyle: {
     flex: 1,
-    // backgroundColor: colors.greyscale75,
+    backgroundColor: colors.greyscale75,
   },
   $contentContainerStyle: {
     alignItems: "center",
@@ -546,8 +466,11 @@ const styles = StyleSheet.create({
   },
 
   $gridContainerStyle: {
-    width: GRID_CONTAINER_SIZE,
-    marginBottom: spacing.spacing16,
+    // width: GRID_CONTAINER_SIZE,
+    width: horizontalScale(GRID_CONTAINER_SIZE),
+
+    // marginBottom: spacing.spacing16,
+    marginBottom: verticalScale(spacing.spacing16),
   },
   $rowContainerStyle: {
     width: "100%",
@@ -563,16 +486,23 @@ const styles = StyleSheet.create({
   },
 
   $innerGridContainerStyle: {
-    height: 198,
+    // height: 198,
+    height: moderateScale(220),
+
     padding: spacing.spacing12,
   },
 
   $innerRowContainerStyle: {
-    height: 100,
-    paddingLeft: spacing.spacing8,
-    paddingRight: spacing.spacing16,
-    paddingTop: spacing.spacing12,
-    paddingBottom: spacing.spacing12,
+    // height: 100,
+    height: moderateScale(100),
+    // paddingLeft: spacing.spacing8,
+    // paddingRight: spacing.spacing16,
+    // paddingTop: spacing.spacing12,
+    // paddingBottom: spacing.spacing12,
+    paddingLeft: horizontalScale(spacing.spacing8),
+    paddingRight: horizontalScale(spacing.spacing16),
+    paddingTop: verticalScale(spacing.spacing12),
+    paddingBottom: verticalScale(spacing.spacing12),
   },
 
   $innerGridInfoStyle: {
@@ -602,17 +532,87 @@ const styles = StyleSheet.create({
   $rowImageStyle: {
     display: "flex",
     height: "100%",
-    width: 100,
+    //width: 100,
+    width: moderateScale(100),
     borderRadius: spacing.spacing16,
     overflow: "hidden",
   },
 
+  $heartContainerStyle: {
+    height: 28,
+    width: 28,
+    backgroundColor: colors.greyscale50,
+    position: "absolute",
+    borderRadius: spacing.spacing12,
+    justifyContent: "center",
+    alignItems: "center",
+    right: spacing.spacing8,
+    top: spacing.spacing8,
+  },
+
+  $hearRowContainerstyle: {
+    height: horizontalScale(28),
+    width: horizontalScale(28),
+    backgroundColor: colors.greyscale50,
+    position: "absolute",
+    borderRadius: spacing.spacing12,
+    justifyContent: "center",
+    alignItems: "center",
+    // right: spacing.spacing8,
+    // top: spacing.spacing8,
+    right: horizontalScale(spacing.spacing8),
+    top: verticalScale(spacing.spacing8),
+  },
+
   $gridImageStyle: {
-    height: 88,
+    // height: 88,
+    height: moderateScale(88),
     width: "100%",
     borderRadius: spacing.spacing16,
     display: "flex",
     overflow: "hidden",
+  },
+
+  $heartGridStyle: {
+    height: horizontalScale(28),
+    width: horizontalScale(28),
+    backgroundColor: colors.greyscale50,
+    position: "absolute",
+    borderRadius: spacing.spacing12,
+    justifyContent: "center",
+    alignItems: "center",
+    right: spacing.spacing8,
+    top: spacing.spacing8,
+  },
+
+  $userImageGridStyle: {
+    width: horizontalScale(24),
+    height: horizontalScale(24),
+    borderRadius: spacing.spacing16,
+    borderWidth: 2,
+    borderColor: colors.accent200,
+  },
+
+  $userImagePlaceholderGridStyle: {
+    width: horizontalScale(24),
+    height: horizontalScale(24),
+    borderRadius: spacing.spacing16,
+
+    backgroundColor: colors.greyscale300,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  $headerGridPlaceholderStyle: {
+    height: horizontalScale(28),
+    width: horizontalScale(28),
+    backgroundColor: colors.greyscale50,
+    position: "absolute",
+    borderRadius: spacing.spacing12,
+    justifyContent: "center",
+    alignItems: "center",
+    right: spacing.spacing8,
+    top: spacing.spacing8,
   },
 
   $rowTextStyle: {
@@ -623,6 +623,23 @@ const styles = StyleSheet.create({
     paddingRight: spacing.spacing4,
   },
 
+  userImageStyle: {
+    width: horizontalScale(24),
+    height: horizontalScale(24),
+    borderRadius: spacing.spacing16,
+    borderWidth: 2,
+    borderColor: colors.accent200,
+  },
+
+  $userPlaceholderStyle: {
+    width: horizontalScale(24),
+    height: horizontalScale(24),
+    borderRadius: spacing.spacing16,
+    backgroundColor: colors.greyscale300,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
   $gridTextStyle: {
     fontFamily: "sofia800",
     color: colors.greyscale500,
@@ -630,7 +647,9 @@ const styles = StyleSheet.create({
 
   $userDetailsBtnStyle: {
     backgroundColor: colors.brandPrimary,
-    height: 24,
-    width: 24,
+    // height: 24,
+    // width: 24,
+    height: horizontalScale(24),
+    width: horizontalScale(24),
   },
 });

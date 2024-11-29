@@ -4,6 +4,7 @@ import { colors } from "@/theme/colors";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
 import { Step } from "@/types/step.types";
+import { horizontalScale, moderateScale } from "@/utils/scale";
 import useRecipeStore from "@/zustand/useRecipeStore";
 import { AntDesign } from "@expo/vector-icons";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
@@ -35,7 +36,11 @@ const RecipeEditEditStep = () => {
     navigation.setOptions({
       headerLeft: () => (
         <Pressable onPress={goBack}>
-          <RNIcon name="arrow_left" />
+          <RNIcon
+            name="arrow_left"
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+          />
         </Pressable>
       ),
 
@@ -44,7 +49,7 @@ const RecipeEditEditStep = () => {
         <Pressable onPress={handleSave}>
           <AntDesign
             name="check"
-            size={24}
+            size={moderateScale(24)}
             color={colors.accent300}
           />
         </Pressable>
@@ -77,8 +82,8 @@ const RecipeEditEditStep = () => {
     >
       <View
         style={{
-          paddingHorizontal: spacing.spacing24,
-          gap: spacing.spacing24,
+          paddingHorizontal: horizontalScale(spacing.spacing24),
+          gap: horizontalScale(spacing.spacing24),
           width: "100%",
         }}
       >

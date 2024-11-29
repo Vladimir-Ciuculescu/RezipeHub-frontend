@@ -15,6 +15,7 @@ import { IngredientItem } from "@/types/ingredient.types";
 import { Step } from "@/types/step.types";
 import SwipeableListItem from "@/components/SwipeableItem";
 import RNPressable from "@/components/shared/RNPressable";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 interface IngredientRowProps {
   ingredient: IngredientItem;
@@ -39,12 +40,20 @@ const RecipeItems = () => {
     navigation.setOptions({
       headerLeft: () => (
         <RNPressable onPress={cancel}>
-          <RNIcon name="arrow_left" />
+          <RNIcon
+            name="arrow_left"
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+          />
         </RNPressable>
       ),
       headerRight: () => (
         <RNPressable onPress={goNext}>
-          <RNIcon name="arrow_right" />
+          <RNIcon
+            name="arrow_right"
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+          />
         </RNPressable>
       ),
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Add ingredients</Text>,
@@ -122,7 +131,7 @@ const RecipeItems = () => {
           <AntDesign
             name="right"
             color={colors.accent200}
-            size={24}
+            size={moderateScale(24)}
           />
         </Animated.View>
       </View>
@@ -215,14 +224,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+
+    paddingVertical: verticalScale(10),
+    paddingHorizontal: horizontalScale(20),
   },
 
   $stepRowContainerStyle: {
     width: "100%",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+
+    paddingVertical: verticalScale(10),
+    paddingHorizontal: horizontalScale(20),
   },
 
   $stepDescriptionStyle: {
@@ -263,26 +274,6 @@ const styles = StyleSheet.create({
     fontFamily: "sofia800",
     color: colors.greyscale300,
   },
-  $rectButtonStyle: {
-    flex: 1,
-    height: 80,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignItems: "center",
-    justifyContent: "space-between",
-    flexDirection: "row",
-    backgroundColor: "white",
-  },
-
-  $rectStepStyle: {
-    flex: 1,
-    minHeight: 80,
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    alignItems: "center",
-    flexDirection: "row",
-    backgroundColor: "white",
-  },
 
   $stepContainerStyle: {
     gap: spacing.spacing16,
@@ -292,8 +283,8 @@ const styles = StyleSheet.create({
   },
 
   $stepInfoStyle: {
-    height: 28,
-    width: 28,
+    height: horizontalScale(28),
+    width: horizontalScale(28),
     borderRadius: spacing.spacing8,
     backgroundColor: colors.greyscale150,
     alignItems: "center",

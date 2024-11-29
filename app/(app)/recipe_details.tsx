@@ -40,6 +40,7 @@ import FavoritesService from "@/api/services/favorites.service";
 import Toast from "react-native-toast-message";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -178,7 +179,7 @@ const RecipeDetails = () => {
           iconSource={() => (
             <AntDesign
               name="close"
-              size={24}
+              size={moderateScale(24)}
               color="black"
             />
           )}
@@ -194,7 +195,7 @@ const RecipeDetails = () => {
                 iconSource={() => (
                   <Feather
                     name="menu"
-                    size={24}
+                    size={moderateScale(24)}
                     color="black"
                   />
                 )}
@@ -228,10 +229,11 @@ const RecipeDetails = () => {
               loop={false}
               ref={heartRef}
               autoPlay={false}
-              style={{
-                height: 50,
-                width: 50,
-              }}
+              // style={{
+              //   height: 50,
+              //   width: 50,
+              // }}
+              style={{ height: horizontalScale(50), width: horizontalScale(50) }}
               source={require("../../assets/gifs/heart.json")}
             />
           </Pressable>
@@ -247,10 +249,6 @@ const RecipeDetails = () => {
 
   const goBack = () => {
     router.back();
-  };
-
-  const openAddToFavoritesAlert = () => {
-    Alert.alert("Feature under development", "", [{ text: "OK" }], { userInterfaceStyle: "light" });
   };
 
   const openEditModal = () => {
@@ -369,7 +367,7 @@ const RecipeDetails = () => {
           >
             <Ionicons
               name="image-outline"
-              size={120}
+              size={moderateScale(120)}
               color={colors.greyscale400}
             />
           </View>
@@ -419,10 +417,12 @@ const RecipeDetails = () => {
                         <RNIcon
                           name="clock"
                           color={colors.greyscale350}
+                          height={horizontalScale(20)}
+                          width={horizontalScale(20)}
                         />
                         <Text
                           style={{
-                            ...$sizeStyles.n,
+                            ...$sizeStyles.s,
                             fontFamily: "sofia400",
                             color: colors.greyscale350,
                           }}
@@ -444,7 +444,7 @@ const RecipeDetails = () => {
                   <Skeleton.Group show>
                     <Skeleton
                       colorMode="light"
-                      height={25}
+                      height={moderateScale(25)}
                       width="40%"
                     />
                     <MotiView style={{ flexDirection: "row", justifyContent: "space-between" }}>
@@ -458,13 +458,13 @@ const RecipeDetails = () => {
                         >
                           <Skeleton
                             colorMode="light"
-                            height={40}
-                            width={40}
+                            height={moderateScale(40)}
+                            width={horizontalScale(40)}
                           />
                           <Skeleton
                             colorMode="light"
-                            height={25}
-                            width={100}
+                            height={moderateScale(25)}
+                            width={horizontalScale(100)}
                           />
                         </MotiView>
                         <MotiView
@@ -476,13 +476,13 @@ const RecipeDetails = () => {
                         >
                           <Skeleton
                             colorMode="light"
-                            height={40}
-                            width={40}
+                            height={horizontalScale(40)}
+                            width={horizontalScale(40)}
                           />
                           <Skeleton
                             colorMode="light"
-                            height={25}
-                            width={100}
+                            height={moderateScale(25)}
+                            width={horizontalScale(100)}
                           />
                         </MotiView>
                       </MotiView>
@@ -496,13 +496,13 @@ const RecipeDetails = () => {
                         >
                           <Skeleton
                             colorMode="light"
-                            height={40}
-                            width={40}
+                            height={horizontalScale(40)}
+                            width={horizontalScale(40)}
                           />
                           <Skeleton
                             colorMode="light"
-                            height={25}
-                            width={100}
+                            height={moderateScale(25)}
+                            width={horizontalScale(100)}
                           />
                         </MotiView>
                         <MotiView
@@ -514,13 +514,13 @@ const RecipeDetails = () => {
                         >
                           <Skeleton
                             colorMode="light"
-                            height={40}
-                            width={40}
+                            height={horizontalScale(40)}
+                            width={horizontalScale(40)}
                           />
                           <Skeleton
                             colorMode="light"
-                            height={25}
-                            width={100}
+                            height={moderateScale(25)}
+                            width={horizontalScale(100)}
                           />
                         </MotiView>
                       </MotiView>
@@ -557,8 +557,8 @@ const RecipeDetails = () => {
                           <FastImage
                             source={{ uri: parsedOwner.photoUrl }}
                             style={{
-                              height: 48,
-                              width: 48,
+                              height: horizontalScale(48),
+                              width: horizontalScale(48),
                               borderRadius: spacing.spacing24,
                               borderWidth: 4,
                               borderColor: colors.accent200,
@@ -567,8 +567,8 @@ const RecipeDetails = () => {
                         ) : (
                           <View
                             style={{
-                              height: 48,
-                              width: 48,
+                              height: horizontalScale(48),
+                              width: horizontalScale(48),
                               borderRadius: spacing.spacing24,
 
                               backgroundColor: colors.greyscale300,
@@ -578,7 +578,7 @@ const RecipeDetails = () => {
                           >
                             <Feather
                               name="user"
-                              size={15}
+                              size={moderateScale(20)}
                               color={colors.greyscale50}
                             />
                           </View>
@@ -605,6 +605,7 @@ const RecipeDetails = () => {
                   segments={SEGMENTS}
                   initialIndex={segmentIndex}
                   onChangeIndex={handleSegmentIndex}
+                  segmentsStyle={{ height: verticalScale(54) }}
                 />
               </View>
 
@@ -652,19 +653,20 @@ const styles = StyleSheet.create({
   },
 
   $bottomSheetBackgroundStyle: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.greyscale75,
     borderRadius: spacing.spacing24,
   },
 
   $bottomSheetScrollViewStyle: {
     paddingBottom: 50,
+    // backgroundColor: "red",
   },
 
   $contentStyle: {
     flex: 1,
     paddingTop: spacing.spacing16,
     gap: spacing.spacing24,
-    backgroundColor: "white",
+    backgroundColor: colors.greyscale75,
     overflow: "hidden",
   },
 });

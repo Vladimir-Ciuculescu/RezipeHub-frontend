@@ -10,6 +10,7 @@ import Animated, {
 import { colors } from "@/theme/colors";
 import { $sizeStyles } from "@/theme/typography";
 import RNIcon from "./shared/RNIcon";
+import { moderateScale } from "@/utils/scale";
 
 interface CategoryFilterProps {
   label: string;
@@ -77,13 +78,13 @@ const styles = StyleSheet.create({
   $labelStyle: {
     fontFamily: "sofia400",
     color: "#fff",
-    ...$sizeStyles.s,
+    ...$sizeStyles.xs,
   },
   $checkedContainerStyle: {
     marginLeft: 8,
     justifyContent: "center",
     alignItems: "center",
-    height: 20,
-    width: 20,
+    height: moderateScale(20),
+    width: moderateScale(20),
   },
 });

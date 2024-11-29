@@ -10,6 +10,9 @@ import { Skeleton } from "moti/skeleton";
 import SwipeableListItem from "./SwipeableItem";
 import { AntDesign } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import RNPressable from "./shared/RNPressable";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
+import RNShadowView from "./shared/RNShadowView";
 
 const { width } = Dimensions.get("screen");
 
@@ -55,14 +58,14 @@ const StepListItem: React.FC<StepListItemProps> = ({
       </View>
     </SwipeableListItem>
   ) : (
-    <View style={styles.$innerContainerStyle}>
+    <RNShadowView style={styles.$innerContainerStyle}>
       <View style={styles.$stepInfoStyle}>
-        <Text style={{ ...$sizeStyles.xl, color: colors.accent200 }}>{number + 1}</Text>
+        <Text style={{ ...$sizeStyles.l, color: colors.accent200 }}>{number + 1}</Text>
       </View>
       <Text style={[$sizeStyles.n, styles.stepText, { fontFamily: "sofia700" }]}>
         {step.description}
       </Text>
-    </View>
+    </RNShadowView>
   );
 };
 
@@ -106,13 +109,13 @@ const StepsList: React.FC<StepsListProps> = ({
         {mode === "view" ? (
           <Text style={[$sizeStyles.n, { color: colors.greyscale350 }]}>{steps.length} items</Text>
         ) : (
-          <Pressable onPress={() => goToAddSteps()}>
+          <RNPressable onPress={() => goToAddSteps()}>
             <AntDesign
               name="plus"
-              size={24}
+              size={horizontalScale(24)}
               color={colors.accent200}
             />
-          </Pressable>
+          </RNPressable>
         )}
       </View>
 
@@ -141,7 +144,7 @@ const StepsList: React.FC<StepsListProps> = ({
               <Skeleton
                 key={key}
                 colorMode="light"
-                height={80}
+                height={moderateScale(80)}
                 width="100%"
               />
             ))}
@@ -159,13 +162,14 @@ const styles = StyleSheet.create({
   },
 
   $notEditableContainerStyle: {
-    padding: 10,
+    padding: verticalScale(12),
+
     paddingHorizontal: spacing.spacing16,
     gap: spacing.spacing12,
   },
 
   $innerContainerStyle: {
-    minHeight: 80,
+    minHeight: moderateScale(80),
     display: "flex",
     gap: spacing.spacing16,
     flexDirection: "row",
@@ -173,18 +177,10 @@ const styles = StyleSheet.create({
     padding: spacing.spacing16,
     backgroundColor: "white",
     borderRadius: 16,
-    shadowColor: "#171717",
-    shadowOpacity: 0.1,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowRadius: 8,
-    elevation: 5,
   },
   $stepInfoStyle: {
-    height: 28,
-    width: 28,
+    height: horizontalScale(28),
+    width: horizontalScale(28),
     borderRadius: spacing.spacing8,
     backgroundColor: colors.greyscale150,
     alignItems: "center",

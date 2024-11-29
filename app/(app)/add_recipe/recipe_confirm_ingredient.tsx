@@ -24,6 +24,7 @@ import toastConfig from "@/components/Toast/ToastConfing";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Skeleton } from "moti/build/skeleton";
 import RNPressable from "@/components/shared/RNPressable";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 const nutrientsLabelMapping: any = {
   ENERC_KCAL: "Calories",
@@ -135,6 +136,8 @@ const RecipeConfirmIngredient = () => {
           <RNIcon
             name="arrow_left"
             color={colors.brandPrimary}
+            height={moderateScale(20)}
+            width={moderateScale(20)}
           />
         </RNPressable>
       ),
@@ -144,7 +147,7 @@ const RecipeConfirmIngredient = () => {
         <RNPressable onPress={addIngredient}>
           <AntDesign
             name="check"
-            size={24}
+            size={moderateScale(24)}
             color={colors.accent200}
           />
         </RNPressable>
@@ -299,6 +302,7 @@ const RecipeConfirmIngredient = () => {
               initialIndex={segmentIndex}
               segments={segments}
               onChangeIndex={setSegmentIndex}
+              segmentsStyle={{ height: verticalScale(54) }}
             />
 
             {nutrientsInfo ? (
@@ -328,7 +332,7 @@ const RecipeConfirmIngredient = () => {
                       <Skeleton
                         key={index}
                         colorMode="light"
-                        height={30}
+                        height={moderateScale(30)}
                         width="100%"
                       />
                     ))}
@@ -352,13 +356,13 @@ export default RecipeConfirmIngredient;
 
 const styles = StyleSheet.create({
   $containerStyle: {
-    paddingHorizontal: spacing.spacing24,
-    paddingTop: spacing.spacing24,
+    paddingHorizontal: horizontalScale(spacing.spacing24),
+    paddingTop: verticalScale(spacing.spacing24),
   },
 
   $contentContainerstyle: {
     flexGrow: 1,
-    paddingBottom: 60,
+    paddingBottom: moderateScale(100),
   },
 
   $pickerContainerStyle: {
@@ -373,32 +377,35 @@ const styles = StyleSheet.create({
   },
 
   $baseWrapperStyle: {
-    gap: spacing.spacing12,
+    gap: verticalScale(spacing.spacing12),
   },
 
   $inputAndroidStyle: {
-    height: 54,
+    height: moderateScale(54),
     borderColor: colors.greyscale200,
     borderWidth: 2,
     fontFamily: "sofia800",
-    paddingHorizontal: 16,
+    paddingHorizontal: horizontalScale(spacing.spacing16),
     borderRadius: 16,
     color: colors.slate900,
   },
 
   $inputIOSStyle: {
-    height: 54,
+    height: moderateScale(54),
+
     borderColor: colors.greyscale200,
     color: colors.slate900,
     borderWidth: 2,
     fontFamily: "sofia800",
-    paddingHorizontal: 16,
+    paddingHorizontal: horizontalScale(spacing.spacing16),
     borderRadius: 16,
   },
 
   $iconContainerStyle: {
-    top: 14,
-    right: spacing.spacing16,
+    // top: 14,
+    top: moderateScale(14),
+    // right: spacing.spacing16,
+    right: horizontalScale(spacing.spacing16),
   },
 
   $labelStyle: { fontFamily: "sofia800", color: colors.greyscale500 },
@@ -417,10 +424,6 @@ const styles = StyleSheet.create({
     ...$sizeStyles.n,
     color: colors.greyscale400,
     fontFamily: "sofia800",
-  },
-
-  $segmentStyle: {
-    height: 54,
   },
 
   $segmentLabelstyle: {

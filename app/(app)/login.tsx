@@ -20,7 +20,6 @@ import {
   LoginUserRequest,
   LoginUserResponse,
   SocialLoginUserRequest,
-  User,
 } from "@/types/user.types";
 import { ACCESS_TOKEN, IS_LOGGED_IN, REFRESH_TOKEN, storage } from "@/storage";
 import * as WebBrowser from "expo-web-browser";
@@ -32,6 +31,7 @@ import { jwtDecode } from "jwt-decode";
 import { useQueryClient } from "@tanstack/react-query";
 import * as Linking from "expo-linking";
 import TokenService from "@/api/services/token.service";
+import { horizontalScale, verticalScale } from "@/utils/scale";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -305,15 +305,13 @@ const styles = StyleSheet.create({
   $keyboardContainerStyle: {
     flex: 1,
     justifyContent: "space-between",
-    paddingHorizontal: spacing.spacing24,
-    paddingTop: spacing.spacing24,
-    paddingBottom: spacing.spacing32,
+    paddingHorizontal: horizontalScale(spacing.spacing24),
+    paddingTop: verticalScale(spacing.spacing24),
+    paddingBottom: verticalScale(spacing.spacing32),
   },
 
-  $containerStyle: { width: "100%", gap: spacing.spacing24 },
-
   $socialProvidersContainerStyle: {
-    gap: spacing.spacing16,
+    gap: verticalScale(spacing.spacing16),
     alignItems: "center",
   },
 

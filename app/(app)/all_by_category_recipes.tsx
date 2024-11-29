@@ -15,6 +15,7 @@ import { No_results } from "@/assets/illustrations";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import RNShadowView from "@/components/shared/RNShadowView";
 import RNPressable from "@/components/shared/RNPressable";
+import { horizontalScale, moderateScale } from "@/utils/scale";
 
 interface SearchParams {
   [key: string]: string;
@@ -101,7 +102,11 @@ const AllByCategoryRecipes = () => {
     navigation.setOptions({
       headerLeft: () => (
         <RNPressable onPress={goBack}>
-          <RNIcon name="arrow_left" />
+          <RNIcon
+            name="arrow_left"
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+          />
         </RNPressable>
       ),
       headerTitle: () => (
@@ -110,7 +115,7 @@ const AllByCategoryRecipes = () => {
           style={{ justifyContent: "center", alignItems: "center", gap: spacing.spacing8 }}
         >
           <FastImage
-            style={{ width: 25, height: 25 }}
+            style={{ width: horizontalScale(25), height: horizontalScale(25) }}
             source={path}
           />
           <Text style={$sizeStyles.h2}>{category}</Text>
@@ -152,7 +157,7 @@ const AllByCategoryRecipes = () => {
         onPress={() => goToRecipeDetails(item)}
         key={item.id}
       >
-        <RNShadowView style={[styles.$gridContainerStyle, styles.$rowContainerStyle]}>
+        <RNShadowView style={[{ marginBottom: spacing.spacing16 }, styles.$rowContainerStyle]}>
           <View style={[styles.$innerContainerStyle, styles.$innerRowContainerStyle]}>
             <View style={styles.$innerRowInfoStyle}>
               <View style={styles.$contentRowStyle}>
@@ -167,7 +172,7 @@ const AllByCategoryRecipes = () => {
                   <View style={[styles.$rowImageStyle, styles.$placeholderImageStyle]}>
                     <Ionicons
                       name="image-outline"
-                      size={35}
+                      size={moderateScale(40)}
                       color={colors.greyscale400}
                     />
                   </View>
@@ -176,6 +181,7 @@ const AllByCategoryRecipes = () => {
                   <Text
                     numberOfLines={3}
                     style={styles.$rowTextStyle}
+                    ellipsizeMode="tail"
                   >
                     {item.title}
                   </Text>
@@ -185,8 +191,8 @@ const AllByCategoryRecipes = () => {
                       <RNIcon
                         name="arrow_right"
                         color={colors.greyscale50}
-                        height={12}
-                        width={12}
+                        height={horizontalScale(12)}
+                        width={horizontalScale(12)}
                       />
                     </View>
                   </View>
@@ -202,7 +208,7 @@ const AllByCategoryRecipes = () => {
                         <View style={styles.$userAvatarPlaceholderStyle}>
                           <Feather
                             name="user"
-                            size={15}
+                            size={moderateScale(16)}
                             color={colors.greyscale50}
                           />
                         </View>
@@ -219,8 +225,8 @@ const AllByCategoryRecipes = () => {
                     <View style={styles.$timeContainerStyle}>
                       <RNIcon
                         name="clock"
-                        height={20}
-                        width={20}
+                        height={moderateScale(16)}
+                        width={moderateScale(16)}
                         style={styles.$clockIconStyle}
                       />
                       <Text style={styles.$timeTextStyle}>{item.preparationTime} Min</Text>
@@ -285,14 +291,12 @@ const styles = StyleSheet.create({
   },
   $emptyContainerStyle: {
     width: GRID_CONTAINER_SIZE * GRID_COLUMNS,
-    height: 198,
+    height: moderateScale(198),
+
     justifyContent: "center",
     alignItems: "center",
   },
-  $gridContainerStyle: {
-    width: GRID_CONTAINER_SIZE,
-    marginBottom: spacing.spacing16,
-  },
+
   $rowContainerStyle: {
     width: "100%",
     justifyContent: "flex-start",
@@ -305,12 +309,9 @@ const styles = StyleSheet.create({
     borderRadius: spacing.spacing16,
     width: "100%",
   },
-  $innerGridContainerStyle: {
-    height: 198,
-    padding: spacing.spacing12,
-  },
+
   $innerRowContainerStyle: {
-    height: 100,
+    height: moderateScale(100),
     paddingLeft: spacing.spacing8,
     paddingRight: spacing.spacing16,
     paddingTop: spacing.spacing12,
@@ -326,7 +327,7 @@ const styles = StyleSheet.create({
   $contentRowStyle: {
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: spacing.spacing12,
+    gap: horizontalScale(spacing.spacing12),
     flexShrink: 1,
     height: "100%",
     width: "100%",
@@ -334,7 +335,8 @@ const styles = StyleSheet.create({
   $rowImageStyle: {
     display: "flex",
     height: "100%",
-    width: 100,
+    // width: 100,
+    width: horizontalScale(100),
     borderRadius: spacing.spacing16,
     overflow: "hidden",
   },
@@ -367,8 +369,9 @@ const styles = StyleSheet.create({
   },
   $userDetailsBtnStyle: {
     backgroundColor: colors.brandPrimary,
-    height: 24,
-    width: 24,
+
+    height: horizontalScale(24),
+    width: horizontalScale(24),
     justifyContent: "center",
     alignItems: "center",
     borderRadius: spacing.spacing8,
@@ -384,25 +387,25 @@ const styles = StyleSheet.create({
     gap: spacing.spacing4,
   },
   $userAvatarStyle: {
-    width: 24,
-    height: 24,
+    height: horizontalScale(24),
+    width: horizontalScale(24),
     borderRadius: spacing.spacing16,
     borderWidth: 2,
     borderColor: colors.accent200,
   },
   $userAvatarPlaceholderStyle: {
-    width: 24,
-    height: 24,
+    height: horizontalScale(24),
+    width: horizontalScale(24),
     borderRadius: spacing.spacing16,
     backgroundColor: colors.greyscale300,
     justifyContent: "center",
     alignItems: "center",
   },
   $userNameStyle: {
-    ...$sizeStyles.s,
+    ...$sizeStyles.xs,
     fontFamily: "sofia400",
     color: colors.greyscale300,
-    maxWidth: 100,
+    maxWidth: horizontalScale(120),
   },
   $timeContainerStyle: {
     flexDirection: "row",
@@ -413,7 +416,7 @@ const styles = StyleSheet.create({
     color: colors.greyscale300,
   },
   $timeTextStyle: {
-    ...$sizeStyles.s,
+    ...$sizeStyles.xs,
     color: colors.greyscale300,
   },
   $noResultsContainerStyle: {

@@ -12,11 +12,13 @@ import { formatFloatingValue } from "@/utils/formatFloatingValue";
 import RNIcon from "./shared/RNIcon";
 import { View } from "react-native-ui-lib";
 import { $sizeStyles } from "@/theme/typography";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 const { width: screenWidth } = Dimensions.get("window");
 const numColumns = 2;
-const gap = spacing.spacing16;
-const paddingHorizontal = spacing.spacing24 * 2;
+// const gap = spacing.spacing16;
+const gap = verticalScale(spacing.spacing16);
+const paddingHorizontal = horizontalScale(spacing.spacing24 * 2);
 const itemSize = (screenWidth - paddingHorizontal - (numColumns - 1) * gap) / numColumns;
 
 interface PersonalRecipeItemProps {
@@ -66,7 +68,7 @@ const PersonalRecipeItem: React.FC<PersonalRecipeItemProps> = ({ item }) => {
             <View style={styles.$placeholderstyle}>
               <Ionicons
                 name="image-outline"
-                size={35}
+                size={moderateScale(40)}
                 color={colors.greyscale400}
               />
             </View>
@@ -80,30 +82,34 @@ const PersonalRecipeItem: React.FC<PersonalRecipeItemProps> = ({ item }) => {
           <View style={styles.$infoStyle}>
             <View
               row
-              style={{ alignItems: "center", gap: spacing.spacing2 }}
+              style={{
+                alignItems: "center",
+              }}
             >
               <RNIcon
                 name="fire"
                 style={{ color: colors.greyscale300 }}
-                height={15}
+                height={moderateScale(16)}
               />
               <Text
-                style={[{ ...$sizeStyles.s, fontFamily: "sofia800", color: colors.greyscale300 }]}
+                style={[{ ...$sizeStyles.xs, fontFamily: "sofia800", color: colors.greyscale300 }]}
               >
                 {formatFloatingValue(totalCalories)} Kcal
               </Text>
             </View>
             <View
               row
-              style={{ alignItems: "center", gap: spacing.spacing2 }}
+              style={{
+                alignItems: "center",
+              }}
             >
               <RNIcon
                 name="clock"
                 style={{ color: colors.greyscale300 }}
-                height={15}
+                height={moderateScale(16)}
               />
               <Text
-                style={[{ ...$sizeStyles.s, fontFamily: "sofia800", color: colors.greyscale300 }]}
+                style={[{ ...$sizeStyles.xs, fontFamily: "sofia800", color: colors.greyscale300 }]}
               >
                 {preparationTime} min
               </Text>
@@ -121,7 +127,7 @@ const styles = StyleSheet.create({
   $containerStyle: {
     height: "100%",
     width: "100%",
-    gap: spacing.spacing8,
+    gap: verticalScale(spacing.spacing8),
   },
 
   $imageStyle: {
@@ -143,12 +149,12 @@ const styles = StyleSheet.create({
   $infoStyle: {
     flex: 1,
     justifyContent: "flex-end",
-    gap: spacing.spacing4,
+    gap: verticalScale(spacing.spacing4),
   },
 
   $recipeItemStyle: {
     width: itemSize,
-    height: 198,
-    padding: spacing.spacing12,
+    height: moderateScale(250),
+    padding: moderateScale(spacing.spacing12),
   },
 });
