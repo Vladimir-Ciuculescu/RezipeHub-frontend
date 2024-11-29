@@ -356,15 +356,13 @@ export default RecipeConfirmIngredient;
 
 const styles = StyleSheet.create({
   $containerStyle: {
-    // paddingHorizontal: spacing.spacing24,
-    // paddingTop: spacing.spacing24,
     paddingHorizontal: horizontalScale(spacing.spacing24),
     paddingTop: verticalScale(spacing.spacing24),
   },
 
   $contentContainerstyle: {
     flexGrow: 1,
-    // paddingBottom: 60,
+    paddingBottom: moderateScale(100),
   },
 
   $pickerContainerStyle: {
@@ -379,7 +377,6 @@ const styles = StyleSheet.create({
   },
 
   $baseWrapperStyle: {
-    // gap: spacing.spacing12,
     gap: verticalScale(spacing.spacing12),
   },
 

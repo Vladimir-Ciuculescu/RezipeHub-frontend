@@ -21,7 +21,7 @@ import { View } from "react-native-ui-lib";
 import { AntDesign } from "@expo/vector-icons";
 import useRecipeStore from "@/zustand/useRecipeStore";
 import RNPressable from "@/components/shared/RNPressable";
-import { verticalScale } from "@/utils/scale";
+import { moderateScale, verticalScale } from "@/utils/scale";
 
 interface SearchParams {
   [key: string]: string;
@@ -131,7 +131,11 @@ const RecipeEditIngredient = () => {
     navigation.setOptions({
       headerLeft: () => (
         <RNPressable onPress={goBack}>
-          <RNIcon name="arrow_left" />
+          <RNIcon
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+            name="arrow_left"
+          />
         </RNPressable>
       ),
 
@@ -144,7 +148,7 @@ const RecipeEditIngredient = () => {
           <AntDesign
             style={saveDisabled && { opacity: 0.4 }}
             name="check"
-            size={24}
+            size={moderateScale(24)}
             color={colors.accent300}
           />
         </RNPressable>
@@ -228,8 +232,8 @@ const RecipeEditIngredient = () => {
             style={{
               chevronUp: { display: "none" },
               chevronDown: { display: "none" },
-              inputIOS: styles.$inputAndroidStyle,
-              inputAndroid: styles.$inputIOSStyle,
+              inputIOS: styles.$inputIOSStyle,
+              inputAndroid: styles.$inputAndroidStyle,
               iconContainer: styles.$iconContainerStyle,
             }}
             useNativeAndroidPickerStyle={false}

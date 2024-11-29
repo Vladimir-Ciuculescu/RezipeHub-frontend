@@ -23,6 +23,7 @@ import RNShadowView from "@/components/shared/RNShadowView";
 import { Skeleton } from "moti/skeleton";
 import { No_results, Search_placeholder } from "@/assets/illustrations";
 import RNPressable from "@/components/shared/RNPressable";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -39,7 +40,11 @@ const RecipeEditSearchIngredients = () => {
     navigation.setOptions({
       headerLeft: () => (
         <RNPressable onPress={goBack}>
-          <RNIcon name="arrow_left" />
+          <RNIcon
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+            name="arrow_left"
+          />
         </RNPressable>
       ),
 
@@ -102,7 +107,7 @@ const RecipeEditSearchIngredients = () => {
               leftIcon={
                 isLoading ? (
                   <ActivityIndicator
-                    size={24}
+                    size={moderateScale(24)}
                     color={colors.accent200}
                   />
                 ) : (
@@ -117,7 +122,7 @@ const RecipeEditSearchIngredients = () => {
                   <Pressable onPress={clearSearch}>
                     <AntDesign
                       name="close"
-                      size={24}
+                      size={moderateScale(24)}
                       color={colors.accent200}
                     />
                   </Pressable>
@@ -141,7 +146,7 @@ const RecipeEditSearchIngredients = () => {
                     <Skeleton
                       key={index}
                       colorMode="light"
-                      height={50}
+                      height={moderateScale(50)}
                       width="100%"
                     />
                   ))}
@@ -151,7 +156,7 @@ const RecipeEditSearchIngredients = () => {
             <View
               style={{
                 alignItems: "center",
-                paddingTop: spacing.spacing64,
+                paddingTop: verticalScale(spacing.spacing64),
                 gap: spacing.spacing48,
               }}
             >
@@ -167,7 +172,7 @@ const RecipeEditSearchIngredients = () => {
             <View
               style={{
                 alignItems: "center",
-                paddingTop: spacing.spacing64,
+                paddingTop: verticalScale(spacing.spacing64),
                 gap: spacing.spacing48,
               }}
             >
@@ -205,7 +210,7 @@ export default RecipeEditSearchIngredients;
 const styles = StyleSheet.create({
   $containerstyle: {
     flex: 1,
-    paddingTop: spacing.spacing24,
+    paddingTop: verticalScale(spacing.spacing24),
   },
 
   $innerContainerStyle: {
@@ -213,14 +218,13 @@ const styles = StyleSheet.create({
   },
 
   $seachInputStyle: {
-    // paddingHorizontal: 24,
     width: "100%",
   },
 
   $flatListContainerStyle: {
-    paddingTop: spacing.spacing12,
-    paddingBottom: 100,
-    gap: spacing.spacing16,
-    paddingHorizontal: spacing.spacing16,
+    paddingTop: verticalScale(spacing.spacing12),
+    paddingBottom: verticalScale(120),
+    gap: verticalScale(spacing.spacing16),
+    paddingHorizontal: horizontalScale(spacing.spacing16),
   },
 });

@@ -19,7 +19,7 @@ import FoodService from "@/api/services/food.service";
 import { View } from "react-native-ui-lib";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
 import useRecipeStore from "@/zustand/useRecipeStore";
-import { verticalScale } from "@/utils/scale";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 interface SearchParams {
   [key: string]: string;
@@ -74,7 +74,6 @@ const RecipeConfirmEditIngredient = () => {
   const navigation = useNavigation();
   const router = useRouter();
 
-  const ingredients = useRecipeStore.use.ingredients();
   const editIngredientAction = useRecipeStore.use.editIngredientAction();
 
   const { ingredient } = useLocalSearchParams<SearchParams>();
@@ -164,6 +163,8 @@ const RecipeConfirmEditIngredient = () => {
       headerLeft: () => (
         <Pressable onPress={gotBack}>
           <RNIcon
+            height={moderateScale(20)}
+            width={moderateScale(20)}
             name="arrow_left"
             color={colors.brandPrimary}
           />
@@ -179,7 +180,7 @@ const RecipeConfirmEditIngredient = () => {
           <AntDesign
             style={saveDisabled && { opacity: 0.4 }}
             name="check"
-            size={24}
+            size={moderateScale(24)}
             color={colors.accent300}
           />
         </Pressable>
@@ -251,8 +252,8 @@ const RecipeConfirmEditIngredient = () => {
             style={{
               chevronUp: { display: "none" },
               chevronDown: { display: "none" },
-              inputIOS: styles.$inputAndroidStyle,
-              inputAndroid: styles.$inputIOSStyle,
+              inputIOS: styles.$inputIOSStyle,
+              inputAndroid: styles.$inputAndroidStyle,
 
               iconContainer: styles.$iconContainerStyle,
             }}
@@ -310,7 +311,7 @@ const styles = StyleSheet.create({
 
   $contentContainerstyle: {
     flexGrow: 1,
-    paddingBottom: 60,
+    paddingBottom: moderateScale(100),
   },
 
   $pickerContainerStyle: {
@@ -321,7 +322,6 @@ const styles = StyleSheet.create({
     borderColor: colors.greyscale150,
     borderWidth: 2.5,
     height: 54,
-    color: "red",
   },
 
   $baseWrapperStyle: {
@@ -329,22 +329,22 @@ const styles = StyleSheet.create({
   },
 
   $inputAndroidStyle: {
-    height: 54,
-    borderColor: colors.greyscale150,
+    height: moderateScale(54),
+    borderColor: colors.greyscale200,
     borderWidth: 2,
     fontFamily: "sofia800",
-    paddingHorizontal: 16,
+    paddingHorizontal: horizontalScale(spacing.spacing16),
     borderRadius: 16,
     color: colors.slate900,
   },
 
   $inputIOSStyle: {
-    height: 54,
-    borderColor: colors.greyscale150,
+    height: moderateScale(54),
+    borderColor: colors.greyscale200,
     color: colors.slate900,
     borderWidth: 2,
     fontFamily: "sofia800",
-    paddingHorizontal: 16,
+    paddingHorizontal: horizontalScale(spacing.spacing16),
     borderRadius: 16,
   },
 

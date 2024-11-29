@@ -153,8 +153,7 @@ const RecipeAddSteps = () => {
       contentContainerStyle={{
         flex: 1,
         justifyContent: "space-between",
-        // paddingTop: spacing.spacing24,
-        // paddingBottom: spacing.spacing32,
+
         paddingTop: verticalScale(spacing.spacing24),
         paddingBottom: verticalScale(spacing.spacing32),
       }}
@@ -254,13 +253,12 @@ export default RecipeAddSteps;
 
 const styles = StyleSheet.create({
   $stepViewStyle: {
-    gap: spacing.spacing16,
+    gap: verticalScale(spacing.spacing16),
     width: screenWidth,
     justifyContent: "center",
-    paddingHorizontal: spacing.spacing24,
+    paddingHorizontal: horizontalScale(spacing.spacing24),
   },
   $paginationContainerStyle: {
-    //height: 50,
     height: moderateScale(50),
     alignItems: "center",
   },
@@ -295,8 +293,7 @@ const styles = StyleSheet.create({
   $buttonsContainerstyle: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.spacing16,
-    // paddingHorizontal: spacing.spacing16,
+    gap: horizontalScale(spacing.spacing16),
     paddingHorizontal: horizontalScale(spacing.spacing16),
   },
 });
