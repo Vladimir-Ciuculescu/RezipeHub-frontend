@@ -47,6 +47,7 @@ import RNPickerSelect from "react-native-picker-select";
 import { RECIPE_TYPES } from "@/constants";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import RNPressable from "@/components/shared/RNPressable";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 const { width } = Dimensions.get("screen");
 
@@ -482,14 +483,14 @@ const RecipeEditSummary = () => {
                       )}
                     />
                   ) : (
-                    <View style={{ width: "100%", height: 183 }}>
+                    <View style={{ width: "100%", height: moderateScale(183) }}>
                       <Pressable
                         onPress={() => openSheet(setFieldValue)}
                         style={styles.$removePhotoBtnStyle}
                       >
                         <AntDesign
                           name="close"
-                          size={24}
+                          size={moderateScale(24)}
                           color={colors.greyscale50}
                         />
                       </Pressable>
@@ -515,8 +516,8 @@ const RecipeEditSummary = () => {
                       style={{
                         chevronUp: { display: "none" },
                         chevronDown: { display: "none" },
-                        inputIOS: styles.$inputAndroidStyle,
-                        inputAndroid: styles.$inputIOSStyle,
+                        inputIOS: styles.$inputIOSStyle,
+                        inputAndroid: styles.$inputAndroidStyle,
 
                         iconContainer: styles.$iconContainerStyle,
                       }}
@@ -541,6 +542,7 @@ const RecipeEditSummary = () => {
                     segments={SEGMENTS}
                     initialIndex={segmentIndex}
                     onChangeIndex={handleSegmentIndex}
+                    segmentsStyle={{ height: verticalScale(54) }}
                   />
                 </View>
                 <FlatList
@@ -588,10 +590,11 @@ const styles = StyleSheet.create({
 
   $removePhotoBtnStyle: {
     position: "absolute",
-    right: 10,
-    top: 10,
-    width: 40,
-    height: 40,
+
+    right: horizontalScale(10),
+    top: verticalScale(10),
+    width: horizontalScale(40),
+    height: verticalScale(40),
     backgroundColor: colors.accent400,
     borderRadius: 12,
     zIndex: 999,
@@ -600,26 +603,27 @@ const styles = StyleSheet.create({
   },
 
   $inputAndroidStyle: {
-    height: 54,
-    borderColor: colors.greyscale150,
+    height: moderateScale(54),
+    borderColor: colors.greyscale200,
     borderWidth: 2,
     fontFamily: "sofia800",
-    paddingHorizontal: 16,
+    paddingHorizontal: horizontalScale(16),
     borderRadius: 16,
     color: colors.slate900,
   },
 
   $inputIOSStyle: {
-    height: 54,
-    borderColor: colors.greyscale150,
+    height: moderateScale(54),
+
+    borderColor: colors.greyscale200,
     color: colors.slate900,
     borderWidth: 2,
     fontFamily: "sofia800",
-    paddingHorizontal: 16,
+    paddingHorizontal: horizontalScale(16),
     borderRadius: 16,
   },
   $iconContainerStyle: {
-    top: 14,
+    top: verticalScale(14),
     right: spacing.spacing16,
   },
   $imageStyle: {

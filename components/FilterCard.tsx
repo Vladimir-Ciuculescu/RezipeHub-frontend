@@ -4,6 +4,8 @@ import { colors } from "@/theme/colors";
 import { spacing } from "@/theme/spacing";
 import { AntDesign } from "@expo/vector-icons";
 import { $sizeStyles } from "@/theme/typography";
+import { horizontalScale, moderateScale } from "@/utils/scale";
+import RNPressable from "./shared/RNPressable";
 
 interface FilterCardProps {
   label: string;
@@ -14,26 +16,26 @@ const FilterCard: React.FC<FilterCardProps> = ({ label, onRemove }) => {
   return (
     <View
       style={{
-        height: 41,
+        height: moderateScale(40),
         backgroundColor: colors.accent200,
         borderRadius: spacing.spacing12,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        paddingHorizontal: spacing.spacing8,
-        gap: spacing.spacing8,
+        gap: horizontalScale(spacing.spacing8),
+        paddingHorizontal: horizontalScale(spacing.spacing8),
       }}
     >
       <Text style={{ ...$sizeStyles.s, fontFamily: "sofia600", color: colors.greyscale50 }}>
         {label}
       </Text>
-      <Pressable onPress={onRemove}>
+      <RNPressable onPress={onRemove}>
         <AntDesign
           name="close"
-          size={16}
+          size={moderateScale(16)}
           color={colors.greyscale50}
         />
-      </Pressable>
+      </RNPressable>
     </View>
   );
 };

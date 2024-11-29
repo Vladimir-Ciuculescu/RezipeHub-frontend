@@ -81,20 +81,18 @@ const AppLayout = () => {
       console.log(state);
     });
 
-    router.replace("onboarding");
+    if (!onboarded) {
+      router.replace("onboarding");
+      return;
+    }
 
-    // if (!onboarded) {
-    //   router.replace("onboarding");
-    //   return;
-    // }
-
-    // if (!isLoggedIn || isLoggedIn === undefined) {
-    //   router.replace("home");
-    // } else {
-    //   (async () => {
-    //     await getProfile();
-    //   })();
-    // }
+    if (!isLoggedIn || isLoggedIn === undefined) {
+      router.replace("home");
+    } else {
+      (async () => {
+        await getProfile();
+      })();
+    }
 
     return () => {
       unsubscribe();

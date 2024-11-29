@@ -22,6 +22,7 @@ import { Skeleton } from "moti/skeleton";
 import RNShadowView from "@/components/shared/RNShadowView";
 import { No_results, Search_placeholder } from "@/assets/illustrations";
 import RNPressable from "@/components/shared/RNPressable";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -38,7 +39,11 @@ const RecipeSearchIngredients = () => {
     navigation.setOptions({
       headerLeft: () => (
         <RNPressable onPress={gotBack}>
-          <RNIcon name="arrow_left" />
+          <RNIcon
+            name="arrow_left"
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+          />
         </RNPressable>
       ),
 
@@ -116,7 +121,7 @@ const RecipeSearchIngredients = () => {
                   <Pressable onPress={clearSearch}>
                     <AntDesign
                       name="close"
-                      size={24}
+                      size={moderateScale(24)}
                       color={colors.accent200}
                     />
                   </Pressable>
@@ -140,7 +145,7 @@ const RecipeSearchIngredients = () => {
                     <Skeleton
                       key={index}
                       colorMode="light"
-                      height={50}
+                      height={moderateScale(50)}
                       width="100%"
                     />
                   ))}
@@ -204,12 +209,12 @@ export default RecipeSearchIngredients;
 const styles = StyleSheet.create({
   $containerstyle: {
     flex: 1,
-    paddingTop: spacing.spacing24,
+    paddingTop: verticalScale(spacing.spacing24),
     backgroundColor: colors.greyscale75,
   },
 
   $innerContainerStyle: {
-    gap: spacing.spacing12,
+    gap: verticalScale(spacing.spacing12),
   },
 
   $seachInputStyle: {
@@ -218,8 +223,8 @@ const styles = StyleSheet.create({
 
   $flatListContainerStyle: {
     paddingTop: spacing.spacing12,
-    paddingBottom: 100,
-    gap: spacing.spacing16,
-    paddingHorizontal: spacing.spacing16,
+    paddingBottom: verticalScale(120),
+    gap: verticalScale(spacing.spacing16),
+    paddingHorizontal: horizontalScale(spacing.spacing16),
   },
 });

@@ -39,6 +39,7 @@ import { isEqual } from "lodash";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useUserData from "@/hooks/useUserData";
 import RNPressable from "@/components/shared/RNPressable";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -271,7 +272,7 @@ const SearchScreen = () => {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16 }}
+        contentContainerStyle={{ paddingHorizontal: horizontalScale(spacing.spacing16) }}
       >
         <View
           style={{ flexDirection: "row", gap: spacing.spacing8 }}
@@ -349,7 +350,7 @@ const SearchScreen = () => {
                   key={key}
                   colorMode="light"
                   width="100%"
-                  height={100}
+                  height={moderateScale(100)}
                 />
               ))}
           </View>
@@ -357,8 +358,8 @@ const SearchScreen = () => {
           <FlatList
             contentContainerStyle={{
               paddingHorizontal: spacing.spacing24,
-              paddingTop: 30,
-              paddingBottom: 110,
+              paddingTop: verticalScale(30),
+              paddingBottom: verticalScale(110),
             }}
             onScroll={() => Keyboard.dismiss()}
             showsVerticalScrollIndicator={false}
@@ -394,7 +395,7 @@ const SearchScreen = () => {
         >
           <BottomSheetScrollView
             contentContainerStyle={{
-              paddingBottom: spacing.spacing32,
+              paddingBottom: verticalScale(spacing.spacing32),
             }}
             style={{ flex: 1, height: "100%" }}
             showsVerticalScrollIndicator={false}
@@ -402,10 +403,13 @@ const SearchScreen = () => {
             <View style={styles.$bottomSheetContainerStyle}>
               <View>
                 <Text style={styles.$bottomSheetTitleStyle}>Filters</Text>
-                <View style={{ gap: spacing.spacing32 }}>
-                  <View style={{ gap: spacing.spacing16 }}>
+                <View style={{ gap: moderateScale(spacing.spacing32) }}>
+                  <View style={{ gap: moderateScale(spacing.spacing16) }}>
                     <Text
-                      style={[styles.$bottomSheetSectionStyle, { paddingLeft: spacing.spacing24 }]}
+                      style={[
+                        styles.$bottomSheetSectionStyle,
+                        { paddingLeft: horizontalScale(spacing.spacing24) },
+                      ]}
                     >
                       Category
                     </Text>
@@ -487,29 +491,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingVertical: 10,
+    paddingVertical: verticalScale(10),
     justifyContent: "space-between",
     gap: spacing.spacing16,
   },
-  searchText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  searchBar: {
-    height: 40,
-    borderRadius: 10,
-    backgroundColor: "#e0e0e0",
-    paddingHorizontal: 10,
-  },
-  contentContainer: {
-    paddingTop: 10,
-  },
-  item: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-  },
+
   $bottomSheetContainerStyle: {
     flex: 1,
     justifyContent: "space-between",
@@ -520,19 +506,19 @@ const styles = StyleSheet.create({
     ...$sizeStyles.h3,
     fontFamily: "sofia800",
     color: colors.greyscale500,
-    paddingBottom: spacing.spacing32,
+    paddingBottom: verticalScale(spacing.spacing32),
   },
   listContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 12,
+    gap: horizontalScale(spacing.spacing12),
     width: "100%",
-    paddingHorizontal: 24,
+    paddingHorizontal: horizontalScale(spacing.spacing24),
   },
   $applyBtnStyle: {
     marginHorizontal: spacing.spacing16,
     backgroundColor: colors.accent200,
-    height: 64,
+    height: moderateScale(64),
   },
 
   $bottomSheetSectionStyle: {
@@ -544,12 +530,11 @@ const styles = StyleSheet.create({
     ...$sizeStyles.n,
     color: colors.greyscale50,
     fontFamily: "sofia800",
-    fontSize: spacing.spacing16,
   },
 
   $clearBtnStyle: {
     marginHorizontal: spacing.spacing16,
-    height: 64,
+    height: moderateScale(64),
   },
 
   $clearBtnLabelStyle: {

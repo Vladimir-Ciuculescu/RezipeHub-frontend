@@ -1,12 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-  Platform,
-  Pressable,
-} from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, Dimensions, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, View } from "react-native-ui-lib";
 import Feather from "@expo/vector-icons/Feather";
@@ -31,6 +24,7 @@ import {
   No_favorite_recipes_placeholder,
   No_personal_recipes_placeholder,
 } from "@/assets/illustrations";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 const { width: screenWidth, height } = Dimensions.get("window");
 const numColumns = 2;
@@ -106,7 +100,7 @@ const Profile = () => {
         <TouchableOpacity>
           <Feather
             name="settings"
-            size={24}
+            size={moderateScale(24)}
             color={colors.slate900}
           />
         </TouchableOpacity>
@@ -129,14 +123,24 @@ const Profile = () => {
             <View style={styles.$placeholderstyle}>
               <Feather
                 name="user"
-                size={24}
+                size={moderateScale(24)}
                 color={colors.greyscale50}
               />
             </View>
           )}
-          <View>
+          <View style={{ flex: 1, justifyContent: "center" }}>
             <Text style={styles.$userNameStyle}>{firstName + " " + lastName}</Text>
-            {bio && <Text style={styles.$userDescriptionStyle}>{bio}</Text>}
+            {bio && (
+              <View>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={styles.$userDescriptionStyle}
+                >
+                  {bio}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
         <RNButton
@@ -161,7 +165,7 @@ const Profile = () => {
               iconSource={() => (
                 <AntDesign
                   name="plus"
-                  size={24}
+                  size={moderateScale(24)}
                   color={colors.accent200}
                 />
               )}
@@ -187,7 +191,7 @@ const Profile = () => {
                   key={key}
                   colorMode="light"
                   width={itemSize}
-                  height={198}
+                  height={verticalScale(198)}
                 />
               ))
           ) : recipes && recipes.length ? (
@@ -201,8 +205,8 @@ const Profile = () => {
             <View
               style={{
                 width: "100%",
-                gap: spacing.spacing16,
-                paddingTop: spacing.spacing16,
+                gap: verticalScale(spacing.spacing16),
+                paddingTop: verticalScale(spacing.spacing16),
               }}
             >
               <View style={{ width: "100%", height: height / 5 }}>
@@ -240,7 +244,7 @@ const Profile = () => {
                   key={key}
                   colorMode="light"
                   width={itemSize}
-                  height={198}
+                  height={verticalScale(198)}
                 />
               ))
           ) : favorites && favorites.length ? (
@@ -285,19 +289,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   $scrollViewContentStyle: {
-    paddingTop: 12,
-    paddingHorizontal: spacing.spacing24,
+    paddingTop: horizontalScale(spacing.spacing12),
+    paddingHorizontal: horizontalScale(spacing.spacing24),
     gap: spacing.spacing16,
   },
   $headerStyle: {
     flexDirection: "row",
     justifyContent: "space-between",
-    height: spacing.spacing64,
+    height: verticalScale(spacing.spacing64),
     alignItems: "center",
   },
 
   $titleStyle: {
-    ...$sizeStyles.h3,
+    ...$sizeStyles.h2,
     color: colors.greyscale500,
   },
 
@@ -312,31 +316,32 @@ const styles = StyleSheet.create({
 
   $userDescriptionStyle: {
     color: colors.greyscale400,
-    ...$sizeStyles.s,
+    ...$sizeStyles.xs,
+    //maxWidth: "90%",
+    // backgroundColor: "red",
   },
 
   $profileContainerStyle: {
     width: "100%",
-    height: 80,
+    height: verticalScale(90),
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: spacing.spacing16,
+    paddingHorizontal: horizontalScale(spacing.spacing16),
   },
 
   $imageStyle: {
-    width: 48,
-    height: 48,
+    width: horizontalScale(48),
+    height: horizontalScale(48),
     borderRadius: spacing.spacing32,
     display: "flex",
     overflow: "hidden",
   },
 
   $placeholderstyle: {
-    width: 48,
-    height: 48,
+    width: horizontalScale(48),
+    height: horizontalScale(48),
     borderRadius: spacing.spacing32,
     backgroundColor: colors.greyscale300,
-
     justifyContent: "center",
     alignItems: "center",
   },
@@ -344,18 +349,12 @@ const styles = StyleSheet.create({
   $profileDetailsStyle: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.spacing12,
-  },
-  $profileImageStyle: {
-    width: 48,
-    height: 48,
-    borderRadius: spacing.spacing24,
-    borderWidth: 2.5,
-    borderColor: colors.accent200,
+    gap: horizontalScale(spacing.spacing8),
+    flex: 1,
   },
 
   $sectionTitleStyle: {
-    ...$sizeStyles.h3,
+    ...$sizeStyles.l,
     color: colors.greyscale500,
   },
 
@@ -368,21 +367,16 @@ const styles = StyleSheet.create({
   $recipesSectionStyle: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: spacing.spacing12,
+    marginBottom: verticalScale(spacing.spacing12),
     alignItems: "center",
-    paddingHorizontal: 8,
+    paddingHorizontal: horizontalScale(spacing.spacing8),
   },
 
   $recipesContainerStyle: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    gap: spacing.spacing16,
-  },
-  $recipeItemStyle: {
-    width: itemSize,
-    height: 198,
-    padding: spacing.spacing12,
+    gap: verticalScale(spacing.spacing16),
   },
 });
 

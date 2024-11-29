@@ -1,5 +1,5 @@
 import { Text, StyleSheet, Pressable, Alert } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import { AntDesign } from "@expo/vector-icons";
@@ -20,6 +20,7 @@ import RNPickerSelect from "react-native-picker-select";
 import { RecipeType } from "@/types/enums";
 import { RECIPE_TYPES } from "@/constants";
 import RNPressable from "@/components/shared/RNPressable";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 function RecipeTitle() {
   const { showActionSheetWithOptions } = useActionSheet();
@@ -47,14 +48,18 @@ function RecipeTitle() {
         <RNPressable onPress={cancel}>
           <AntDesign
             name="close"
-            size={24}
+            size={moderateScale(24)}
             color="black"
           />
         </RNPressable>
       ),
       headerRight: () => (
         <RNPressable onPress={goNext}>
-          <RNIcon name="arrow_right" />
+          <RNIcon
+            name="arrow_right"
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+          />
         </RNPressable>
       ),
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Add Recipe</Text>,
@@ -207,20 +212,20 @@ function RecipeTitle() {
           iconSource={() => (
             <FontAwesome
               name="photo"
-              size={20}
+              size={moderateScale(22)}
               color={colors.greyscale50}
             />
           )}
         />
       ) : (
-        <View style={{ width: "100%", height: 183 }}>
+        <View style={{ width: "100%", height: moderateScale(183) }}>
           <Pressable
             onPress={openSheet}
             style={styles.$removePhotoBtnStyle}
           >
             <AntDesign
               name="close"
-              size={24}
+              size={moderateScale(24)}
               color={colors.greyscale50}
             />
           </Pressable>
@@ -234,7 +239,7 @@ function RecipeTitle() {
           />
         </View>
       )}
-      <View style={{ width: "100%", gap: spacing.spacing12 }}>
+      <View style={{ width: "100%", gap: verticalScale(spacing.spacing12) }}>
         <Text style={[$sizeStyles.n, styles.$labelStyle]}>Type</Text>
 
         <RNPickerSelect
@@ -246,8 +251,8 @@ function RecipeTitle() {
           style={{
             chevronUp: { display: "none" },
             chevronDown: { display: "none" },
-            inputIOS: styles.$inputAndroidStyle,
-            inputAndroid: styles.$inputIOSStyle,
+            inputIOS: styles.$inputIOSStyle,
+            inputAndroid: styles.$inputAndroidStyle,
 
             iconContainer: styles.$iconContainerStyle,
           }}
@@ -293,12 +298,16 @@ const styles = StyleSheet.create({
 
   $removePhotoBtnStyle: {
     position: "absolute",
-    right: 10,
-    top: 10,
-    width: 40,
-    height: 40,
+    // right: 10,
+    // top: 10,
+    // width: 40,
+    // height: 40,
+    right: horizontalScale(10),
+    top: horizontalScale(10),
+    width: horizontalScale(40),
+    height: horizontalScale(40),
     backgroundColor: colors.accent400,
-    borderRadius: 12,
+    borderRadius: spacing.spacing12,
     zIndex: 999,
     justifyContent: "center",
     alignItems: "center",
@@ -307,32 +316,39 @@ const styles = StyleSheet.create({
   $imageStyle: {
     width: "100%",
     height: "100%",
-    borderRadius: 16,
+    borderRadius: spacing.spacing16,
   },
 
   $labelStyle: { fontFamily: "sofia800", color: colors.greyscale500 },
 
   $inputAndroidStyle: {
-    height: 54,
+    // height: 54,
+    height: moderateScale(54),
     borderColor: colors.greyscale200,
     borderWidth: 2,
     fontFamily: "sofia800",
-    paddingHorizontal: 16,
+    // paddingHorizontal: 16,
+    paddingHorizontal: horizontalScale(16),
+
     borderRadius: 16,
     color: colors.slate900,
   },
 
   $inputIOSStyle: {
-    height: 54,
+    // height: 54,
+    height: moderateScale(54),
+
     borderColor: colors.greyscale200,
     color: colors.slate900,
     borderWidth: 2,
     fontFamily: "sofia800",
-    paddingHorizontal: 16,
+    // paddingHorizontal: 16,
+    paddingHorizontal: horizontalScale(16),
     borderRadius: 16,
   },
   $iconContainerStyle: {
-    top: 14,
+    // top: 14,
+    top: moderateScale(14),
     right: spacing.spacing16,
   },
 });

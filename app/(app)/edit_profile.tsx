@@ -22,6 +22,7 @@ import { ACCESS_TOKEN, storage } from "@/storage";
 import { jwtDecode } from "jwt-decode";
 import useUserStore from "@/zustand/useUserStore";
 import RNPressable from "@/components/shared/RNPressable";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 const EditProfile = () => {
   const navigation = useNavigation();
@@ -159,8 +160,8 @@ const EditProfile = () => {
       enableAutomaticScroll
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{
-        paddingTop: spacing.spacing24,
-        paddingHorizontal: spacing.spacing24,
+        paddingTop: verticalScale(spacing.spacing24),
+        paddingHorizontal: verticalScale(spacing.spacing24),
       }}
     >
       <Formik
@@ -179,31 +180,14 @@ const EditProfile = () => {
           handleBlur,
           setFieldValue,
         }) => (
-          <View style={{ gap: spacing.spacing32 }}>
-            <View style={{ gap: spacing.spacing32 }}>
+          <View style={{ gap: verticalScale(spacing.spacing32) }}>
+            <View style={{ gap: verticalScale(spacing.spacing32) }}>
               <View style={{ width: "100%", alignItems: "center" }}>
-                <View
-                  style={{
-                    height: 120,
-                    width: 120,
-                    borderRadius: spacing.spacing64,
-                    borderWidth: 2,
-                    borderColor: colors.accent200,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
+                <View style={styles.$imageContainerStyle}>
                   {values.photoUrl ? (
                     <FastImage
                       source={{ uri: values.photoUrl }}
-                      style={{
-                        height: 120,
-                        width: 120,
-                        borderWidth: 3,
-                        borderColor: colors.accent200,
-
-                        borderRadius: spacing.spacing64,
-                      }}
+                      style={styles.$imageStyle}
                     />
                   ) : (
                     <RNIcon
@@ -214,22 +198,12 @@ const EditProfile = () => {
                   )}
                   <Pressable
                     onPress={() => chooseProfilePicture(values.photoUrl, setFieldValue)}
-                    style={{
-                      height: 30,
-                      width: 30,
-                      backgroundColor: colors.greyscale300,
-                      borderRadius: spacing.spacing64,
-                      position: "absolute",
-                      bottom: 2,
-                      right: 2,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
+                    style={styles.$editBtnStyle}
                   >
                     <AntDesign
                       name="plus"
-                      size={20}
-                      color="black"
+                      size={moderateScale(18)}
+                      color={colors.greyscale50}
                     />
                   </Pressable>
                 </View>
@@ -284,7 +258,7 @@ const EditProfile = () => {
                 onBlur={handleBlur("bio")}
                 touched={touched.bio}
                 error={errors.bio}
-                containerStyle={{ minHeight: 108 }}
+                containerStyle={{ minHeight: verticalScale(108) }}
               />
             </View>
             <RNButton
@@ -312,5 +286,35 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderStyle: "solid",
     height: 54,
+  },
+
+  $imageContainerStyle: {
+    height: 120,
+    width: 120,
+    borderRadius: spacing.spacing64,
+    borderWidth: 2,
+    borderColor: colors.accent200,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  $imageStyle: {
+    height: horizontalScale(120),
+    width: horizontalScale(120),
+    borderWidth: 3,
+    borderColor: colors.accent200,
+    borderRadius: spacing.spacing64,
+  },
+
+  $editBtnStyle: {
+    height: horizontalScale(32),
+    width: horizontalScale(32),
+    backgroundColor: colors.greyscale300,
+    borderRadius: spacing.spacing64,
+    position: "absolute",
+    bottom: 2,
+    right: 2,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

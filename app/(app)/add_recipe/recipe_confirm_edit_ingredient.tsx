@@ -19,6 +19,7 @@ import FoodService from "@/api/services/food.service";
 import { View } from "react-native-ui-lib";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
 import useRecipeStore from "@/zustand/useRecipeStore";
+import { verticalScale } from "@/utils/scale";
 
 interface SearchParams {
   [key: string]: string;
@@ -279,6 +280,7 @@ const RecipeConfirmEditIngredient = () => {
             initialIndex={segmentIndex}
             segments={segments}
             onChangeIndex={setSegmentIndex}
+            segmentsStyle={{ height: verticalScale(54) }}
           />
 
           {nutrientsInfo &&

@@ -6,6 +6,7 @@ import { colors } from "@/theme/colors";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
 import { hideEmail } from "@/utils/hideEmail";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 import useUserStore from "@/zustand/useUserStore";
 import { useAuth } from "@clerk/clerk-expo";
 import { Feather } from "@expo/vector-icons";
@@ -87,7 +88,7 @@ const OtpVerification = () => {
           <TouchableOpacity onPress={logOut}>
             <Feather
               name="log-in"
-              size={24}
+              size={moderateScale(24)}
               color={colors.accent300}
             />
           </TouchableOpacity>
@@ -215,10 +216,6 @@ const OtpVerification = () => {
     router.replace(isLoggedIn ? "(tabs)" : "login");
   };
 
-  const goToLogin = () => {
-    router.replace("login");
-  };
-
   const DIAL_PAD = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "del"];
 
   const hiddenEmail = hideEmail(email as string);
@@ -227,18 +224,11 @@ const OtpVerification = () => {
 
   return (
     <KeyboardAwareScrollView
-      contentContainerStyle={{
-        alignItems: "center",
-        flexGrow: 1,
-        gap: spacing.spacing24,
-        paddingHorizontal: spacing.spacing24,
-        paddingTop: spacing.spacing24,
-        paddingBottom: 30,
-      }}
+      contentContainerStyle={styles.$keyboardContainerstyle}
       showsVerticalScrollIndicator={false}
     >
       <StatusBar style="dark" />
-      <View style={{ gap: spacing.spacing64 }}>
+      <View style={{ gap: verticalScale(spacing.spacing32) }}>
         <Text style={styles.$labelStyle}>
           We've sent a verification code to {hiddenEmail}. Please check your email and enter the
           code below
@@ -278,7 +268,12 @@ const OtpVerification = () => {
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => (item === "del" ? handleBackButtonPress() : handleDialPress(item))}
-                style={{ flex: 1, height: 80, justifyContent: "center", alignItems: "center" }}
+                style={{
+                  flex: 1,
+                  height: verticalScale(80),
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
               >
                 {item === "del" ? (
                   <RNIcon name="delete" />
@@ -298,9 +293,16 @@ const OtpVerification = () => {
 export default OtpVerification;
 
 const styles = StyleSheet.create({
+  $keyboardContainerstyle: {
+    alignItems: "center",
+    flexGrow: 1,
+    paddingHorizontal: horizontalScale(spacing.spacing24),
+    paddingTop: verticalScale(spacing.spacing24),
+  },
+
   $otpInput: {
-    width: 64,
-    height: 64,
+    width: horizontalScale(64),
+    height: horizontalScale(64),
     borderRadius: 16,
     justifyContent: "center",
     backgroundColor: colors.greyscale150,

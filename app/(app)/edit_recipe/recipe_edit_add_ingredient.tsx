@@ -24,6 +24,7 @@ import toastConfig from "@/components/Toast/ToastConfing";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Skeleton } from "moti/skeleton";
 import RNPressable from "@/components/shared/RNPressable";
+import { verticalScale } from "@/utils/scale";
 
 interface NutrientItemProps {
   nutrient: [string, NutrientDetail];
@@ -273,6 +274,7 @@ const RecipeEditAddIngredient = () => {
               initialIndex={segmentIndex}
               segments={segments}
               onChangeIndex={setSegmentIndex}
+              segmentsStyle={{ height: verticalScale(54) }}
             />
 
             {nutrientsInfo ? (

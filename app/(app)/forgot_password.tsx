@@ -14,6 +14,7 @@ import { Alert, Pressable, StyleSheet } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Text, View } from "react-native-ui-lib";
 import { router } from "expo-router";
+import { horizontalScale, verticalScale } from "@/utils/scale";
 
 const ForgotPassword = () => {
   const navigation = useNavigation();
@@ -120,13 +121,14 @@ const styles = StyleSheet.create({
   $keyboardContainerStyle: {
     flex: 1,
     justifyContent: "space-between",
-    paddingHorizontal: spacing.spacing24,
-    paddingTop: spacing.spacing24,
-    paddingBottom: spacing.spacing32,
+    paddingHorizontal: horizontalScale(spacing.spacing24),
+    paddingTop: verticalScale(spacing.spacing24),
+    paddingBottom: verticalScale(spacing.spacing32),
   },
 
   $labelStyle: {
-    ...$sizeStyles.n,
+    ...$sizeStyles.l,
     fontFamily: "sofia800",
+    textAlign: "center",
   },
 });

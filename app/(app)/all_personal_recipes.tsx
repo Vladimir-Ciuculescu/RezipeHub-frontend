@@ -28,6 +28,8 @@ import RecipeService from "@/api/services/recipe.service";
 import useUserData from "@/hooks/useUserData";
 import { $sizeStyles } from "@/theme/typography";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
+import RNPressable from "@/components/shared/RNPressable";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 const { width } = Dimensions.get("screen");
 
@@ -70,9 +72,13 @@ const LayoutGridAnimation = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={goBack}>
-          <RNIcon name="arrow_left" />
-        </Pressable>
+        <RNPressable onPress={goBack}>
+          <RNIcon
+            name="arrow_left"
+            height={moderateScale(20)}
+            width={moderateScale(20)}
+          />
+        </RNPressable>
       ),
       headerTitle: () => <Text style={{ ...$sizeStyles.h2 }}>Recipes</Text>,
       headerRight: () => (
@@ -88,7 +94,7 @@ const LayoutGridAnimation = () => {
               label: (
                 <Octicons
                   name="rows"
-                  size={16}
+                  size={moderateScale(12)}
                   color={layoutIndex === 0 ? colors.greyscale50 : colors.slate900}
                 />
               ) as any,
@@ -96,7 +102,7 @@ const LayoutGridAnimation = () => {
             {
               label: (
                 <Feather
-                  size={16}
+                  size={moderateScale(12)}
                   name="grid"
                   color={layoutIndex === 1 ? colors.greyscale50 : colors.slate900}
                 />
@@ -222,7 +228,7 @@ const LayoutGridAnimation = () => {
                     >
                       <Ionicons
                         name="image-outline"
-                        size={35}
+                        size={moderateScale(35)}
                         color={colors.greyscale400}
                       />
                     </View>
@@ -244,23 +250,24 @@ const LayoutGridAnimation = () => {
                       row
                       style={{
                         alignItems: "center",
-                        gap: spacing.spacing8,
+                        // gap: spacing.spacing8,
+                        gap: horizontalScale(spacing.spacing8),
                         justifyContent: "space-between",
                       }}
                     >
                       <View
                         row
-                        style={{ alignItems: "flex-start", gap: spacing.spacing4 }}
+                        style={{ alignItems: "flex-start" }}
                       >
                         <RNIcon
                           name="fire"
                           style={{ color: colors.greyscale300 }}
-                          height={20}
+                          height={moderateScale(20)}
                         />
                         <Text
                           style={[
                             {
-                              ...$sizeStyles.s,
+                              ...$sizeStyles.xs,
                               fontFamily: "sofia800",
                               color: colors.greyscale300,
                             },
@@ -275,17 +282,17 @@ const LayoutGridAnimation = () => {
                       />
                       <View
                         row
-                        style={{ alignItems: "center", gap: spacing.spacing4 }}
+                        style={{ alignItems: "center", gap: 2 }}
                       >
                         <RNIcon
                           name="clock"
                           style={{ color: colors.greyscale300 }}
-                          height={18}
+                          height={moderateScale(16)}
                         />
                         <Text
                           style={[
                             {
-                              ...$sizeStyles.s,
+                              ...$sizeStyles.xs,
                               fontFamily: "sofia800",
                               color: colors.greyscale300,
                             },
@@ -303,8 +310,10 @@ const LayoutGridAnimation = () => {
                     <RNIcon
                       name="arrow_right"
                       color={colors.greyscale50}
-                      height={12}
-                      width={12}
+                      // height={12}
+                      // width={12}
+                      height={moderateScale(12)}
+                      width={moderateScale(12)}
                     />
                   )}
                 />
@@ -330,21 +339,22 @@ const LayoutGridAnimation = () => {
                   >
                     <Ionicons
                       name="image-outline"
-                      size={35}
+                      size={moderateScale(40)}
                       color={colors.greyscale400}
                     />
                   </View>
                 )}
                 <Text
-                  numberOfLines={3}
+                  numberOfLines={2}
                   style={styles.$gridTextStyle}
+                  ellipsizeMode="tail"
                 >
-                  {item.title}
+                  {item.title} with chilli con carne boss awd wad awd
                 </Text>
                 <View
                   style={{
                     flex: 1,
-                    justifyContent: "space-between",
+                    justifyContent: "flex-end",
                   }}
                 >
                   <View
@@ -354,11 +364,11 @@ const LayoutGridAnimation = () => {
                     <RNIcon
                       name="fire"
                       style={{ color: colors.greyscale300 }}
-                      height={15}
+                      height={moderateScale(16)}
                     />
                     <Text
                       style={[
-                        { ...$sizeStyles.s, fontFamily: "sofia800", color: colors.greyscale300 },
+                        { ...$sizeStyles.xs, fontFamily: "sofia800", color: colors.greyscale300 },
                       ]}
                     >
                       {formatFloatingValue(item.totalCalories)} Kcal
@@ -371,11 +381,11 @@ const LayoutGridAnimation = () => {
                     <RNIcon
                       name="clock"
                       style={{ color: colors.greyscale300 }}
-                      height={15}
+                      height={moderateScale(16)}
                     />
                     <Text
                       style={[
-                        { ...$sizeStyles.s, fontFamily: "sofia800", color: colors.greyscale300 },
+                        { ...$sizeStyles.xs, fontFamily: "sofia800", color: colors.greyscale300 },
                       ]}
                     >
                       {item.preparationTime} min
@@ -427,12 +437,12 @@ export default LayoutGridAnimation;
 
 const styles = StyleSheet.create({
   $segmentLabelStyle: {
-    width: 20,
+    // width: 20,
+    // width: 30,
+    //width: horizontalScale(30),
     textAlign: "center",
   },
-  $segmentStyle: {
-    height: 34,
-  },
+  $segmentStyle: {},
 
   $containerStyle: {
     flex: 1,
@@ -441,13 +451,16 @@ const styles = StyleSheet.create({
   $contentContainerStyle: {
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: spacing.spacing24,
-    paddingTop: spacing.spacing32,
+    // paddingHorizontal: spacing.spacing24,
+    // paddingTop: spacing.spacing32,
+    paddingHorizontal: horizontalScale(spacing.spacing24),
+    paddingTop: verticalScale(spacing.spacing32),
   },
 
   $gridContainerStyle: {
-    width: GRID_CONTAINER_SIZE,
-    marginBottom: spacing.spacing16,
+    width: horizontalScale(GRID_CONTAINER_SIZE),
+    // marginBottom: spacing.spacing16,
+    marginBottom: verticalScale(spacing.spacing16),
   },
   $rowContainerStyle: {
     width: "100%",
@@ -463,23 +476,23 @@ const styles = StyleSheet.create({
   },
 
   $innerGridContainerStyle: {
-    height: 198,
+    // height: 198,
+    height: moderateScale(220),
     padding: spacing.spacing12,
   },
 
   $innerRowContainerStyle: {
-    height: 100,
-    paddingLeft: spacing.spacing8,
-    paddingRight: spacing.spacing16,
-    paddingTop: spacing.spacing12,
-    paddingBottom: spacing.spacing12,
+    height: moderateScale(100),
+    paddingLeft: horizontalScale(spacing.spacing8),
+    paddingRight: horizontalScale(spacing.spacing16),
+    paddingTop: verticalScale(spacing.spacing12),
+    paddingBottom: verticalScale(spacing.spacing12),
   },
 
   $innerGridInfoStyle: {
     width: "100%",
     height: "100%",
-    gap: spacing.spacing8,
-    // justifyContent: "space-between",
+    gap: verticalScale(spacing.spacing8),
   },
 
   $innerRowInfoStyle: {
@@ -501,12 +514,14 @@ const styles = StyleSheet.create({
 
   $rowImageStyle: {
     height: "100%",
-    width: 100,
+    // width: 100,
+    width: moderateScale(100),
     borderRadius: spacing.spacing16,
   },
 
   $gridImageStyle: {
-    height: 88,
+    //height: 88,
+    height: "45%",
     width: "100%",
     borderRadius: spacing.spacing16,
   },
@@ -516,7 +531,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     fontFamily: "sofia800",
     color: colors.greyscale500,
-    paddingRight: spacing.spacing4,
+    // paddingRight: spacing.spacing4,
   },
 
   $gridTextStyle: {
@@ -526,13 +541,15 @@ const styles = StyleSheet.create({
 
   $userDetailsBtnStyle: {
     backgroundColor: colors.brandPrimary,
-    height: 24,
-    width: 24,
+    // height: 24,
+    // width: 24,
+    height: horizontalScale(24),
+    width: horizontalScale(24),
   },
 
   $emptyContainerStyle: {
     width: GRID_CONTAINER_SIZE * GRID_COLUMNS,
-    height: 198,
+    height: verticalScale(198),
     justifyContent: "center",
     alignItems: "center",
   },

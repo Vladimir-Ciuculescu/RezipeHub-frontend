@@ -1,7 +1,6 @@
 import { Text, Pressable, StyleSheet, Dimensions } from "react-native";
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
-import useUserData from "@/hooks/useUserData";
 import RNShadowView from "./shared/RNShadowView";
 import { spacing } from "@/theme/spacing";
 import FastImage from "react-native-fast-image";
@@ -10,11 +9,12 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import RNIcon from "./shared/RNIcon";
 import { View } from "react-native-ui-lib";
 import { $sizeStyles } from "@/theme/typography";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 const { width: screenWidth } = Dimensions.get("window");
 const numColumns = 2;
-const gap = spacing.spacing16;
-const paddingHorizontal = spacing.spacing24 * 2;
+const gap = verticalScale(spacing.spacing16);
+const paddingHorizontal = horizontalScale(spacing.spacing24 * 2);
 const itemSize = (screenWidth - paddingHorizontal - (numColumns - 1) * gap) / numColumns;
 
 interface FavoriteRecipeItemProps {
@@ -61,42 +61,18 @@ const FavoriteRecipeItem: React.FC<FavoriteRecipeItemProps> = ({ item }) => {
                 onLoad={handleImageLoad}
                 style={{ flex: 1 }}
               />
-              <View
-                style={{
-                  height: 28,
-                  width: 28,
-                  backgroundColor: colors.greyscale50,
-                  position: "absolute",
-                  borderRadius: spacing.spacing12,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  right: spacing.spacing8,
-                  top: spacing.spacing8,
-                }}
-              >
+              <View style={styles.$favoriteIconContainerStyle}>
                 <RNIcon name="heart" />
               </View>
             </View>
           ) : (
             <View style={styles.$placeholderstyle}>
-              <View
-                style={{
-                  height: 28,
-                  width: 28,
-                  backgroundColor: colors.greyscale50,
-                  position: "absolute",
-                  borderRadius: spacing.spacing12,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  right: spacing.spacing8,
-                  top: spacing.spacing8,
-                }}
-              >
+              <View style={styles.$favoriteIconContainerStyle}>
                 <RNIcon name="heart" />
               </View>
               <Ionicons
                 name="image-outline"
-                size={35}
+                size={moderateScale(40)}
                 color={colors.greyscale400}
               />
             </View>
@@ -106,35 +82,19 @@ const FavoriteRecipeItem: React.FC<FavoriteRecipeItemProps> = ({ item }) => {
               numberOfLines={2}
               style={[$sizeStyles.s, { fontFamily: "sofia800" }]}
             >
-              {title}
+              {title} with chilli con carne
             </Text>
             <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.spacing8 }}>
               {user.photoUrl ? (
                 <FastImage
                   source={{ uri: user.photoUrl }}
-                  style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: spacing.spacing16,
-                    borderWidth: 2,
-                    borderColor: colors.accent200,
-                  }}
+                  style={styles.$userImageStyle}
                 />
               ) : (
-                <View
-                  style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: spacing.spacing16,
-
-                    backgroundColor: colors.greyscale300,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
+                <View style={styles.$userPlaceholderStyle}>
                   <Feather
                     name="user"
-                    size={15}
+                    size={moderateScale(14)}
                     color={colors.greyscale50}
                   />
                 </View>
@@ -142,14 +102,7 @@ const FavoriteRecipeItem: React.FC<FavoriteRecipeItemProps> = ({ item }) => {
               <Text
                 numberOfLines={1}
                 ellipsizeMode="tail"
-                style={[
-                  {
-                    ...$sizeStyles.s,
-                    fontFamily: "sofia400",
-                    color: colors.greyscale300,
-                    paddingRight: 30,
-                  },
-                ]}
+                style={styles.$userNameStyle}
               >
                 {`${user.lastName}`}
               </Text>
@@ -178,6 +131,19 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
 
+  $favoriteIconContainerStyle: {
+    height: horizontalScale(28),
+    width: horizontalScale(28),
+    backgroundColor: colors.greyscale50,
+    position: "absolute",
+    borderRadius: spacing.spacing8,
+    justifyContent: "center",
+    alignItems: "center",
+
+    right: horizontalScale(spacing.spacing8),
+    top: verticalScale(spacing.spacing8),
+  },
+
   $placeholderstyle: {
     width: "100%",
     height: "50%",
@@ -187,15 +153,32 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  $infoStyle: {
-    flex: 1,
-    justifyContent: "flex-end",
-    gap: spacing.spacing4,
-  },
-
   $recipeItemStyle: {
     width: itemSize,
-    height: 198,
+    height: moderateScale(240),
     padding: spacing.spacing12,
+  },
+
+  $userImageStyle: {
+    width: horizontalScale(26),
+    height: horizontalScale(26),
+    borderRadius: spacing.spacing16,
+    borderWidth: 2,
+    borderColor: colors.accent200,
+  },
+
+  $userPlaceholderStyle: {
+    width: horizontalScale(26),
+    height: horizontalScale(26),
+    borderRadius: spacing.spacing16,
+    backgroundColor: colors.greyscale300,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  $userNameStyle: {
+    ...$sizeStyles.xs,
+    fontFamily: "sofia800",
+    color: colors.greyscale300,
   },
 });

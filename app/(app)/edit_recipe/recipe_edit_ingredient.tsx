@@ -21,6 +21,7 @@ import { View } from "react-native-ui-lib";
 import { AntDesign } from "@expo/vector-icons";
 import useRecipeStore from "@/zustand/useRecipeStore";
 import RNPressable from "@/components/shared/RNPressable";
+import { verticalScale } from "@/utils/scale";
 
 interface SearchParams {
   [key: string]: string;
@@ -255,6 +256,7 @@ const RecipeEditIngredient = () => {
             initialIndex={segmentIndex}
             segments={segments}
             onChangeIndex={setSegmentIndex}
+            segmentsStyle={{ height: verticalScale(54) }}
           />
 
           {nutrientsInfo &&

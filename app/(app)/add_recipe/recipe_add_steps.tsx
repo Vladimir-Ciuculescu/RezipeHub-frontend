@@ -23,6 +23,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import RNButton from "@/components/shared/RNButton";
 import useRecipeStore from "@/zustand/useRecipeStore";
 import RNPressable from "@/components/shared/RNPressable";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -47,6 +48,8 @@ const RecipeAddSteps = () => {
           <RNIcon
             name="arrow_left"
             color={colors.brandPrimary}
+            height={moderateScale(20)}
+            width={moderateScale(20)}
           />
         </RNPressable>
       ),
@@ -55,7 +58,7 @@ const RecipeAddSteps = () => {
         <RNPressable onPress={confirmSteps}>
           <AntDesign
             name="check"
-            size={24}
+            size={moderateScale(24)}
             color={colors.accent200}
           />
         </RNPressable>
@@ -150,8 +153,10 @@ const RecipeAddSteps = () => {
       contentContainerStyle={{
         flex: 1,
         justifyContent: "space-between",
-        paddingTop: spacing.spacing24,
-        paddingBottom: spacing.spacing32,
+        // paddingTop: spacing.spacing24,
+        // paddingBottom: spacing.spacing32,
+        paddingTop: verticalScale(spacing.spacing24),
+        paddingBottom: verticalScale(spacing.spacing32),
       }}
     >
       <View style={{ gap: spacing.spacing32 }}>
@@ -255,7 +260,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.spacing24,
   },
   $paginationContainerStyle: {
-    height: 50,
+    //height: 50,
+    height: moderateScale(50),
     alignItems: "center",
   },
   $stepsContainerStyle: {
@@ -270,8 +276,8 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.spacing8,
   },
   $paginationViewStyle: {
-    width: 40,
-    height: 40,
+    width: horizontalScale(40),
+    height: horizontalScale(40),
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
@@ -290,6 +296,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.spacing16,
-    paddingHorizontal: spacing.spacing16,
+    // paddingHorizontal: spacing.spacing16,
+    paddingHorizontal: horizontalScale(spacing.spacing16),
   },
 });

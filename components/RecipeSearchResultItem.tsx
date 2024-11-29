@@ -11,6 +11,7 @@ import { spacing } from "@/theme/spacing";
 import { View } from "react-native-ui-lib";
 import { RecipeSearchResponse } from "@/types/recipe.types";
 import { useRouter } from "expo-router";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 interface RecipeSearchResultItemProps {
   recipe: RecipeSearchResponse;
@@ -55,7 +56,7 @@ const RecipeSearchResultItem: React.FC<RecipeSearchResultItemProps> = ({ recipe 
                 >
                   <Ionicons
                     name="image-outline"
-                    size={35}
+                    size={moderateScale(40)}
                     color={colors.greyscale400}
                   />
                 </View>
@@ -69,6 +70,7 @@ const RecipeSearchResultItem: React.FC<RecipeSearchResultItemProps> = ({ recipe 
                 <Text
                   numberOfLines={2}
                   style={styles.$rowTextStyle}
+                  ellipsizeMode="tail"
                 >
                   {recipe.title}
                 </Text>
@@ -88,8 +90,8 @@ const RecipeSearchResultItem: React.FC<RecipeSearchResultItemProps> = ({ recipe 
                   ) : (
                     <View
                       style={{
-                        width: spacing.spacing24,
-                        height: spacing.spacing24,
+                        width: horizontalScale(spacing.spacing24),
+                        height: horizontalScale(spacing.spacing24),
                         borderRadius: spacing.spacing32,
                         backgroundColor: colors.greyscale200,
                         justifyContent: "center",
@@ -99,13 +101,22 @@ const RecipeSearchResultItem: React.FC<RecipeSearchResultItemProps> = ({ recipe 
                       <Feather
                         name="user"
                         color={colors.greyscale350}
-                        size={16}
+                        // size={16}
+                        size={moderateScale(12)}
                       />
                     </View>
                   )}
                   <Text
-                    style={{ ...$sizeStyles.s, fontFamily: "sofia400", color: colors.greyscale300 }}
-                  >{`${user.firstName} ${user.lastName}`}</Text>
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={{
+                      ...$sizeStyles.xs,
+                      fontFamily: "sofia400",
+                      color: colors.greyscale300,
+                    }}
+                  >
+                    {`${user.firstName} ${user.lastName}`}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -115,8 +126,8 @@ const RecipeSearchResultItem: React.FC<RecipeSearchResultItemProps> = ({ recipe 
                 <RNIcon
                   name="arrow_right"
                   color={colors.greyscale50}
-                  height={14}
-                  width={14}
+                  height={moderateScale(14)}
+                  width={moderateScale(14)}
                 />
               )}
             />
@@ -144,10 +155,10 @@ const styles = StyleSheet.create({
   },
 
   $innerRowContainerStyle: {
-    height: 100,
-    paddingLeft: spacing.spacing8,
-    paddingRight: spacing.spacing16,
-    paddingVertical: spacing.spacing8,
+    height: moderateScale(100),
+    paddingLeft: horizontalScale(spacing.spacing8),
+    paddingRight: horizontalScale(spacing.spacing16),
+    paddingVertical: verticalScale(spacing.spacing8),
   },
 
   $innerRowInfoStyle: {
@@ -161,14 +172,14 @@ const styles = StyleSheet.create({
   $contentRowStyle: {
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: spacing.spacing12,
+    gap: horizontalScale(spacing.spacing12),
     flexShrink: 1,
     height: "100%",
     width: "100%",
   },
   $rowImageStyle: {
     height: "100%",
-    width: 100,
+    width: horizontalScale(100),
     borderRadius: spacing.spacing16,
   },
   $rowTextStyle: {
@@ -180,8 +191,8 @@ const styles = StyleSheet.create({
   },
   $userDetailsBtnStyle: {
     backgroundColor: colors.brandPrimary,
-    height: 24,
-    width: 24,
+    height: horizontalScale(24),
+    width: horizontalScale(24),
     borderRadius: spacing.spacing8,
   },
 });
