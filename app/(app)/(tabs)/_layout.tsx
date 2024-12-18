@@ -28,6 +28,7 @@ const TabLayout = () => {
         screenOptions={{
           tabBarShowLabel: false,
           tabBarStyle: styles.$tabBarStyle,
+          unmountOnBlur: true,
         }}
       >
         <Tabs.Screen
