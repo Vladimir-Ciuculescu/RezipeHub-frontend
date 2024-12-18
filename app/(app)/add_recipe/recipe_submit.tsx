@@ -38,6 +38,7 @@ import {
   useUploadToS3Mutation,
 } from "@/hooks/recipes.hooks";
 import RNPressable from "@/components/shared/RNPressable";
+import { moderateScale } from "@/utils/scale";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -284,7 +285,13 @@ const RecipeSubmit = () => {
               alignItems: "center",
             }}
           >
-            <Text style={[$sizeStyles.h3]}>{title}</Text>
+            <Text
+              numberOfLines={2}
+              ellipsizeMode="tail"
+              style={[$sizeStyles.h3, { maxWidth: "90%" }]}
+            >
+              {title}
+            </Text>
 
             <View
               row
@@ -311,6 +318,7 @@ const RecipeSubmit = () => {
             initialIndex={segmentIndex}
             borderRadius={16}
             onChangeIndex={handleSegmentIndex}
+            segmentsStyle={{ height: moderateScale(54) }}
           />
         </View>
 

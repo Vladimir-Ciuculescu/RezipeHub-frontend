@@ -311,7 +311,7 @@ const RecipeConfirmIngredient = () => {
               ).map((nutrient, index, array) => {
                 return (
                   <React.Fragment
-                    key={`${nutrient[0]}-${nutrient[1].quantity}-${nutrient[1].unit}`}
+                    key={`${nutrient[0]}-${nutrient[1].quantity}-${nutrient[1].unit}-${index}`}
                   >
                     <NutrientItem nutrient={nutrient} />
                     {index < array.length - 1 && <View style={styles.separator} />}

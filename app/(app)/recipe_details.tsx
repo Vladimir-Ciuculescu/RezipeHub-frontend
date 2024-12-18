@@ -400,7 +400,6 @@ const RecipeDetails = () => {
               >
                 {recipe ? (
                   <>
-                    {/* <Text style={[$sizeStyles.h3]}>{recipe!.title}</Text> */}
                     <View
                       row
                       style={{
@@ -408,7 +407,12 @@ const RecipeDetails = () => {
                         alignItems: "center",
                       }}
                     >
-                      <Text style={[$sizeStyles.h3]}>{recipe!.title}</Text>
+                      <Text
+                        ellipsizeMode="tail"
+                        style={[$sizeStyles.h3, { maxWidth: "80%" }]}
+                      >
+                        {recipe!.title}
+                      </Text>
 
                       <View
                         row
