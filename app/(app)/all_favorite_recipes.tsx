@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
-import { useNavigation, useRouter } from "expo-router";
+import { Link, useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import RNSegmentedControl from "@/components/shared/RnSegmentedControl";
 import { colors } from "@/theme/colors";
@@ -174,17 +174,9 @@ const AllFavoriteRecipes = () => {
     }
   };
 
-  const goToFavoriteRecipe = (
-    recipeId: number,
-    user: { id: number; firstName: string; lastName: string; photoUrl: string },
-  ) => {
-    router.navigate({
-      pathname: "/recipe_details",
-      params: { id: recipeId, owner: JSON.stringify(user) },
-    });
-  };
-
   const renderItem = ({ item, index }: { item: any; index: number }) => {
+    const { id, photoUrl, user } = item;
+
     if (item === null && layout === "GRID") {
       return (
         <View
@@ -195,36 +187,148 @@ const AllFavoriteRecipes = () => {
     }
 
     return (
-      <Pressable
-        onPress={() => goToFavoriteRecipe(item.id, item.user)}
-        key={item.id}
+      <Link
+        asChild
+        href={{
+          pathname: "/recipe_details",
+          params: {
+            id: id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            recipePhotoUrl: photoUrl,
+            userPhotoUrl: user.photoUrl,
+            userId: user.id,
+          },
+        }}
       >
-        <RNShadowView
-          style={[styles.$gridContainerStyle, layout === "LIST" && styles.$rowContainerStyle]}
-        >
-          <View
-            style={[
-              styles.$innerContainerStyle,
-              layout === "GRID" ? styles.$innerGridContainerStyle : styles.$innerRowContainerStyle,
-            ]}
+        <Pressable key={item.id}>
+          <RNShadowView
+            style={[styles.$gridContainerStyle, layout === "LIST" && styles.$rowContainerStyle]}
           >
-            {layout === "LIST" && (
-              <View style={styles.$innerRowInfoStyle}>
-                <View style={styles.$contentRowStyle}>
+            <View
+              style={[
+                styles.$innerContainerStyle,
+                layout === "GRID"
+                  ? styles.$innerGridContainerStyle
+                  : styles.$innerRowContainerStyle,
+              ]}
+            >
+              {layout === "LIST" && (
+                <View style={styles.$innerRowInfoStyle}>
+                  <View style={styles.$contentRowStyle}>
+                    {item.photoUrl ? (
+                      <View style={styles.$rowImageStyle}>
+                        <FastImage
+                          source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
+                          style={{ flex: 1 }}
+                        />
+                        <View style={styles.$hearRowContainerstyle}>
+                          <RNIcon name="heart" />
+                        </View>
+                      </View>
+                    ) : (
+                      <View
+                        style={[
+                          styles.$rowImageStyle,
+                          {
+                            backgroundColor: colors.greyscale200,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          },
+                        ]}
+                      >
+                        <View style={styles.$hearRowContainerstyle}>
+                          <RNIcon name="heart" />
+                        </View>
+                        <Ionicons
+                          name="image-outline"
+                          size={moderateScale(25)}
+                          color={colors.greyscale400}
+                        />
+                      </View>
+                    )}
+                    <View
+                      style={{
+                        flex: 1,
+                        paddingRight: spacing.spacing4,
+                      }}
+                    >
+                      <Text
+                        numberOfLines={3}
+                        style={styles.$rowTextStyle}
+                      >
+                        {item.title}
+                      </Text>
+
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: spacing.spacing8,
+                        }}
+                      >
+                        {item.user.photoUrl ? (
+                          <FastImage
+                            source={{ uri: item.user.photoUrl }}
+                            style={styles.userImageStyle}
+                          />
+                        ) : (
+                          <View style={styles.$userPlaceholderStyle}>
+                            <Feather
+                              name="user"
+                              size={moderateScale(12)}
+                              color={colors.greyscale50}
+                            />
+                          </View>
+                        )}
+                        <Text
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                          style={[
+                            {
+                              ...$sizeStyles.xs,
+                              fontFamily: "sofia400",
+                              color: colors.greyscale300,
+                              paddingRight: 30,
+                            },
+                          ]}
+                        >
+                          {item.user ? `${item.user.firstName} ${item.user.lastName}` : ""}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  <RNButton
+                    style={styles.$userDetailsBtnStyle}
+                    iconSource={() => (
+                      <RNIcon
+                        name="arrow_right"
+                        color={colors.greyscale50}
+                        // height={12}
+                        // width={12}
+                        height={moderateScale(12)}
+                        width={moderateScale(12)}
+                      />
+                    )}
+                  />
+                </View>
+              )}
+              {layout === "GRID" && (
+                <View style={styles.$innerGridInfoStyle}>
                   {item.photoUrl ? (
-                    <View style={styles.$rowImageStyle}>
+                    <View style={styles.$gridImageStyle}>
                       <FastImage
                         source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
                         style={{ flex: 1 }}
                       />
-                      <View style={styles.$hearRowContainerstyle}>
+                      <View style={styles.$heartGridStyle}>
                         <RNIcon name="heart" />
                       </View>
                     </View>
                   ) : (
                     <View
                       style={[
-                        styles.$rowImageStyle,
+                        styles.$gridImageStyle,
                         {
                           backgroundColor: colors.greyscale200,
                           justifyContent: "center",
@@ -232,25 +336,20 @@ const AllFavoriteRecipes = () => {
                         },
                       ]}
                     >
-                      <View style={styles.$hearRowContainerstyle}>
+                      <View style={styles.$headerGridPlaceholderStyle}>
                         <RNIcon name="heart" />
                       </View>
                       <Ionicons
                         name="image-outline"
-                        size={moderateScale(25)}
+                        size={moderateScale(40)}
                         color={colors.greyscale400}
                       />
                     </View>
                   )}
-                  <View
-                    style={{
-                      flex: 1,
-                      paddingRight: spacing.spacing4,
-                    }}
-                  >
+                  <View style={{ flex: 1, justifyContent: "space-between" }}>
                     <Text
                       numberOfLines={3}
-                      style={styles.$rowTextStyle}
+                      style={styles.$gridTextStyle}
                     >
                       {item.title}
                     </Text>
@@ -261,10 +360,10 @@ const AllFavoriteRecipes = () => {
                       {item.user.photoUrl ? (
                         <FastImage
                           source={{ uri: item.user.photoUrl }}
-                          style={styles.userImageStyle}
+                          style={styles.$userImageGridStyle}
                         />
                       ) : (
-                        <View style={styles.$userPlaceholderStyle}>
+                        <View style={styles.$userImagePlaceholderGridStyle}>
                           <Feather
                             name="user"
                             size={moderateScale(12)}
@@ -284,105 +383,16 @@ const AllFavoriteRecipes = () => {
                           },
                         ]}
                       >
-                        {item.user ? `${item.user.firstName} ${item.user.lastName}` : ""}
+                        {item.user ? `${item.user.lastName}` : ""}
                       </Text>
                     </View>
                   </View>
                 </View>
-                <RNButton
-                  style={styles.$userDetailsBtnStyle}
-                  iconSource={() => (
-                    <RNIcon
-                      name="arrow_right"
-                      color={colors.greyscale50}
-                      // height={12}
-                      // width={12}
-                      height={moderateScale(12)}
-                      width={moderateScale(12)}
-                    />
-                  )}
-                />
-              </View>
-            )}
-            {layout === "GRID" && (
-              <View style={styles.$innerGridInfoStyle}>
-                {item.photoUrl ? (
-                  <View style={styles.$gridImageStyle}>
-                    <FastImage
-                      source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
-                      style={{ flex: 1 }}
-                    />
-                    <View style={styles.$heartGridStyle}>
-                      <RNIcon name="heart" />
-                    </View>
-                  </View>
-                ) : (
-                  <View
-                    style={[
-                      styles.$gridImageStyle,
-                      {
-                        backgroundColor: colors.greyscale200,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      },
-                    ]}
-                  >
-                    <View style={styles.$headerGridPlaceholderStyle}>
-                      <RNIcon name="heart" />
-                    </View>
-                    <Ionicons
-                      name="image-outline"
-                      size={moderateScale(40)}
-                      color={colors.greyscale400}
-                    />
-                  </View>
-                )}
-                <View style={{ flex: 1, justifyContent: "space-between" }}>
-                  <Text
-                    numberOfLines={3}
-                    style={styles.$gridTextStyle}
-                  >
-                    {item.title}
-                  </Text>
-
-                  <View
-                    style={{ flexDirection: "row", alignItems: "center", gap: spacing.spacing8 }}
-                  >
-                    {item.user.photoUrl ? (
-                      <FastImage
-                        source={{ uri: item.user.photoUrl }}
-                        style={styles.$userImageGridStyle}
-                      />
-                    ) : (
-                      <View style={styles.$userImagePlaceholderGridStyle}>
-                        <Feather
-                          name="user"
-                          size={moderateScale(12)}
-                          color={colors.greyscale50}
-                        />
-                      </View>
-                    )}
-                    <Text
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                      style={[
-                        {
-                          ...$sizeStyles.xs,
-                          fontFamily: "sofia400",
-                          color: colors.greyscale300,
-                          paddingRight: 30,
-                        },
-                      ]}
-                    >
-                      {item.user ? `${item.user.lastName}` : ""}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            )}
-          </View>
-        </RNShadowView>
-      </Pressable>
+              )}
+            </View>
+          </RNShadowView>
+        </Pressable>
+      </Link>
     );
   };
 

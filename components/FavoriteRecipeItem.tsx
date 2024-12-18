@@ -1,6 +1,6 @@
 import { Text, Pressable, StyleSheet, Dimensions } from "react-native";
 import React, { useState } from "react";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import RNShadowView from "./shared/RNShadowView";
 import { spacing } from "@/theme/spacing";
 import FastImage from "react-native-fast-image";
@@ -42,75 +42,86 @@ const FavoriteRecipeItem: React.FC<FavoriteRecipeItemProps> = ({ item }) => {
     setImageLoaded(true);
   };
 
-  const goToFavoriteRecipe = () => {
-    router.navigate({ pathname: "/recipe_details", params: { id, owner: JSON.stringify(user) } });
-  };
-
   return (
-    <Pressable onPress={goToFavoriteRecipe}>
-      <RNShadowView style={styles.$recipeItemStyle}>
-        <View style={styles.$containerStyle}>
-          {photoUrl ? (
-            <View style={styles.$imageStyle}>
-              <FastImage
-                source={{
-                  uri: photoUrl,
-                  priority: FastImage.priority.high,
-                  cache: FastImage.cacheControl.web,
-                }}
-                onLoad={handleImageLoad}
-                style={{ flex: 1 }}
-              />
-              <View style={styles.$favoriteIconContainerStyle}>
-                <RNIcon name="heart" />
-              </View>
-            </View>
-          ) : (
-            <View style={styles.$placeholderstyle}>
-              <View style={styles.$favoriteIconContainerStyle}>
-                <RNIcon name="heart" />
-              </View>
-              <Ionicons
-                name="image-outline"
-                size={moderateScale(40)}
-                color={colors.greyscale400}
-              />
-            </View>
-          )}
-          <View style={{ flex: 1, justifyContent: "space-between" }}>
-            <Text
-              numberOfLines={2}
-              style={[$sizeStyles.s, { fontFamily: "sofia800" }]}
-            >
-              {title} with chilli con carne
-            </Text>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.spacing8 }}>
-              {user.photoUrl ? (
+    <Link
+      asChild
+      href={{
+        pathname: "/recipe_details",
+        params: {
+          id: id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          recipePhotoUrl: photoUrl,
+          userPhotoUrl: user.photoUrl,
+          userId: user.id,
+        },
+      }}
+    >
+      <Pressable>
+        <RNShadowView style={styles.$recipeItemStyle}>
+          <View style={styles.$containerStyle}>
+            {photoUrl ? (
+              <View style={styles.$imageStyle}>
                 <FastImage
-                  source={{ uri: user.photoUrl }}
-                  style={styles.$userImageStyle}
+                  source={{
+                    uri: photoUrl,
+                    priority: FastImage.priority.high,
+                    cache: FastImage.cacheControl.web,
+                  }}
+                  onLoad={handleImageLoad}
+                  style={{ flex: 1 }}
                 />
-              ) : (
-                <View style={styles.$userPlaceholderStyle}>
-                  <Feather
-                    name="user"
-                    size={moderateScale(14)}
-                    color={colors.greyscale50}
-                  />
+                <View style={styles.$favoriteIconContainerStyle}>
+                  <RNIcon name="heart" />
                 </View>
-              )}
+              </View>
+            ) : (
+              <View style={styles.$placeholderstyle}>
+                <View style={styles.$favoriteIconContainerStyle}>
+                  <RNIcon name="heart" />
+                </View>
+                <Ionicons
+                  name="image-outline"
+                  size={moderateScale(40)}
+                  color={colors.greyscale400}
+                />
+              </View>
+            )}
+            <View style={{ flex: 1, justifyContent: "space-between" }}>
               <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={styles.$userNameStyle}
+                numberOfLines={2}
+                style={[$sizeStyles.s, { fontFamily: "sofia800" }]}
               >
-                {`${user.lastName}`}
+                {title} with chilli con carne
               </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.spacing8 }}>
+                {user.photoUrl ? (
+                  <FastImage
+                    source={{ uri: user.photoUrl }}
+                    style={styles.$userImageStyle}
+                  />
+                ) : (
+                  <View style={styles.$userPlaceholderStyle}>
+                    <Feather
+                      name="user"
+                      size={moderateScale(14)}
+                      color={colors.greyscale50}
+                    />
+                  </View>
+                )}
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={styles.$userNameStyle}
+                >
+                  {`${user.lastName}`}
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
-      </RNShadowView>
-    </Pressable>
+        </RNShadowView>
+      </Pressable>
+    </Link>
   );
 };
 

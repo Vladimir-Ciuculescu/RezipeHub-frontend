@@ -1,7 +1,7 @@
 import { Text, Pressable, StyleSheet, Dimensions } from "react-native";
 import React, { useState } from "react";
 import { RecipeType } from "@/types/enums";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import useUserData from "@/hooks/useUserData";
 import RNShadowView from "./shared/RNShadowView";
 import { spacing } from "@/theme/spacing";
@@ -46,78 +46,93 @@ const PersonalRecipeItem: React.FC<PersonalRecipeItemProps> = ({ item }) => {
     setImageLoaded(true);
   };
 
-  const goToRecipe = () => {
-    router.navigate({ pathname: "/recipe_details", params: { id, userId: user.id } });
-  };
-
   return (
-    <Pressable onPress={goToRecipe}>
-      <RNShadowView style={styles.$recipeItemStyle}>
-        <View style={styles.$containerStyle}>
-          {photoUrl ? (
-            <FastImage
-              source={{
-                uri: photoUrl,
-                priority: FastImage.priority.high,
-                cache: FastImage.cacheControl.web,
-              }}
-              onLoad={handleImageLoad}
-              style={styles.$imageStyle}
-            />
-          ) : (
-            <View style={styles.$placeholderstyle}>
-              <Ionicons
-                name="image-outline"
-                size={moderateScale(40)}
-                color={colors.greyscale400}
+    <Link
+      asChild
+      href={{
+        pathname: "/recipe_details",
+        params: {
+          id: id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          recipePhotoUrl: photoUrl,
+          userPhotoUrl: user.photoUrl,
+          userId: user.id,
+        },
+      }}
+    >
+      <Pressable>
+        <RNShadowView style={styles.$recipeItemStyle}>
+          <View style={styles.$containerStyle}>
+            {photoUrl ? (
+              <FastImage
+                source={{
+                  uri: photoUrl,
+                  priority: FastImage.priority.high,
+                  cache: FastImage.cacheControl.web,
+                }}
+                onLoad={handleImageLoad}
+                style={styles.$imageStyle}
               />
-            </View>
-          )}
-          <Text
-            numberOfLines={2}
-            style={[$sizeStyles.s, { fontFamily: "sofia800" }]}
-          >
-            {title}
-          </Text>
-          <View style={styles.$infoStyle}>
-            <View
-              row
-              style={{
-                alignItems: "center",
-              }}
+            ) : (
+              <View style={styles.$placeholderstyle}>
+                <Ionicons
+                  name="image-outline"
+                  size={moderateScale(40)}
+                  color={colors.greyscale400}
+                />
+              </View>
+            )}
+            <Text
+              numberOfLines={2}
+              style={[$sizeStyles.s, { fontFamily: "sofia800" }]}
             >
-              <RNIcon
-                name="fire"
-                style={{ color: colors.greyscale300 }}
-                height={moderateScale(16)}
-              />
-              <Text
-                style={[{ ...$sizeStyles.xs, fontFamily: "sofia800", color: colors.greyscale300 }]}
+              {title}
+            </Text>
+            <View style={styles.$infoStyle}>
+              <View
+                row
+                style={{
+                  alignItems: "center",
+                }}
               >
-                {formatFloatingValue(totalCalories)} Kcal
-              </Text>
-            </View>
-            <View
-              row
-              style={{
-                alignItems: "center",
-              }}
-            >
-              <RNIcon
-                name="clock"
-                style={{ color: colors.greyscale300 }}
-                height={moderateScale(16)}
-              />
-              <Text
-                style={[{ ...$sizeStyles.xs, fontFamily: "sofia800", color: colors.greyscale300 }]}
+                <RNIcon
+                  name="fire"
+                  style={{ color: colors.greyscale300 }}
+                  height={moderateScale(16)}
+                />
+                <Text
+                  style={[
+                    { ...$sizeStyles.xs, fontFamily: "sofia800", color: colors.greyscale300 },
+                  ]}
+                >
+                  {formatFloatingValue(totalCalories)} Kcal
+                </Text>
+              </View>
+              <View
+                row
+                style={{
+                  alignItems: "center",
+                }}
               >
-                {preparationTime} min
-              </Text>
+                <RNIcon
+                  name="clock"
+                  style={{ color: colors.greyscale300 }}
+                  height={moderateScale(16)}
+                />
+                <Text
+                  style={[
+                    { ...$sizeStyles.xs, fontFamily: "sofia800", color: colors.greyscale300 },
+                  ]}
+                >
+                  {preparationTime} min
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
-      </RNShadowView>
-    </Pressable>
+        </RNShadowView>
+      </Pressable>
+    </Link>
   );
 };
 

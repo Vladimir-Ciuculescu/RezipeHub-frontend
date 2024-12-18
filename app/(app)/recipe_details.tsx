@@ -6,6 +6,7 @@ import {
   ListRenderItem,
   Alert,
   Pressable,
+  Image,
 } from "react-native";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
@@ -98,13 +99,24 @@ const RecipeDetails = () => {
 
   const userData = useUserData();
 
-  const { id, userId, owner } = useLocalSearchParams<{
+  // const { id, userId, owner } = useLocalSearchParams<{
+  //   id: string;
+  //   userId: string;
+  //   owner: string;
+  // }>();
+
+  // const parsedOwner = owner ? JSON.parse(owner) : null;
+
+  const { id, userId, firstName, lastName, recipePhotoUrl, userPhotoUrl } = useLocalSearchParams<{
     id: string;
     userId: string;
-    owner: string;
+    firstName: string;
+    lastName: string;
+    recipePhotoUrl: string;
+    userPhotoUrl: string;
   }>();
 
-  const parsedOwner = owner ? JSON.parse(owner) : null;
+  // const parsedOwner = owner ? JSON.parse(owner) : null;
 
   const belongsToCurrentUser = parseInt(userId!) === userData.id;
 
@@ -374,9 +386,13 @@ const RecipeDetails = () => {
         ) : (
           <FastImage
             resizeMode="cover"
-            source={{ uri: recipe.photoUrl, cache: FastImage.cacheControl.web }}
+            source={{ uri: recipePhotoUrl }}
             style={[{ height: heightValue }, styles.$imageBackgroundStyle]}
           />
+          // <Image
+          //   style={[{ height: heightValue }, styles.$imageBackgroundStyle]}
+          //   source={photoUrl}
+          // />
         )}
         <BottomSheet
           enableOverDrag={false}
@@ -532,7 +548,8 @@ const RecipeDetails = () => {
                   </Skeleton.Group>
                 )}
 
-                {!belongsToCurrentUser && parsedOwner && (
+                {/* Revisit this  */}
+                {!belongsToCurrentUser && firstName && (
                   <View
                     style={{
                       width: "100%",
@@ -557,9 +574,9 @@ const RecipeDetails = () => {
                         row
                         style={{ alignItems: "center", gap: spacing.spacing16 }}
                       >
-                        {parsedOwner.photoUrl ? (
+                        {userPhotoUrl ? (
                           <FastImage
-                            source={{ uri: parsedOwner.photoUrl }}
+                            source={{ uri: userPhotoUrl }}
                             style={{
                               height: horizontalScale(48),
                               width: horizontalScale(48),
@@ -587,9 +604,7 @@ const RecipeDetails = () => {
                             />
                           </View>
                         )}
-                        <Text
-                          style={{ ...$sizeStyles.l }}
-                        >{`${parsedOwner.firstName} ${parsedOwner.lastName}`}</Text>
+                        <Text style={{ ...$sizeStyles.l }}>{`${firstName} ${lastName}`}</Text>
                       </View>
                     </View>
 

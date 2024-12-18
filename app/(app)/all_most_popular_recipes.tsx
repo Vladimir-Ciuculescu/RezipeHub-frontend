@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 import React, { useLayoutEffect, useMemo } from "react";
-import { useNavigation, useRouter } from "expo-router";
+import { Link, useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import { $sizeStyles } from "@/theme/typography";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -85,102 +85,109 @@ const AllMostPopularRecipes = () => {
     }
   };
 
-  const goToRecipeDetails = (item: MostPopularRecipeResponse) => {
-    router.navigate({
-      pathname: "/recipe_details",
-      params: { id: item.id, userId: item.user.id, owner: JSON.stringify(item.user) },
-    });
-  };
-
   const renderItem = ({ item, index }: { item: any; index: number }) => {
+    const { id, photoUrl, user } = item;
+
     return (
-      <Pressable
-        onPress={() => goToRecipeDetails(item)}
-        key={item.id}
+      <Link
+        asChild
+        href={{
+          pathname: "/recipe_details",
+          params: {
+            id: id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            recipePhotoUrl: photoUrl,
+            userPhotoUrl: user.photoUrl,
+            userId: user.id,
+          },
+        }}
       >
-        <RNShadowView
-          style={[{ marginBottom: verticalScale(spacing.spacing16) }, styles.$rowContainerStyle]}
-        >
-          <View style={[styles.$innerContainerStyle, styles.$innerRowContainerStyle]}>
-            <View style={styles.$innerRowInfoStyle}>
-              <View style={styles.$contentRowStyle}>
-                {item.photoUrl ? (
-                  <View style={styles.$rowImageStyle}>
-                    <FastImage
-                      source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
-                      style={styles.$flexStyle}
-                    />
-                  </View>
-                ) : (
-                  <View style={[styles.$rowImageStyle, styles.$placeholderImageStyle]}>
-                    <Ionicons
-                      name="image-outline"
-                      size={moderateScale(40)}
-                      color={colors.greyscale400}
-                    />
-                  </View>
-                )}
-                <View style={styles.$contentColumnStyle}>
-                  <Text
-                    numberOfLines={3}
-                    style={styles.$rowTextStyle}
-                    ellipsizeMode="tail"
-                  >
-                    {item.title}
-                  </Text>
-
-                  <View style={styles.$arrowContainerStyle}>
-                    <View style={styles.$userDetailsBtnStyle}>
-                      <RNIcon
-                        name="arrow_right"
-                        color={colors.greyscale50}
-                        height={horizontalScale(12)}
-                        width={horizontalScale(12)}
+        <Pressable key={item.id}>
+          <RNShadowView
+            style={[{ marginBottom: verticalScale(spacing.spacing16) }, styles.$rowContainerStyle]}
+          >
+            <View style={[styles.$innerContainerStyle, styles.$innerRowContainerStyle]}>
+              <View style={styles.$innerRowInfoStyle}>
+                <View style={styles.$contentRowStyle}>
+                  {item.photoUrl ? (
+                    <View style={styles.$rowImageStyle}>
+                      <FastImage
+                        source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
+                        style={styles.$flexStyle}
                       />
                     </View>
-                  </View>
+                  ) : (
+                    <View style={[styles.$rowImageStyle, styles.$placeholderImageStyle]}>
+                      <Ionicons
+                        name="image-outline"
+                        size={moderateScale(40)}
+                        color={colors.greyscale400}
+                      />
+                    </View>
+                  )}
+                  <View style={styles.$contentColumnStyle}>
+                    <Text
+                      numberOfLines={3}
+                      style={styles.$rowTextStyle}
+                      ellipsizeMode="tail"
+                    >
+                      {item.title}
+                    </Text>
 
-                  <View style={styles.$footerContainerStyle}>
-                    <View style={styles.$userInfoContainerStyle}>
-                      {item.user.photoUrl ? (
-                        <FastImage
-                          source={{ uri: item.user.photoUrl }}
-                          style={styles.$userAvatarStyle}
+                    <View style={styles.$arrowContainerStyle}>
+                      <View style={styles.$userDetailsBtnStyle}>
+                        <RNIcon
+                          name="arrow_right"
+                          color={colors.greyscale50}
+                          height={horizontalScale(12)}
+                          width={horizontalScale(12)}
                         />
-                      ) : (
-                        <View style={styles.$userAvatarPlaceholderStyle}>
-                          <Feather
-                            name="user"
-                            size={moderateScale(16)}
-                            color={colors.greyscale50}
-                          />
-                        </View>
-                      )}
-                      <Text
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                        style={styles.$userNameStyle}
-                      >
-                        {item.user ? item.user.lastName : ""}
-                      </Text>
+                      </View>
                     </View>
 
-                    <View style={styles.$timeContainerStyle}>
-                      <RNIcon
-                        name="clock"
-                        height={moderateScale(16)}
-                        width={moderateScale(16)}
-                        style={styles.$clockIconStyle}
-                      />
-                      <Text style={styles.$timeTextStyle}>{item.preparationTime} Min</Text>
+                    <View style={styles.$footerContainerStyle}>
+                      <View style={styles.$userInfoContainerStyle}>
+                        {item.user.photoUrl ? (
+                          <FastImage
+                            source={{ uri: item.user.photoUrl }}
+                            style={styles.$userAvatarStyle}
+                          />
+                        ) : (
+                          <View style={styles.$userAvatarPlaceholderStyle}>
+                            <Feather
+                              name="user"
+                              size={moderateScale(16)}
+                              color={colors.greyscale50}
+                            />
+                          </View>
+                        )}
+                        <Text
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                          style={styles.$userNameStyle}
+                        >
+                          {item.user ? item.user.lastName : ""}
+                        </Text>
+                      </View>
+
+                      <View style={styles.$timeContainerStyle}>
+                        <RNIcon
+                          name="clock"
+                          height={moderateScale(16)}
+                          width={moderateScale(16)}
+                          style={styles.$clockIconStyle}
+                        />
+                        <Text style={styles.$timeTextStyle}>{item.preparationTime} Min</Text>
+                      </View>
                     </View>
                   </View>
                 </View>
               </View>
             </View>
-          </View>
-        </RNShadowView>
-      </Pressable>
+          </RNShadowView>
+        </Pressable>
+      </Link>
     );
   };
 

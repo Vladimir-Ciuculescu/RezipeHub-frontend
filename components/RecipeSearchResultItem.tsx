@@ -10,7 +10,7 @@ import { $sizeStyles } from "@/theme/typography";
 import { spacing } from "@/theme/spacing";
 import { View } from "react-native-ui-lib";
 import { RecipeSearchResponse } from "@/types/recipe.types";
-import { useRouter } from "expo-router";
+import { Link } from "expo-router";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 
 interface RecipeSearchResultItemProps {
@@ -18,123 +18,128 @@ interface RecipeSearchResultItemProps {
 }
 
 const RecipeSearchResultItem: React.FC<RecipeSearchResultItemProps> = ({ recipe }) => {
-  const { user, id } = recipe;
-
-  const router = useRouter();
-
-  const goToRecipeDetails = () => {
-    router.navigate({
-      pathname: "/recipe_details",
-      params: { id, userId: user.id, owner: JSON.stringify(user) },
-    });
-  };
+  const { user, id, photoUrl } = recipe;
 
   return (
-    <Pressable
-      onPress={goToRecipeDetails}
-      key={recipe.id}
+    <Link
+      href={{
+        pathname: "/recipe_details",
+        params: {
+          id: id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          recipePhotoUrl: photoUrl,
+          userPhotoUrl: user.photoUrl,
+          userId: user.id,
+        },
+      }}
+      asChild
     >
-      <RNShadowView style={styles.$rowContainerStyle}>
-        <View style={[styles.$innerContainerStyle, styles.$innerRowContainerStyle]}>
-          <View style={styles.$innerRowInfoStyle}>
-            <View style={styles.$contentRowStyle}>
-              {recipe.photoUrl ? (
-                <FastImage
-                  source={{ uri: recipe.photoUrl, cache: FastImage.cacheControl.web }}
-                  style={styles.$rowImageStyle}
-                />
-              ) : (
-                <View
-                  style={[
-                    styles.$rowImageStyle,
-                    {
-                      backgroundColor: colors.greyscale200,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    },
-                  ]}
-                >
-                  <Ionicons
-                    name="image-outline"
-                    size={moderateScale(40)}
-                    color={colors.greyscale400}
+      <Pressable key={recipe.id}>
+        <RNShadowView style={styles.$rowContainerStyle}>
+          <View style={[styles.$innerContainerStyle, styles.$innerRowContainerStyle]}>
+            <View style={styles.$innerRowInfoStyle}>
+              <View style={styles.$contentRowStyle}>
+                {recipe.photoUrl ? (
+                  <FastImage
+                    source={{ uri: recipe.photoUrl, cache: FastImage.cacheControl.web }}
+                    style={styles.$rowImageStyle}
                   />
-                </View>
-              )}
-              <View
-                style={{
-                  flex: 1,
-                  paddingVertical: spacing.spacing4,
-                }}
-              >
-                <Text
-                  numberOfLines={2}
-                  style={styles.$rowTextStyle}
-                  ellipsizeMode="tail"
-                >
-                  {recipe.title}
-                </Text>
-
-                <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.spacing8 }}>
-                  {user.photoUrl ? (
-                    <FastImage
-                      source={{
-                        uri: user.photoUrl,
-                      }}
-                      style={{
-                        width: spacing.spacing24,
-                        height: spacing.spacing24,
-                        borderRadius: spacing.spacing32,
-                      }}
-                    />
-                  ) : (
-                    <View
-                      style={{
-                        width: horizontalScale(spacing.spacing24),
-                        height: horizontalScale(spacing.spacing24),
-                        borderRadius: spacing.spacing32,
+                ) : (
+                  <View
+                    style={[
+                      styles.$rowImageStyle,
+                      {
                         backgroundColor: colors.greyscale200,
                         justifyContent: "center",
                         alignItems: "center",
+                      },
+                    ]}
+                  >
+                    <Ionicons
+                      name="image-outline"
+                      size={moderateScale(40)}
+                      color={colors.greyscale400}
+                    />
+                  </View>
+                )}
+                <View
+                  style={{
+                    flex: 1,
+                    paddingVertical: spacing.spacing4,
+                  }}
+                >
+                  <Text
+                    numberOfLines={2}
+                    style={styles.$rowTextStyle}
+                    ellipsizeMode="tail"
+                  >
+                    {recipe.title}
+                  </Text>
+
+                  <View
+                    style={{ flexDirection: "row", alignItems: "center", gap: spacing.spacing8 }}
+                  >
+                    {user.photoUrl ? (
+                      <FastImage
+                        source={{
+                          uri: user.photoUrl,
+                        }}
+                        style={{
+                          width: spacing.spacing24,
+                          height: spacing.spacing24,
+                          borderRadius: spacing.spacing32,
+                        }}
+                      />
+                    ) : (
+                      <View
+                        style={{
+                          width: horizontalScale(spacing.spacing24),
+                          height: horizontalScale(spacing.spacing24),
+                          borderRadius: spacing.spacing32,
+                          backgroundColor: colors.greyscale200,
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Feather
+                          name="user"
+                          color={colors.greyscale350}
+                          // size={16}
+                          size={moderateScale(12)}
+                        />
+                      </View>
+                    )}
+                    <Text
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                      style={{
+                        ...$sizeStyles.xs,
+                        fontFamily: "sofia400",
+                        color: colors.greyscale300,
                       }}
                     >
-                      <Feather
-                        name="user"
-                        color={colors.greyscale350}
-                        // size={16}
-                        size={moderateScale(12)}
-                      />
-                    </View>
-                  )}
-                  <Text
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                    style={{
-                      ...$sizeStyles.xs,
-                      fontFamily: "sofia400",
-                      color: colors.greyscale300,
-                    }}
-                  >
-                    {`${user.firstName} ${user.lastName}`}
-                  </Text>
+                      {`${user.firstName} ${user.lastName}`}
+                    </Text>
+                  </View>
                 </View>
               </View>
+              <RNButton
+                style={styles.$userDetailsBtnStyle}
+                iconSource={() => (
+                  <RNIcon
+                    name="arrow_right"
+                    color={colors.greyscale50}
+                    height={moderateScale(14)}
+                    width={moderateScale(14)}
+                  />
+                )}
+              />
             </View>
-            <RNButton
-              style={styles.$userDetailsBtnStyle}
-              iconSource={() => (
-                <RNIcon
-                  name="arrow_right"
-                  color={colors.greyscale50}
-                  height={moderateScale(14)}
-                  width={moderateScale(14)}
-                />
-              )}
-            />
           </View>
-        </View>
-      </RNShadowView>
-    </Pressable>
+        </RNShadowView>
+      </Pressable>
+    </Link>
   );
 };
 

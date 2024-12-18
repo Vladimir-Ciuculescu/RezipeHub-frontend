@@ -9,7 +9,7 @@ import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
 import { View } from "react-native-ui-lib";
 import RNIcon from "./shared/RNIcon";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { horizontalScale, moderateScale } from "@/utils/scale";
 
 interface MostPopulaerRecipeItemProps {
@@ -17,91 +17,100 @@ interface MostPopulaerRecipeItemProps {
 }
 
 const MostPopularRecipeItem: React.FC<MostPopulaerRecipeItemProps> = ({ item }) => {
-  const { photoUrl, user } = item;
-
-  const router = useRouter();
-
-  const goToRecipe = () => {
-    router.navigate({ pathname: "/recipe_details", params: { id: item.id, userId: user.id } });
-  };
+  const { id, photoUrl, user } = item;
 
   return (
-    <Pressable onPress={goToRecipe}>
-      <RNShadowView style={styles.$containerStyle}>
-        {photoUrl ? (
-          <View style={styles.$imageStyle}>
-            <FastImage
-              source={{
-                uri: photoUrl,
-                priority: FastImage.priority.high,
-                cache: FastImage.cacheControl.web,
-              }}
-              style={{ flex: 1 }}
-            />
-          </View>
-        ) : (
-          <View style={styles.$placeholderstyle}>
-            <Ionicons
-              name="image-outline"
-              size={moderateScale(48)}
-              color={colors.greyscale400}
-            />
-          </View>
-        )}
-
-        <View style={styles.$innerContainerStyle}>
-          <Text
-            style={{ ...$sizeStyles.n, fontFamily: "sofia800" }}
-            numberOfLines={2}
-          >
-            {item.title}
-          </Text>
-          <View
-            row
-            style={{ justifyContent: "space-between" }}
-          >
-            <View
-              row
-              style={{ alignItems: "center", gap: spacing.spacing4 }}
-            >
-              {user.photoUrl ? (
-                <FastImage
-                  source={{ uri: user.photoUrl }}
-                  style={styles.$userImageStyle}
-                />
-              ) : (
-                <View style={styles.$userImagePlaceholderStyle}>
-                  <Feather
-                    name="user"
-                    size={15}
-                    color={colors.greyscale50}
-                  />
-                </View>
-              )}
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={styles.$ownerNameStyle}
-              >
-                {`${item.user.lastName}`}
-              </Text>
-            </View>
-            <View
-              row
-              style={{ alignItems: "center", gap: spacing.spacing4 }}
-            >
-              <RNIcon
-                name="clock"
-                height={moderateScale(18)}
-                width={moderateScale(18)}
-                style={{ color: colors.greyscale300 }}
+    <Link
+      asChild
+      href={{
+        pathname: "/recipe_details",
+        params: {
+          id: id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          recipePhotoUrl: photoUrl,
+          userPhotoUrl: user.photoUrl,
+          userId: user.id,
+        },
+      }}
+    >
+      <Pressable>
+        <RNShadowView style={styles.$containerStyle}>
+          {photoUrl ? (
+            <View style={styles.$imageStyle}>
+              <FastImage
+                source={{
+                  uri: photoUrl,
+                  priority: FastImage.priority.high,
+                  cache: FastImage.cacheControl.web,
+                }}
+                style={{ flex: 1 }}
               />
-              <Text style={styles.$preparationTimeStyle}>{item.preparationTime}</Text>
+            </View>
+          ) : (
+            <View style={styles.$placeholderstyle}>
+              <Ionicons
+                name="image-outline"
+                size={moderateScale(48)}
+                color={colors.greyscale400}
+              />
+            </View>
+          )}
+
+          <View style={styles.$innerContainerStyle}>
+            <Text
+              style={{ ...$sizeStyles.n, fontFamily: "sofia800" }}
+              numberOfLines={2}
+            >
+              {item.title}
+            </Text>
+            <View
+              row
+              style={{ justifyContent: "space-between" }}
+            >
+              <View
+                row
+                style={{ alignItems: "center", gap: spacing.spacing4 }}
+              >
+                {user.photoUrl ? (
+                  <FastImage
+                    source={{ uri: user.photoUrl }}
+                    style={styles.$userImageStyle}
+                  />
+                ) : (
+                  <View style={styles.$userImagePlaceholderStyle}>
+                    <Feather
+                      name="user"
+                      size={15}
+                      color={colors.greyscale50}
+                    />
+                  </View>
+                )}
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={styles.$ownerNameStyle}
+                >
+                  {`${item.user.lastName}`}
+                </Text>
+              </View>
+              <View
+                row
+                style={{ alignItems: "center", gap: spacing.spacing4 }}
+              >
+                <RNIcon
+                  name="clock"
+                  height={moderateScale(18)}
+                  width={moderateScale(18)}
+                  style={{ color: colors.greyscale300 }}
+                />
+                <Text style={styles.$preparationTimeStyle}>{item.preparationTime}</Text>
+              </View>
             </View>
           </View>
-        </View>
-      </RNShadowView>
-    </Pressable>
+        </RNShadowView>
+      </Pressable>
+    </Link>
   );
 };
 
