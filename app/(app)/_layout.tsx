@@ -3,7 +3,7 @@
 // }
 
 import React, { useEffect } from "react";
-import { BackHandler, LogBox, StyleSheet } from "react-native";
+import { Appearance, BackHandler, LogBox, StyleSheet } from "react-native";
 import { colors } from "@/theme/colors";
 import { useFonts } from "expo-font";
 import { fontsToLoad } from "@/theme/typography";
@@ -29,6 +29,8 @@ import NetInfo from "@react-native-community/netinfo";
 LogBox.ignoreLogs([
   "Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead. ",
 ]);
+
+Appearance.setColorScheme("light");
 
 const tokenCache = {
   getToken(key: string) {

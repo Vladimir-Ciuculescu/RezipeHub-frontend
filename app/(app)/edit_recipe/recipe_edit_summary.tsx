@@ -120,7 +120,7 @@ const RecipeEditSummary = () => {
           </RNPressable>
         ),
     });
-  }, [navigation, isLoading]);
+  }, [navigation, isLoading, formikRef]);
 
   const onDeleteIngredient = useCallback((ingredient: IngredientItem) => {
     removeIngredientAction(ingredient);
@@ -452,6 +452,7 @@ const RecipeEditSummary = () => {
                     value={values.title}
                     onChangeText={handleChange("title")}
                     label="Title"
+                    returnKeyType="done"
                     placeholder="Title"
                     wrapperStyle={{ width: "100%" }}
                     touched={touched.title as boolean}
@@ -461,6 +462,7 @@ const RecipeEditSummary = () => {
                     value={values.servings}
                     onChangeText={handleChange("servings")}
                     keyboardType="numeric"
+                    returnKeyType="done"
                     label="Servings"
                     placeholder="Servings"
                     wrapperStyle={{ width: "100%" }}
@@ -508,7 +510,7 @@ const RecipeEditSummary = () => {
                     <Text style={[$sizeStyles.n, styles.$labelStyle]}>Type</Text>
 
                     <RNPickerSelect
-                      doneText="Search"
+                      doneText="Done"
                       placeholder={{ value: "", label: "Select a Type" }}
                       value={values.type}
                       onValueChange={handleChange("type")}
@@ -532,10 +534,13 @@ const RecipeEditSummary = () => {
                     onChangeText={handleChange("preparationTime")}
                     keyboardType="numeric"
                     label="Preparation time (minutes)"
-                    placeholder="10"
+                    placeholder="15"
+                    returnKeyType="done"
                     wrapperStyle={{ width: "100%" }}
                     leftIcon={<RNIcon name="clock" />}
                     rightIcon={<Text style={{ ...$sizeStyles.s }}>min</Text>}
+                    touched={touched.preparationTime as boolean}
+                    error={errors.preparationTime as string}
                   />
                   <RNSegmentedControl
                     borderRadius={16}

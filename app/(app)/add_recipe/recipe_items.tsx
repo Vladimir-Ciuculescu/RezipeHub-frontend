@@ -87,7 +87,9 @@ const RecipeItems = () => {
   };
 
   const onEditIngredient = (ingredient: IngredientItem) => {
-    const payload = { ...ingredient, quantitiy: parseInt(ingredient.quantity as string) };
+    const numericQuantity = parseFloat((ingredient.quantity as string).replace(",", "."));
+
+    const payload = { ...ingredient, quantity: numericQuantity };
 
     router.navigate({
       pathname: "add_recipe/recipe_confirm_edit_ingredient",

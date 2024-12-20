@@ -1,7 +1,7 @@
 import { ACCESS_TOKEN, REFRESH_TOKEN, storage } from "@/storage";
 import axios from "axios";
 
-const baseURL = "http://192.168.1.136:3000";
+const baseURL = "http://192.168.1.146:3000";
 const iosBaseUrL = "http://localhost:3000";
 const andrdoidBaseUrl = "http://192.168.0.1:3000";
 

@@ -92,7 +92,12 @@ const RnInput: React.FC<RNInputProps> = (props) => {
           trailingAccessory={<View style={styles.$trailingAccessoryContainer}>{rightIcon}</View>}
         />
         {touched && error && (
-          <Text style={[$sizeStyles.s, { paddingLeft: spacing.spacing8, color: colors.red500 }]}>
+          <Text
+            style={[
+              $sizeStyles.xs,
+              { paddingLeft: spacing.spacing8, color: colors.red500, fontFamily: "sofia400" },
+            ]}
+          >
             {error}
           </Text>
         )}

@@ -106,7 +106,7 @@ const RecipeEditIngredient = () => {
         getNutritionData(
           parsedIngredient.foodId as string,
           currentMeasure!.uri,
-          parsedIngredient.quantity as string,
+          parsedIngredient.quantity as number,
         );
 
         setMeasures(measureItems);
@@ -163,7 +163,7 @@ const RecipeEditIngredient = () => {
       getNutritionData(
         parsedIngredient.foodId as string,
         currentMeasure!.uri!,
-        parsedIngredient.quantity as string,
+        parsedIngredient.quantity as number,
       );
     }
   }, [measure, pickerDismissed]);
@@ -172,14 +172,14 @@ const RecipeEditIngredient = () => {
     router.back();
   };
 
-  const getNutritionData = async (foodId: string, uri: string, quantity: string) => {
+  const getNutritionData = async (foodId: string, uri: string, quantity: number) => {
     let payload: NutrientsRequestPayload | undefined;
 
     try {
       payload = {
         foodId,
         measureURI: uri,
-        quantity: parseInt(quantity),
+        quantity,
       };
       const data = await FoodService.getNutritionData(payload);
       setNutrientsInfo(data);
@@ -189,14 +189,18 @@ const RecipeEditIngredient = () => {
   };
 
   const submitQuantity = async () => {
+    const numericQuantity = parseFloat(quantity.replace(",", "."));
+
     const currentMeasure = measures.find((unit) => unit.label === measure);
-    getNutritionData(parsedIngredient.foodId as string, currentMeasure!.uri!, quantity);
+    getNutritionData(parsedIngredient.foodId as string, currentMeasure!.uri!, numericQuantity);
   };
 
   const handleSave = () => {
+    const numericQuantity = parseFloat(quantity.replace(",", "."));
+
     const payload = {
       ...parsedIngredient,
-      quantity: parseInt(quantity),
+      quantity: numericQuantity,
       measure,
       calories: nutrientsInfo?.totalNutrients.ENERC_KCAL!.quantity!,
       carbs: nutrientsInfo?.totalNutrients.CHOCDF!.quantity,
@@ -244,11 +248,12 @@ const RecipeEditIngredient = () => {
         </View>
         <RnInput
           onSubmitEditing={submitQuantity}
-          keyboardType="numeric"
+          keyboardType="decimal-pad"
           returnKeyType="done"
           onChangeText={(value: any) => setQuantity(value)}
           autoCapitalize="none"
           value={quantity}
+          blurOnSubmit={quantity !== ""}
           label="Quantity"
           placeholder="Enter quantity"
         />

@@ -175,9 +175,7 @@ const AllFavoriteRecipes = () => {
   };
 
   const renderItem = ({ item, index }: { item: any; index: number }) => {
-    const { id, photoUrl, user } = item;
-
-    if (item === null && layout === "GRID") {
+    if (item === null) {
       return (
         <View
           key={String(index)}
@@ -185,6 +183,8 @@ const AllFavoriteRecipes = () => {
         />
       );
     }
+
+    const { id, photoUrl, user } = item;
 
     return (
       <Link

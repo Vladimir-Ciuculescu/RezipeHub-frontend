@@ -20,6 +20,7 @@ import { View } from "react-native-ui-lib";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
 import useRecipeStore from "@/zustand/useRecipeStore";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
+import RNPressable from "@/components/shared/RNPressable";
 
 interface SearchParams {
   [key: string]: string;
@@ -84,7 +85,7 @@ const RecipeConfirmEditIngredient = () => {
   const [pickerDismissed, setPickerDismissed] = useState(true);
   const [measure, setMeasure] = useState<string>(parsedIngredient.measure);
   const [measures, setMeasures] = useState<Measure[]>([]);
-  const [quantity, setQuantity] = useState(parsedIngredient.quantity.toString());
+  const [quantity, setQuantity] = useState(parsedIngredient.quantity.toString().replace(",", "."));
   const [segmentIndex, setSegmentIndex] = useState(0);
 
   useEffect(() => {
@@ -103,7 +104,7 @@ const RecipeConfirmEditIngredient = () => {
         getNutritionData(
           parsedIngredient.foodId as string,
           currentMeasure!.uri,
-          parsedIngredient.quantity as string,
+          parsedIngredient.quantity,
         );
 
         setMeasures(measureItems);
@@ -119,23 +120,23 @@ const RecipeConfirmEditIngredient = () => {
     const defaultMeasurementObject = {
       foodId: parsedIngredient.foodId,
       measureUri: "http://www.edamam.com/ontologies/edamam.owl#Measure_gram",
-      quantity: "0",
+      quantity: 0,
     };
 
     if (pickerDismissed || Platform.OS === "android") {
       const currentMeasure = measures.find((item) => item.value === measure);
 
-      let payload: { foodId: string; measureUri: string; quantity: string } = {
+      let payload: { foodId: string; measureUri: string; quantity: number } = {
         foodId: "",
         measureUri: "",
-        quantity: "0",
+        quantity: 0,
       };
 
       if (currentMeasure) {
         payload = {
           foodId: parsedIngredient.foodId,
           measureUri: currentMeasure.uri!,
-          quantity: quantity.toString(),
+          quantity: parseFloat(quantity),
         };
       } else {
         payload = defaultMeasurementObject;
@@ -161,14 +162,14 @@ const RecipeConfirmEditIngredient = () => {
 
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={gotBack}>
+        <RNPressable onPress={gotBack}>
           <RNIcon
             height={moderateScale(20)}
             width={moderateScale(20)}
             name="arrow_left"
             color={colors.brandPrimary}
           />
-        </Pressable>
+        </RNPressable>
       ),
 
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Edit ingredient</Text>,
@@ -188,14 +189,14 @@ const RecipeConfirmEditIngredient = () => {
     });
   }, [navigation, quantity, measure, nutrientsInfo, saveEnabled, pickerDismissed]);
 
-  const getNutritionData = async (foodId: string, uri: string, quantity: string) => {
+  const getNutritionData = async (foodId: string, uri: string, quantity: number) => {
     let payload: NutrientsRequestPayload | undefined;
 
     try {
       payload = {
         foodId,
         measureURI: uri,
-        quantity: parseInt(quantity),
+        quantity,
       };
       const data = await FoodService.getNutritionData(payload);
       setNutrientsInfo(data);
@@ -205,14 +206,18 @@ const RecipeConfirmEditIngredient = () => {
   };
 
   const submitQuantity = async () => {
+    const numericQuantity = parseFloat(quantity.replace(",", "."));
+
     const currentMeasure = measures.find((unit) => unit.label === measure);
-    getNutritionData(parsedIngredient.foodId as string, currentMeasure!.uri!, quantity);
+    getNutritionData(parsedIngredient.foodId as string, currentMeasure!.uri!, numericQuantity);
   };
 
   const handleSave = () => {
+    const numericQuantity = parseFloat(quantity.replace(",", "."));
+
     const payload = {
       ...parsedIngredient,
-      quantity: parseInt(quantity),
+      quantity: numericQuantity,
       measure,
       calories: nutrientsInfo?.totalNutrients.ENERC_KCAL!.quantity!,
       carbs: nutrientsInfo?.totalNutrients.CHOCDF!.quantity,
@@ -265,13 +270,14 @@ const RecipeConfirmEditIngredient = () => {
         </View>
         <RnInput
           onSubmitEditing={submitQuantity}
-          keyboardType="numeric"
+          keyboardType="decimal-pad"
           returnKeyType="done"
           onChangeText={(value: any) => setQuantity(value)}
           autoCapitalize="none"
           value={quantity}
           label="Quantity"
           placeholder="Enter quantity"
+          blurOnSubmit={quantity !== ""}
         />
         <View style={styles.$baseWrapperStyle}>
           <Text style={[$sizeStyles.h3, styles.$labelStyle]}>Nutritional information</Text>

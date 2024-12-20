@@ -83,6 +83,7 @@ const RecipeSubmit = () => {
           <RNIcon name="arrow_left" />
         </RNPressable>
       ),
+      headerTitle: () => <Text style={[$sizeStyles.h3]}>Confirm recipe</Text>,
       headerRight: () =>
         isLoading ? (
           <ActivityIndicator color={colors.accent200} />
@@ -94,7 +95,6 @@ const RecipeSubmit = () => {
             />
           </RNPressable>
         ),
-      headerTitle: () => <Text style={[$sizeStyles.h3]}>Confirm recipe</Text>,
     });
   }, [navigation, user, isLoading]);
 
@@ -127,7 +127,11 @@ const RecipeSubmit = () => {
         return {
           name: ingredient.title,
           unit: ingredient.measure,
-          quantity: parseInt(ingredient.quantity as string),
+
+          quantity:
+            typeof ingredient.quantity === "number"
+              ? ingredient.quantity
+              : parseFloat((ingredient.quantity as string).replace(",", ".")),
           calories: ingredient.calories!,
           carbs: ingredient.carbs!,
           proteins: ingredient.proteins!,
@@ -392,7 +396,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: spacing.spacing16,
     gap: spacing.spacing24,
-    backgroundColor: "white",
     overflow: "hidden",
   },
   $titleContainerStyle: {

@@ -180,8 +180,6 @@ const LayoutGridAnimation = () => {
   };
 
   const renderItem = ({ item, index }: { item: any; index: number }) => {
-    const { id, photoUrl, user } = item;
-
     if (item === null && layout === "GRID") {
       return (
         <View
@@ -197,11 +195,8 @@ const LayoutGridAnimation = () => {
         href={{
           pathname: "/recipe_details",
           params: {
-            id: id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            recipePhotoUrl: photoUrl,
-            userPhotoUrl: user.photoUrl,
+            recipePhotoUrl: item.photoUrl,
+            id: item.id,
             userId: user.id,
           },
         }}
@@ -449,9 +444,7 @@ export default LayoutGridAnimation;
 
 const styles = StyleSheet.create({
   $segmentLabelStyle: {
-    // width: 20,
-    // width: 30,
-    //width: horizontalScale(30),
+    width: 20,
     textAlign: "center",
   },
   $segmentStyle: {},
@@ -463,15 +456,13 @@ const styles = StyleSheet.create({
   $contentContainerStyle: {
     alignItems: "center",
     justifyContent: "center",
-    // paddingHorizontal: spacing.spacing24,
-    // paddingTop: spacing.spacing32,
+
     paddingHorizontal: horizontalScale(spacing.spacing24),
     paddingTop: verticalScale(spacing.spacing32),
   },
 
   $gridContainerStyle: {
     width: horizontalScale(GRID_CONTAINER_SIZE),
-    // marginBottom: spacing.spacing16,
     marginBottom: verticalScale(spacing.spacing16),
   },
   $rowContainerStyle: {
@@ -488,7 +479,6 @@ const styles = StyleSheet.create({
   },
 
   $innerGridContainerStyle: {
-    // height: 198,
     height: moderateScale(220),
     padding: spacing.spacing12,
   },
@@ -526,13 +516,11 @@ const styles = StyleSheet.create({
 
   $rowImageStyle: {
     height: "100%",
-    // width: 100,
     width: moderateScale(100),
     borderRadius: spacing.spacing16,
   },
 
   $gridImageStyle: {
-    //height: 88,
     height: "45%",
     width: "100%",
     borderRadius: spacing.spacing16,
@@ -543,7 +531,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     fontFamily: "sofia800",
     color: colors.greyscale500,
-    // paddingRight: spacing.spacing4,
   },
 
   $gridTextStyle: {
@@ -553,8 +540,7 @@ const styles = StyleSheet.create({
 
   $userDetailsBtnStyle: {
     backgroundColor: colors.brandPrimary,
-    // height: 24,
-    // width: 24,
+
     height: horizontalScale(24),
     width: horizontalScale(24),
   },

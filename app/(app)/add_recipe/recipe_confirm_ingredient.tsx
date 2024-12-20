@@ -1,4 +1,4 @@
-import { Text, Pressable, StyleSheet, ScrollView, Platform } from "react-native";
+import { Text, StyleSheet, ScrollView, Platform } from "react-native";
 import React, { FC, useEffect, useLayoutEffect, useState } from "react";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import FoodService from "@/api/services/food.service";
@@ -242,9 +242,10 @@ const RecipeConfirmIngredient = () => {
   };
 
   const submitQuantity = async () => {
+    const numericQuantity = parseFloat(quantity.replace(",", "."));
     const measure = measures.find((item) => item.value === unitMeasure);
 
-    getNutritionData(parsedIngredient.food.foodId, measure!.uri as string, parseInt(quantity));
+    getNutritionData(parsedIngredient.food.foodId, measure!.uri as string, numericQuantity);
   };
 
   return (
@@ -263,7 +264,7 @@ const RecipeConfirmIngredient = () => {
 
             <RNPickerSelect
               placeholder={{}}
-              doneText="Search"
+              doneText="done"
               onOpen={() => setPickerDismissed(false)}
               onClose={() => setPickerDismissed(true)}
               value={unitMeasure}
@@ -286,10 +287,11 @@ const RecipeConfirmIngredient = () => {
           </View>
           <RnInput
             onSubmitEditing={submitQuantity}
-            keyboardType="numeric"
+            keyboardType="decimal-pad"
             returnKeyType="done"
             onChangeText={(value: any) => setQuantity(value)}
             autoCapitalize="none"
+            blurOnSubmit={quantity !== ""}
             value={quantity}
             label="Quantity"
             placeholder="Enter quantity"

@@ -176,13 +176,14 @@ const RecipeEditAddIngredient = () => {
         weight: measure.weight,
       }));
 
+      const numericQuantity = parseFloat(quantity.replace(",", "."));
+
       const payload = {
         foodId: parsedIngredient.food.foodId,
         title: parsedIngredient.food.label,
         measure: unitMeasure,
-        // quantity: quantity,
         uri: currentMeasure!.uri,
-        quantity: parseInt(quantity),
+        quantity: numericQuantity,
         calories: nutrientsInfo?.totalNutrients.ENERC_KCAL!.quantity!,
         carbs: nutrientsInfo?.totalNutrients.CHOCDF!.quantity,
         proteins: nutrientsInfo?.totalNutrients.PROCNT!.quantity,
@@ -207,14 +208,12 @@ const RecipeEditAddIngredient = () => {
     }
   };
 
-  const gotBack = () => {
-    router.back();
-  };
-
   const submitQuantity = async () => {
+    const numericQuantity = parseFloat(quantity.replace(",", "."));
+
     const measure = measures.find((item) => item.value === unitMeasure);
 
-    getNutritionData(parsedIngredient.food.foodId, measure!.uri!, parseInt(quantity));
+    getNutritionData(parsedIngredient.food.foodId, measure!.uri!, numericQuantity);
   };
 
   const segments = [{ label: "Measures" }, { label: "Percentage" }];
@@ -258,11 +257,12 @@ const RecipeEditAddIngredient = () => {
           </View>
           <RnInput
             onSubmitEditing={submitQuantity}
-            keyboardType="numeric"
+            keyboardType="decimal-pad"
             returnKeyType="done"
             onChangeText={(value: any) => setQuantity(value)}
             autoCapitalize="none"
             value={quantity}
+            blurOnSubmit={quantity !== ""}
             label="Quantity"
             placeholder="Enter quantity"
           />

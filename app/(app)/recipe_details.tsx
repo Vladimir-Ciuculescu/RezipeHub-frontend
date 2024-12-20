@@ -562,7 +562,7 @@ const RecipeDetails = () => {
                       style={{
                         height: 1.5,
                         width: "100%",
-                        backgroundColor: colors.greyscale150,
+                        backgroundColor: colors.greyscale300,
                         justifyContent: "center",
                       }}
                     />
@@ -612,7 +612,8 @@ const RecipeDetails = () => {
                       style={{
                         height: 1.5,
                         width: "100%",
-                        backgroundColor: colors.greyscale150,
+                        backgroundColor: colors.greyscale300,
+
                         justifyContent: "center",
                       }}
                     />
