@@ -24,12 +24,16 @@ import { Skeleton } from "moti/skeleton";
 import { No_results, Search_placeholder } from "@/assets/illustrations";
 import RNPressable from "@/components/shared/RNPressable";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
+import { FlashList } from "@shopify/flash-list";
+import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
+import { useIsFocused } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("screen");
 
 const RecipeEditSearchIngredients = () => {
   const navigation = useNavigation();
   const router = useRouter();
+  const isFocused = useIsFocused();
   const [text, setText] = useState("");
   const [debouncedText, setDebouncedText] = useState(text);
   const [results, setResults] = useState([]);
@@ -55,7 +59,7 @@ const RecipeEditSearchIngredients = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedText(text);
-    }, 500);
+    }, 1000);
 
     return () => {
       clearTimeout(timer);
@@ -185,17 +189,26 @@ const RecipeEditSearchIngredients = () => {
               </Text>
             </View>
           ) : (
-            <FlatList
+            <FlashList
+              estimatedItemSize={15}
               showsVerticalScrollIndicator={false}
               data={results}
               keyExtractor={(item, index) => "key" + index}
               contentContainerStyle={styles.$flatListContainerStyle}
+              ItemSeparatorComponent={() => <View style={{ height: spacing.spacing16 }} />}
               renderItem={({ item, index }) => (
-                <IngredientAccordion
-                  flow="update"
-                  key={index}
-                  ingredient={item}
-                />
+                <RNFadeInTransition
+                  direction="top"
+                  animate={isFocused}
+                  key={`notification-event-${index}`}
+                  index={2 + (index + 0.25)}
+                >
+                  <IngredientAccordion
+                    flow="update"
+                    key={index}
+                    ingredient={item}
+                  />
+                </RNFadeInTransition>
               )}
             />
           )}
@@ -214,7 +227,9 @@ const styles = StyleSheet.create({
   },
 
   $innerContainerStyle: {
-    gap: spacing.spacing12,
+    gap: verticalScale(spacing.spacing12),
+    height: "100%",
+    width: "100%",
   },
 
   $seachInputStyle: {
@@ -224,7 +239,7 @@ const styles = StyleSheet.create({
   $flatListContainerStyle: {
     paddingTop: verticalScale(spacing.spacing12),
     paddingBottom: verticalScale(120),
-    gap: verticalScale(spacing.spacing16),
+    // gap: verticalScale(spacing.spacing16),
     paddingHorizontal: horizontalScale(spacing.spacing16),
   },
 });

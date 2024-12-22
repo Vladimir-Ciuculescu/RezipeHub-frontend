@@ -20,11 +20,14 @@ import RNShadowView from "@/components/shared/RNShadowView";
 import FastImage from "react-native-fast-image";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { spacing } from "@/theme/spacing";
-import { MostPopularRecipeResponse } from "@/types/recipe.types";
 import RNPressable from "@/components/shared/RNPressable";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
+import { No_results } from "@/assets/illustrations";
+import { FlashList } from "@shopify/flash-list";
+import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
+import { useIsFocused } from "@react-navigation/native";
 
-const { width } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("screen");
 
 const GRID_CONTAINER_SIZE = width * 0.4;
 const GRID_COLUMNS = 2;
@@ -32,7 +35,7 @@ const GRID_COLUMNS = 2;
 const AllMostPopularRecipes = () => {
   const navigation = useNavigation();
   const user = useUserData();
-  const router = useRouter();
+  const isFocused = useIsFocused();
 
   const goBack = () => {
     navigation.goBack();
@@ -89,105 +92,110 @@ const AllMostPopularRecipes = () => {
     const { id, photoUrl, user } = item;
 
     return (
-      <Link
-        asChild
-        href={{
-          pathname: "/recipe_details",
-          params: {
-            id: id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            recipePhotoUrl: photoUrl,
-            userPhotoUrl: user.photoUrl,
-            userId: user.id,
-          },
-        }}
+      <RNFadeInTransition
+        direction="top"
+        animate={isFocused}
+        key={`notification-event-${index}`}
+        index={2 + (index + 0.25)}
       >
-        <Pressable key={item.id}>
-          <RNShadowView
-            style={[{ marginBottom: verticalScale(spacing.spacing16) }, styles.$rowContainerStyle]}
-          >
-            <View style={[styles.$innerContainerStyle, styles.$innerRowContainerStyle]}>
-              <View style={styles.$innerRowInfoStyle}>
-                <View style={styles.$contentRowStyle}>
-                  {item.photoUrl ? (
-                    <View style={styles.$rowImageStyle}>
-                      <FastImage
-                        source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
-                        style={styles.$flexStyle}
-                      />
-                    </View>
-                  ) : (
-                    <View style={[styles.$rowImageStyle, styles.$placeholderImageStyle]}>
-                      <Ionicons
-                        name="image-outline"
-                        size={moderateScale(40)}
-                        color={colors.greyscale400}
-                      />
-                    </View>
-                  )}
-                  <View style={styles.$contentColumnStyle}>
-                    <Text
-                      numberOfLines={3}
-                      style={styles.$rowTextStyle}
-                      ellipsizeMode="tail"
-                    >
-                      {item.title}
-                    </Text>
-
-                    <View style={styles.$arrowContainerStyle}>
-                      <View style={styles.$userDetailsBtnStyle}>
-                        <RNIcon
-                          name="arrow_right"
-                          color={colors.greyscale50}
-                          height={horizontalScale(12)}
-                          width={horizontalScale(12)}
+        <Link
+          asChild
+          href={{
+            pathname: "/recipe_details",
+            params: {
+              id: id,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              recipePhotoUrl: photoUrl,
+              userPhotoUrl: user.photoUrl,
+              userId: user.id,
+            },
+          }}
+        >
+          <Pressable key={item.id}>
+            <RNShadowView style={[styles.$rowContainerStyle]}>
+              <View style={[styles.$innerContainerStyle, styles.$innerRowContainerStyle]}>
+                <View style={styles.$innerRowInfoStyle}>
+                  <View style={styles.$contentRowStyle}>
+                    {item.photoUrl ? (
+                      <View style={styles.$rowImageStyle}>
+                        <FastImage
+                          source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
+                          style={styles.$flexStyle}
                         />
                       </View>
-                    </View>
+                    ) : (
+                      <View style={[styles.$rowImageStyle, styles.$placeholderImageStyle]}>
+                        <Ionicons
+                          name="image-outline"
+                          size={moderateScale(40)}
+                          color={colors.greyscale400}
+                        />
+                      </View>
+                    )}
+                    <View style={styles.$contentColumnStyle}>
+                      <Text
+                        numberOfLines={3}
+                        style={styles.$rowTextStyle}
+                        ellipsizeMode="tail"
+                      >
+                        {item.title}
+                      </Text>
 
-                    <View style={styles.$footerContainerStyle}>
-                      <View style={styles.$userInfoContainerStyle}>
-                        {item.user.photoUrl ? (
-                          <FastImage
-                            source={{ uri: item.user.photoUrl }}
-                            style={styles.$userAvatarStyle}
+                      <View style={styles.$arrowContainerStyle}>
+                        <View style={styles.$userDetailsBtnStyle}>
+                          <RNIcon
+                            name="arrow_right"
+                            color={colors.greyscale50}
+                            height={horizontalScale(12)}
+                            width={horizontalScale(12)}
                           />
-                        ) : (
-                          <View style={styles.$userAvatarPlaceholderStyle}>
-                            <Feather
-                              name="user"
-                              size={moderateScale(16)}
-                              color={colors.greyscale50}
-                            />
-                          </View>
-                        )}
-                        <Text
-                          numberOfLines={1}
-                          ellipsizeMode="tail"
-                          style={styles.$userNameStyle}
-                        >
-                          {item.user ? item.user.lastName : ""}
-                        </Text>
+                        </View>
                       </View>
 
-                      <View style={styles.$timeContainerStyle}>
-                        <RNIcon
-                          name="clock"
-                          height={moderateScale(16)}
-                          width={moderateScale(16)}
-                          style={styles.$clockIconStyle}
-                        />
-                        <Text style={styles.$timeTextStyle}>{item.preparationTime} Min</Text>
+                      <View style={styles.$footerContainerStyle}>
+                        <View style={styles.$userInfoContainerStyle}>
+                          {item.user.photoUrl ? (
+                            <FastImage
+                              source={{ uri: item.user.photoUrl }}
+                              style={styles.$userAvatarStyle}
+                            />
+                          ) : (
+                            <View style={styles.$userAvatarPlaceholderStyle}>
+                              <Feather
+                                name="user"
+                                size={moderateScale(16)}
+                                color={colors.greyscale50}
+                              />
+                            </View>
+                          )}
+                          <Text
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                            style={styles.$userNameStyle}
+                          >
+                            {item.user ? item.user.lastName : ""}
+                          </Text>
+                        </View>
+
+                        <View style={styles.$timeContainerStyle}>
+                          <RNIcon
+                            name="clock"
+                            height={moderateScale(16)}
+                            width={moderateScale(16)}
+                            style={styles.$clockIconStyle}
+                          />
+                          <Text style={styles.$timeTextStyle}>{item.preparationTime} Min</Text>
+                        </View>
                       </View>
                     </View>
                   </View>
                 </View>
               </View>
-            </View>
-          </RNShadowView>
-        </Pressable>
-      </Link>
+            </RNShadowView>
+          </Pressable>
+        </Link>
+      </RNFadeInTransition>
     );
   };
 
@@ -197,11 +205,13 @@ const AllMostPopularRecipes = () => {
       style={styles.$containerStyle}
     >
       {getItems && getItems.length ? (
-        <FlatList
+        <FlashList
+          estimatedItemSize={15}
           showsVerticalScrollIndicator={false}
           data={getItems}
           renderItem={renderItem}
           contentContainerStyle={styles.$contentContainerStyle}
+          ItemSeparatorComponent={() => <View style={{ height: spacing.spacing16 }} />}
           ListEmptyComponent={<View style={styles.$emptyContainerStyle} />}
           onEndReached={loadNextPage}
           onEndReachedThreshold={0.5}
@@ -214,7 +224,15 @@ const AllMostPopularRecipes = () => {
             ) : null
           }
         />
-      ) : null}
+      ) : (
+        <View style={styles.$noResultsContainerStyle}>
+          <No_results
+            height={height / 3}
+            width={width}
+          />
+          <Text style={styles.$noResultsTextStyle}>No results found !</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -227,10 +245,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.greyscale150,
   },
   $contentContainerStyle: {
-    alignItems: "center",
-    justifyContent: "center",
     paddingHorizontal: spacing.spacing24,
     paddingTop: spacing.spacing32,
+    paddingBottom: 120,
   },
   $headerTitleStyle: {
     ...$sizeStyles.h2,
@@ -363,5 +380,15 @@ const styles = StyleSheet.create({
   $timeTextStyle: {
     ...$sizeStyles.s,
     color: colors.greyscale300,
+  },
+  $noResultsContainerStyle: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: spacing.spacing12,
+  },
+  $noResultsTextStyle: {
+    color: colors.slate900,
+    ...$sizeStyles.h2,
   },
 });

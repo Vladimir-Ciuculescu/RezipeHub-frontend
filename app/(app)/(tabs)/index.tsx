@@ -25,6 +25,8 @@ import RNButton from "@/components/shared/RNButton";
 import { router } from "expo-router";
 import Animated, { FadeIn, FadeInLeft, FadeOut } from "react-native-reanimated";
 import RNFadeInView from "@/components/shared/RNFadeInView";
+import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
+import { useIsFocused } from "@react-navigation/native";
 
 const categories = [
   {
@@ -110,6 +112,8 @@ const Home = () => {
   const loggedStatus = useUserStore.use.isLoggedIn();
 
   const scrollViewRef = useRef<ScrollView>(null);
+
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     if (scrollViewRef.current && loggedStatus) {
@@ -198,115 +202,141 @@ const Home = () => {
         style={{ flex: 1, paddingTop: top }}
         contentContainerStyle={{ gap: spacing.spacing24, paddingBottom: paddingBottom }}
       >
-        <View style={styles.$welcomeContainerstyle}>
-          <View
-            row
-            style={{ gap: spacing.spacing8 }}
-          >
-            {icon}
-            <Text style={styles.$messageStyle}>{message}</Text>
-          </View>
-          <Text style={styles.$userNameStyle}>{`${userData.firstName} ${userData.lastName}`}</Text>
-        </View>
-
-        <View style={{ gap: spacing.spacing16 }}>
-          <View
-            row
-            style={{
-              width: "100%",
-              justifyContent: "space-between",
-              paddingHorizontal: spacing.spacing24,
-            }}
-          >
-            <Text style={styles.$sectionTitleStyle}>Latest</Text>
-
-            <Pressable onPress={goToAllLatestRecipes}>
-              <Text style={styles.$seeAllBtnStyle}>See All</Text>
-            </Pressable>
-          </View>
-          <ScrollView
-            showsHorizontalScrollIndicator={false}
-            horizontal
-            contentContainerStyle={{
-              gap: spacing.spacing24,
-              paddingHorizontal: spacing.spacing24,
-            }}
-          >
-            {areLatestRecipesLoading
-              ? Array(4)
-                  .fill(null)
-                  .map((_: number, key: number) => (
-                    <Skeleton
-                      key={key}
-                      colorMode="light"
-                      width={200}
-                      height={198}
-                    />
-                  ))
-              : latestRecipes.map((item: any, key: number) => (
-                  <LatestRecipeItem
-                    key={key}
-                    item={item}
-                  />
-                ))}
-          </ScrollView>
-        </View>
-
-        <ScrollView
-          contentContainerStyle={{ gap: spacing.spacing24, paddingHorizontal: spacing.spacing24 }}
-          horizontal
-          showsHorizontalScrollIndicator={false}
+        <RNFadeInTransition
+          index={0}
+          animate={isFocused}
+          direction="top"
         >
-          {categories.map((category, key) => {
-            return (
-              <CategoryItem
-                key={key}
-                category={category}
-              />
-            );
-          })}
-        </ScrollView>
-        <View style={{ gap: spacing.spacing16 }}>
-          <View
-            row
-            style={{
-              width: "100%",
-              justifyContent: "space-between",
-              paddingHorizontal: spacing.spacing24,
-            }}
-          >
-            <Text style={styles.$sectionTitleStyle}>Most Popular</Text>
-            <Pressable onPress={goToAllMostPopularRecipes}>
-              <Text style={styles.$seeAllBtnStyle}>See All</Text>
-            </Pressable>
+          <View style={styles.$welcomeContainerstyle}>
+            <View
+              row
+              style={{ gap: spacing.spacing8 }}
+            >
+              {icon}
+              <Text style={styles.$messageStyle}>{message}</Text>
+            </View>
+            <Text
+              style={styles.$userNameStyle}
+            >{`${userData.firstName} ${userData.lastName}`}</Text>
           </View>
-          <ScrollView
-            showsHorizontalScrollIndicator={false}
-            horizontal
-            contentContainerStyle={{
-              gap: spacing.spacing24,
-              paddingHorizontal: spacing.spacing24,
-            }}
-          >
-            {areMostPopularRecipesLoading
-              ? Array(4)
-                  .fill(null)
-                  .map((_: number, key: number) => (
-                    <Skeleton
+        </RNFadeInTransition>
+
+        <RNFadeInTransition
+          index={1}
+          animate={isFocused}
+          direction="left"
+        >
+          <View style={{ gap: spacing.spacing16 }}>
+            <View
+              row
+              style={{
+                width: "100%",
+                justifyContent: "space-between",
+                paddingHorizontal: spacing.spacing24,
+              }}
+            >
+              <Text style={styles.$sectionTitleStyle}>Latest</Text>
+
+              <Pressable onPress={goToAllLatestRecipes}>
+                <Text style={styles.$seeAllBtnStyle}>See All</Text>
+              </Pressable>
+            </View>
+            <ScrollView
+              showsHorizontalScrollIndicator={false}
+              horizontal
+              contentContainerStyle={{
+                gap: spacing.spacing24,
+                paddingHorizontal: spacing.spacing24,
+              }}
+            >
+              {areLatestRecipesLoading
+                ? Array(4)
+                    .fill(null)
+                    .map((_: number, key: number) => (
+                      <Skeleton
+                        key={key}
+                        colorMode="light"
+                        width={200}
+                        height={198}
+                      />
+                    ))
+                : latestRecipes.map((item: any, key: number) => (
+                    <LatestRecipeItem
                       key={key}
-                      colorMode="light"
-                      width={200}
-                      height={198}
+                      item={item}
                     />
-                  ))
-              : mostPopularRecipes.map((item: any, key: number) => (
-                  <MostPopularRecipeItem
-                    item={item}
-                    key={key}
-                  />
-                ))}
+                  ))}
+            </ScrollView>
+          </View>
+        </RNFadeInTransition>
+
+        <RNFadeInTransition
+          index={2}
+          animate={isFocused}
+          direction="top"
+        >
+          <ScrollView
+            contentContainerStyle={{ gap: spacing.spacing24, paddingHorizontal: spacing.spacing24 }}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          >
+            {categories.map((category, key) => {
+              return (
+                <CategoryItem
+                  key={key}
+                  category={category}
+                />
+              );
+            })}
           </ScrollView>
-        </View>
+        </RNFadeInTransition>
+        <RNFadeInTransition
+          index={3}
+          animate={isFocused}
+          direction="left"
+        >
+          <View style={{ gap: spacing.spacing16 }}>
+            <View
+              row
+              style={{
+                width: "100%",
+                justifyContent: "space-between",
+                paddingHorizontal: spacing.spacing24,
+              }}
+            >
+              <Text style={styles.$sectionTitleStyle}>Most Popular</Text>
+              <Pressable onPress={goToAllMostPopularRecipes}>
+                <Text style={styles.$seeAllBtnStyle}>See All</Text>
+              </Pressable>
+            </View>
+            <ScrollView
+              showsHorizontalScrollIndicator={false}
+              horizontal
+              contentContainerStyle={{
+                gap: spacing.spacing24,
+                paddingHorizontal: spacing.spacing24,
+              }}
+            >
+              {areMostPopularRecipesLoading
+                ? Array(4)
+                    .fill(null)
+                    .map((_: number, key: number) => (
+                      <Skeleton
+                        key={key}
+                        colorMode="light"
+                        width={200}
+                        height={198}
+                      />
+                    ))
+                : mostPopularRecipes.map((item: any, key: number) => (
+                    <MostPopularRecipeItem
+                      item={item}
+                      key={key}
+                    />
+                  ))}
+            </ScrollView>
+          </View>
+        </RNFadeInTransition>
       </ScrollView>
     </RNFadeInView>
   );

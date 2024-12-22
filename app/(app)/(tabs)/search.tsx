@@ -4,8 +4,6 @@ import {
   Text,
   StyleSheet,
   Keyboard,
-  FlatList,
-  TouchableOpacity,
   Dimensions,
   ScrollView,
   TouchableWithoutFeedback,
@@ -24,7 +22,6 @@ import {
   BottomSheetScrollView,
   useBottomSheetModal,
 } from "@gorhom/bottom-sheet";
-// import FiltersBottomSheet from "@/components/FiltersBottomSheet";
 import CategoryFilter from "@/components/CategoryFilter";
 import { MAX_CALORIES, MAX_PREPARATION_TIME, RECIPE_TYPES } from "@/constants";
 import useFilterStore from "@/zustand/useFilterStore";
@@ -40,8 +37,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import useUserData from "@/hooks/useUserData";
 import RNPressable from "@/components/shared/RNPressable";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
-import Animated, { FadeInLeft } from "react-native-reanimated";
+import { FlashList } from "@shopify/flash-list";
 import RNFadeInView from "@/components/shared/RNFadeInView";
+import { useIsFocused } from "@react-navigation/native";
+import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -78,6 +77,8 @@ const SearchScreen = () => {
     minPreparationTime: preparationTimeRange[0],
     maxPreparationTime: preparationTimeRange[1],
   });
+
+  const isFocused = useIsFocused();
 
   const filterCopyRef = useRef(filters);
   const initialFilters = useRef(filters);
@@ -310,37 +311,43 @@ const SearchScreen = () => {
     <RNFadeInView>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <SafeAreaView style={styles.container}>
-          <View style={styles.header}>
-            <View style={{ paddingHorizontal: spacing.spacing16 }}>
-              <RNShadowView>
-                <RnInput
-                  onSubmitEditing={applyText}
-                  returnKeyType="search"
-                  placeholder="Search a recipe"
-                  value={filters.text}
-                  onChangeText={(text) => setFilters((prev) => ({ ...prev, text }))}
-                  wrapperStyle={{ width: "100%" }}
-                  containerStyle={{ borderColor: "transparent" }}
-                  leftIcon={
-                    <RNIcon
-                      color={colors.accent200}
-                      name="search"
-                    />
-                  }
-                  rightIcon={
-                    <RNPressable onPress={openBottomSheetFilters}>
+          <RNFadeInTransition
+            index={1}
+            animate={isFocused}
+            direction="top"
+          >
+            <View style={styles.header}>
+              <View style={{ paddingHorizontal: spacing.spacing16 }}>
+                <RNShadowView>
+                  <RnInput
+                    onSubmitEditing={applyText}
+                    returnKeyType="search"
+                    placeholder="Search a recipe"
+                    value={filters.text}
+                    onChangeText={(text) => setFilters((prev) => ({ ...prev, text }))}
+                    wrapperStyle={{ width: "100%" }}
+                    containerStyle={{ borderColor: "transparent" }}
+                    leftIcon={
                       <RNIcon
                         color={colors.accent200}
-                        name={"filter"}
+                        name="search"
                       />
-                    </RNPressable>
-                  }
-                />
-              </RNShadowView>
-            </View>
+                    }
+                    rightIcon={
+                      <RNPressable onPress={openBottomSheetFilters}>
+                        <RNIcon
+                          color={colors.accent200}
+                          name={"filter"}
+                        />
+                      </RNPressable>
+                    }
+                  />
+                </RNShadowView>
+              </View>
 
-            <Filters />
-          </View>
+              <Filters />
+            </View>
+          </RNFadeInTransition>
 
           {isLoading ? (
             <View
@@ -362,19 +369,28 @@ const SearchScreen = () => {
                 ))}
             </View>
           ) : getRecipes && getRecipes.length ? (
-            <FlatList
+            <FlashList
+              data={getRecipes}
+              renderItem={({ item, index }) => (
+                <RNFadeInTransition
+                  direction="top"
+                  animate={isFocused}
+                  key={`notification-event-${index}`}
+                  index={2 + (index + 0.25)}
+                >
+                  <RecipeSearchResultItem recipe={item} />
+                </RNFadeInTransition>
+              )}
+              estimatedItemSize={15}
+              onScroll={() => Keyboard.dismiss()}
+              onEndReached={loadNextPage}
+              ItemSeparatorComponent={() => <View style={{ height: spacing.spacing16 }} />}
               contentContainerStyle={{
                 paddingHorizontal: spacing.spacing24,
                 paddingTop: verticalScale(30),
                 paddingBottom: verticalScale(110),
               }}
-              onScroll={() => Keyboard.dismiss()}
               showsVerticalScrollIndicator={false}
-              ItemSeparatorComponent={() => <View style={{ height: spacing.spacing16 }} />}
-              data={getRecipes}
-              renderItem={({ item }) => <RecipeSearchResultItem recipe={item} />}
-              onEndReached={loadNextPage}
-              scrollEventThrottle={16}
             />
           ) : (
             <View

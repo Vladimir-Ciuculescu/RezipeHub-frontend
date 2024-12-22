@@ -30,6 +30,8 @@ import { $sizeStyles } from "@/theme/typography";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
 import RNPressable from "@/components/shared/RNPressable";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
+import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
+import { useIsFocused } from "@react-navigation/native";
 
 const { width } = Dimensions.get("screen");
 
@@ -39,6 +41,7 @@ const GRID_COLUMNS = 2;
 const LayoutGridAnimation = () => {
   const user = useUserData();
 
+  const isFocused = useIsFocused();
   const [layoutIndex, setLayoutIndex] = useState(0);
   const [layout, setLayout] = useState<"LIST" | "GRID">("LIST");
 
@@ -190,41 +193,158 @@ const LayoutGridAnimation = () => {
     }
 
     return (
-      <Link
-        asChild
-        href={{
-          pathname: "/recipe_details",
-          params: {
-            recipePhotoUrl: item.photoUrl,
-            id: item.id,
-            userId: user.id,
-          },
-        }}
+      <RNFadeInTransition
+        direction="top"
+        animate={isFocused}
+        key={`notification-event-${index}`}
+        index={2 + (index + 0.25)}
       >
-        <Pressable key={item.id}>
-          <RNShadowView
-            style={[styles.$gridContainerStyle, layout === "LIST" && styles.$rowContainerStyle]}
-          >
-            <View
-              style={[
-                styles.$innerContainerStyle,
-                layout === "GRID"
-                  ? styles.$innerGridContainerStyle
-                  : styles.$innerRowContainerStyle,
-              ]}
+        <Link
+          asChild
+          href={{
+            pathname: "/recipe_details",
+            params: {
+              recipePhotoUrl: item.photoUrl,
+              id: item.id,
+              userId: user.id,
+            },
+          }}
+        >
+          <Pressable key={item.id}>
+            <RNShadowView
+              style={[styles.$gridContainerStyle, layout === "LIST" && styles.$rowContainerStyle]}
             >
-              {layout === "LIST" && (
-                <View style={styles.$innerRowInfoStyle}>
-                  <View style={styles.$contentRowStyle}>
+              <View
+                style={[
+                  styles.$innerContainerStyle,
+                  layout === "GRID"
+                    ? styles.$innerGridContainerStyle
+                    : styles.$innerRowContainerStyle,
+                ]}
+              >
+                {layout === "LIST" && (
+                  <View style={styles.$innerRowInfoStyle}>
+                    <View style={styles.$contentRowStyle}>
+                      {item.photoUrl ? (
+                        <FastImage
+                          source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
+                          style={styles.$rowImageStyle}
+                        />
+                      ) : (
+                        <View
+                          style={[
+                            styles.$rowImageStyle,
+                            {
+                              backgroundColor: colors.greyscale200,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            },
+                          ]}
+                        >
+                          <Ionicons
+                            name="image-outline"
+                            size={moderateScale(35)}
+                            color={colors.greyscale400}
+                          />
+                        </View>
+                      )}
+                      <View
+                        style={{
+                          flex: 1,
+                          paddingRight: spacing.spacing4,
+                        }}
+                      >
+                        <Text
+                          numberOfLines={3}
+                          style={styles.$rowTextStyle}
+                        >
+                          {item.title}
+                        </Text>
+
+                        <View
+                          row
+                          style={{
+                            alignItems: "center",
+                            // gap: spacing.spacing8,
+                            gap: horizontalScale(spacing.spacing8),
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <View
+                            row
+                            style={{ alignItems: "flex-start" }}
+                          >
+                            <RNIcon
+                              name="fire"
+                              style={{ color: colors.greyscale300 }}
+                              height={moderateScale(20)}
+                            />
+                            <Text
+                              style={[
+                                {
+                                  ...$sizeStyles.xs,
+                                  fontFamily: "sofia800",
+                                  color: colors.greyscale300,
+                                },
+                              ]}
+                            >
+                              {formatFloatingValue(item.totalCalories)} Kcal
+                            </Text>
+                          </View>
+                          <RNIcon
+                            name="separator"
+                            style={{ color: colors.greyscale300 }}
+                          />
+                          <View
+                            row
+                            style={{ alignItems: "center", gap: 2 }}
+                          >
+                            <RNIcon
+                              name="clock"
+                              style={{ color: colors.greyscale300 }}
+                              height={moderateScale(16)}
+                            />
+                            <Text
+                              style={[
+                                {
+                                  ...$sizeStyles.xs,
+                                  fontFamily: "sofia800",
+                                  color: colors.greyscale300,
+                                },
+                              ]}
+                            >
+                              {item.preparationTime} min
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                    <RNButton
+                      style={styles.$userDetailsBtnStyle}
+                      iconSource={() => (
+                        <RNIcon
+                          name="arrow_right"
+                          color={colors.greyscale50}
+                          // height={12}
+                          // width={12}
+                          height={moderateScale(12)}
+                          width={moderateScale(12)}
+                        />
+                      )}
+                    />
+                  </View>
+                )}
+                {layout === "GRID" && (
+                  <View style={styles.$innerGridInfoStyle}>
                     {item.photoUrl ? (
                       <FastImage
                         source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
-                        style={styles.$rowImageStyle}
+                        style={styles.$gridImageStyle}
                       />
                     ) : (
                       <View
                         style={[
-                          styles.$rowImageStyle,
+                          styles.$gridImageStyle,
                           {
                             backgroundColor: colors.greyscale200,
                             justifyContent: "center",
@@ -234,176 +354,74 @@ const LayoutGridAnimation = () => {
                       >
                         <Ionicons
                           name="image-outline"
-                          size={moderateScale(35)}
+                          size={moderateScale(40)}
                           color={colors.greyscale400}
                         />
                       </View>
                     )}
+                    <Text
+                      numberOfLines={2}
+                      style={styles.$gridTextStyle}
+                      ellipsizeMode="tail"
+                    >
+                      {item.title} with chilli con carne boss awd wad awd
+                    </Text>
                     <View
                       style={{
                         flex: 1,
-                        paddingRight: spacing.spacing4,
+                        justifyContent: "flex-end",
                       }}
                     >
-                      <Text
-                        numberOfLines={3}
-                        style={styles.$rowTextStyle}
-                      >
-                        {item.title}
-                      </Text>
-
                       <View
                         row
-                        style={{
-                          alignItems: "center",
-                          // gap: spacing.spacing8,
-                          gap: horizontalScale(spacing.spacing8),
-                          justifyContent: "space-between",
-                        }}
+                        style={{ alignItems: "center", gap: spacing.spacing2 }}
                       >
-                        <View
-                          row
-                          style={{ alignItems: "flex-start" }}
-                        >
-                          <RNIcon
-                            name="fire"
-                            style={{ color: colors.greyscale300 }}
-                            height={moderateScale(20)}
-                          />
-                          <Text
-                            style={[
-                              {
-                                ...$sizeStyles.xs,
-                                fontFamily: "sofia800",
-                                color: colors.greyscale300,
-                              },
-                            ]}
-                          >
-                            {formatFloatingValue(item.totalCalories)} Kcal
-                          </Text>
-                        </View>
                         <RNIcon
-                          name="separator"
+                          name="fire"
                           style={{ color: colors.greyscale300 }}
+                          height={moderateScale(16)}
                         />
-                        <View
-                          row
-                          style={{ alignItems: "center", gap: 2 }}
+                        <Text
+                          style={[
+                            {
+                              ...$sizeStyles.xs,
+                              fontFamily: "sofia800",
+                              color: colors.greyscale300,
+                            },
+                          ]}
                         >
-                          <RNIcon
-                            name="clock"
-                            style={{ color: colors.greyscale300 }}
-                            height={moderateScale(16)}
-                          />
-                          <Text
-                            style={[
-                              {
-                                ...$sizeStyles.xs,
-                                fontFamily: "sofia800",
-                                color: colors.greyscale300,
-                              },
-                            ]}
-                          >
-                            {item.preparationTime} min
-                          </Text>
-                        </View>
+                          {formatFloatingValue(item.totalCalories)} Kcal
+                        </Text>
+                      </View>
+                      <View
+                        row
+                        style={{ alignItems: "center", gap: spacing.spacing2 }}
+                      >
+                        <RNIcon
+                          name="clock"
+                          style={{ color: colors.greyscale300 }}
+                          height={moderateScale(16)}
+                        />
+                        <Text
+                          style={[
+                            {
+                              ...$sizeStyles.xs,
+                              fontFamily: "sofia800",
+                              color: colors.greyscale300,
+                            },
+                          ]}
+                        >
+                          {item.preparationTime} min
+                        </Text>
                       </View>
                     </View>
                   </View>
-                  <RNButton
-                    style={styles.$userDetailsBtnStyle}
-                    iconSource={() => (
-                      <RNIcon
-                        name="arrow_right"
-                        color={colors.greyscale50}
-                        // height={12}
-                        // width={12}
-                        height={moderateScale(12)}
-                        width={moderateScale(12)}
-                      />
-                    )}
-                  />
-                </View>
-              )}
-              {layout === "GRID" && (
-                <View style={styles.$innerGridInfoStyle}>
-                  {item.photoUrl ? (
-                    <FastImage
-                      source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
-                      style={styles.$gridImageStyle}
-                    />
-                  ) : (
-                    <View
-                      style={[
-                        styles.$gridImageStyle,
-                        {
-                          backgroundColor: colors.greyscale200,
-                          justifyContent: "center",
-                          alignItems: "center",
-                        },
-                      ]}
-                    >
-                      <Ionicons
-                        name="image-outline"
-                        size={moderateScale(40)}
-                        color={colors.greyscale400}
-                      />
-                    </View>
-                  )}
-                  <Text
-                    numberOfLines={2}
-                    style={styles.$gridTextStyle}
-                    ellipsizeMode="tail"
-                  >
-                    {item.title} with chilli con carne boss awd wad awd
-                  </Text>
-                  <View
-                    style={{
-                      flex: 1,
-                      justifyContent: "flex-end",
-                    }}
-                  >
-                    <View
-                      row
-                      style={{ alignItems: "center", gap: spacing.spacing2 }}
-                    >
-                      <RNIcon
-                        name="fire"
-                        style={{ color: colors.greyscale300 }}
-                        height={moderateScale(16)}
-                      />
-                      <Text
-                        style={[
-                          { ...$sizeStyles.xs, fontFamily: "sofia800", color: colors.greyscale300 },
-                        ]}
-                      >
-                        {formatFloatingValue(item.totalCalories)} Kcal
-                      </Text>
-                    </View>
-                    <View
-                      row
-                      style={{ alignItems: "center", gap: spacing.spacing2 }}
-                    >
-                      <RNIcon
-                        name="clock"
-                        style={{ color: colors.greyscale300 }}
-                        height={moderateScale(16)}
-                      />
-                      <Text
-                        style={[
-                          { ...$sizeStyles.xs, fontFamily: "sofia800", color: colors.greyscale300 },
-                        ]}
-                      >
-                        {item.preparationTime} min
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              )}
-            </View>
-          </RNShadowView>
-        </Pressable>
-      </Link>
+                )}
+              </View>
+            </RNShadowView>
+          </Pressable>
+        </Link>
+      </RNFadeInTransition>
     );
   };
 

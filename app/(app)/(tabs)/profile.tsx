@@ -26,6 +26,8 @@ import {
 } from "@/assets/illustrations";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 import RNFadeInView from "@/components/shared/RNFadeInView";
+import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
+import { useIsFocused } from "@react-navigation/native";
 
 const { width: screenWidth, height } = Dimensions.get("window");
 const numColumns = 2;
@@ -35,6 +37,8 @@ const itemSize = (screenWidth - paddingHorizontal - (numColumns - 1) * gap) / nu
 
 const Profile = () => {
   const { top } = useSafeAreaInsets();
+
+  const isFocused = useIsFocused();
 
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -97,186 +101,204 @@ const Profile = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[styles.$scrollViewContentStyle, { paddingBottom }]}
       >
-        <View style={styles.$headerStyle}>
-          <Text style={styles.$titleStyle}>Account</Text>
-          <TouchableOpacity>
-            <Feather
-              name="settings"
-              size={moderateScale(24)}
-              color={colors.slate900}
-            />
-          </TouchableOpacity>
-        </View>
+        <RNFadeInTransition
+          index={0}
+          animate={isFocused}
+          direction="left"
+        >
+          <View style={styles.$headerStyle}>
+            <Text style={styles.$titleStyle}>Account</Text>
+            <TouchableOpacity>
+              <Feather
+                name="settings"
+                size={moderateScale(24)}
+                color={colors.slate900}
+              />
+            </TouchableOpacity>
+          </View>
 
-        <RNShadowView style={styles.$profileContainerStyle}>
-          <View style={styles.$profileDetailsStyle}>
-            {photoUrl ? (
-              <View style={styles.$imageStyle}>
-                <FastImage
-                  source={{
-                    uri: photoUrl,
-                    priority: FastImage.priority.high,
-                    cache: FastImage.cacheControl.web,
-                  }}
-                  style={{ flex: 1 }}
-                />
+          <RNShadowView style={styles.$profileContainerStyle}>
+            <View style={styles.$profileDetailsStyle}>
+              {photoUrl ? (
+                <View style={styles.$imageStyle}>
+                  <FastImage
+                    source={{
+                      uri: photoUrl,
+                      priority: FastImage.priority.high,
+                      cache: FastImage.cacheControl.web,
+                    }}
+                    style={{ flex: 1 }}
+                  />
+                </View>
+              ) : (
+                <View style={styles.$placeholderstyle}>
+                  <Feather
+                    name="user"
+                    size={moderateScale(24)}
+                    color={colors.greyscale50}
+                  />
+                </View>
+              )}
+              <View style={{ flex: 1, justifyContent: "center" }}>
+                <Text style={styles.$userNameStyle}>{firstName + " " + lastName}</Text>
+                {bio && (
+                  <View>
+                    <Text
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                      style={styles.$userDescriptionStyle}
+                    >
+                      {bio}
+                    </Text>
+                  </View>
+                )}
               </View>
-            ) : (
-              <View style={styles.$placeholderstyle}>
-                <Feather
-                  name="user"
-                  size={moderateScale(24)}
+            </View>
+            <RNButton
+              onPress={goToEditProfile}
+              style={styles.$userDetailsBtnStyle}
+              iconSource={() => (
+                <RNIcon
+                  name="arrow_right"
                   color={colors.greyscale50}
                 />
-              </View>
-            )}
-            <View style={{ flex: 1, justifyContent: "center" }}>
-              <Text style={styles.$userNameStyle}>{firstName + " " + lastName}</Text>
-              {bio && (
-                <View>
-                  <Text
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                    style={styles.$userDescriptionStyle}
-                  >
-                    {bio}
+              )}
+            />
+          </RNShadowView>
+        </RNFadeInTransition>
+
+        <RNFadeInTransition
+          index={1}
+          animate={isFocused}
+          direction="top"
+        >
+          <View>
+            <View style={styles.$recipesSectionStyle}>
+              <Text style={styles.$sectionTitleStyle}>My Recipes</Text>
+
+              {recipes && recipes.length === 0 ? (
+                <RNButton
+                  onPress={goToAddRecipe}
+                  iconSource={() => (
+                    <AntDesign
+                      name="plus"
+                      size={moderateScale(24)}
+                      color={colors.accent200}
+                    />
+                  )}
+                  link
+                  labelStyle={styles.$seeAllBtnStyle}
+                />
+              ) : recipes && recipes.length > 4 ? (
+                <RNButton
+                  onPress={goToAllYourRecipes}
+                  link
+                  label="See All"
+                  labelStyle={styles.$seeAllBtnStyle}
+                />
+              ) : null}
+            </View>
+
+            <View style={styles.$recipesContainerStyle}>
+              {areRecipesLoading ? (
+                Array(4)
+                  .fill(null)
+                  .map((_: number, key: number) => (
+                    <Skeleton
+                      key={key}
+                      colorMode="light"
+                      width={itemSize}
+                      height={verticalScale(198)}
+                    />
+                  ))
+              ) : recipes && recipes.length ? (
+                recipes.slice(0, 4).map((item: any, key: number) => (
+                  <PersonalRecipeItem
+                    key={key}
+                    item={item}
+                  />
+                ))
+              ) : (
+                <View
+                  style={{
+                    width: "100%",
+                    gap: verticalScale(spacing.spacing16),
+                    paddingTop: verticalScale(spacing.spacing16),
+                  }}
+                >
+                  <View style={{ width: "100%", height: height / 5 }}>
+                    <No_personal_recipes_placeholder
+                      width="100%"
+                      height="100%"
+                    />
+                  </View>
+                  <Text style={{ color: colors.slate900, ...$sizeStyles.xl, textAlign: "center" }}>
+                    Add your first recipe
                   </Text>
                 </View>
               )}
             </View>
           </View>
-          <RNButton
-            onPress={goToEditProfile}
-            style={styles.$userDetailsBtnStyle}
-            iconSource={() => (
-              <RNIcon
-                name="arrow_right"
-                color={colors.greyscale50}
-              />
-            )}
-          />
-        </RNShadowView>
+        </RNFadeInTransition>
+        <RNFadeInTransition
+          index={2}
+          animate={isFocused}
+          direction="top"
+        >
+          <View>
+            <View style={styles.$recipesSectionStyle}>
+              <Text style={styles.$sectionTitleStyle}>My Favorites</Text>
+              {favorites && favorites.length > 4 && (
+                <RNButton
+                  onPress={goToAllFavoritesRecipes}
+                  link
+                  label="See All"
+                  labelStyle={styles.$seeAllBtnStyle}
+                />
+              )}
+            </View>
 
-        <View>
-          <View style={styles.$recipesSectionStyle}>
-            <Text style={styles.$sectionTitleStyle}>My Recipes</Text>
-
-            {recipes && recipes.length === 0 ? (
-              <RNButton
-                onPress={goToAddRecipe}
-                iconSource={() => (
-                  <AntDesign
-                    name="plus"
-                    size={moderateScale(24)}
-                    color={colors.accent200}
-                  />
-                )}
-                link
-                labelStyle={styles.$seeAllBtnStyle}
-              />
-            ) : recipes && recipes.length > 4 ? (
-              <RNButton
-                onPress={goToAllYourRecipes}
-                link
-                label="See All"
-                labelStyle={styles.$seeAllBtnStyle}
-              />
-            ) : null}
-          </View>
-
-          <View style={styles.$recipesContainerStyle}>
-            {areRecipesLoading ? (
-              Array(4)
-                .fill(null)
-                .map((_: number, key: number) => (
-                  <Skeleton
+            <View style={styles.$recipesContainerStyle}>
+              {areFavoritesLoading ? (
+                Array(4)
+                  .fill(null)
+                  .map((_: number, key: number) => (
+                    <Skeleton
+                      key={key}
+                      colorMode="light"
+                      width={itemSize}
+                      height={verticalScale(198)}
+                    />
+                  ))
+              ) : favorites && favorites.length ? (
+                favorites.slice(0, 4).map((item: any, key: number) => (
+                  <FavoriteRecipeItem
                     key={key}
-                    colorMode="light"
-                    width={itemSize}
-                    height={verticalScale(198)}
+                    item={item}
                   />
                 ))
-            ) : recipes && recipes.length ? (
-              recipes.slice(0, 4).map((item: any, key: number) => (
-                <PersonalRecipeItem
-                  key={key}
-                  item={item}
-                />
-              ))
-            ) : (
-              <View
-                style={{
-                  width: "100%",
-                  gap: verticalScale(spacing.spacing16),
-                  paddingTop: verticalScale(spacing.spacing16),
-                }}
-              >
-                <View style={{ width: "100%", height: height / 5 }}>
-                  <No_personal_recipes_placeholder
-                    width="100%"
-                    height="100%"
-                  />
+              ) : (
+                <View
+                  style={{
+                    width: "100%",
+                    gap: spacing.spacing16,
+                    paddingTop: spacing.spacing16,
+                  }}
+                >
+                  <View style={{ width: "100%", height: height / 5 }}>
+                    <No_favorite_recipes_placeholder
+                      width="100%"
+                      height="100%"
+                    />
+                  </View>
+                  <Text style={{ color: colors.slate900, ...$sizeStyles.xl, textAlign: "center" }}>
+                    You haven’t added any favorites yet
+                  </Text>
                 </View>
-                <Text style={{ color: colors.slate900, ...$sizeStyles.xl, textAlign: "center" }}>
-                  Add your first recipe
-                </Text>
-              </View>
-            )}
+              )}
+            </View>
           </View>
-        </View>
-        <View>
-          <View style={styles.$recipesSectionStyle}>
-            <Text style={styles.$sectionTitleStyle}>My Favorites</Text>
-            {favorites && favorites.length > 4 && (
-              <RNButton
-                onPress={goToAllFavoritesRecipes}
-                link
-                label="See All"
-                labelStyle={styles.$seeAllBtnStyle}
-              />
-            )}
-          </View>
-
-          <View style={styles.$recipesContainerStyle}>
-            {areFavoritesLoading ? (
-              Array(4)
-                .fill(null)
-                .map((_: number, key: number) => (
-                  <Skeleton
-                    key={key}
-                    colorMode="light"
-                    width={itemSize}
-                    height={verticalScale(198)}
-                  />
-                ))
-            ) : favorites && favorites.length ? (
-              favorites.slice(0, 4).map((item: any, key: number) => (
-                <FavoriteRecipeItem
-                  key={key}
-                  item={item}
-                />
-              ))
-            ) : (
-              <View
-                style={{
-                  width: "100%",
-                  gap: spacing.spacing16,
-                  paddingTop: spacing.spacing16,
-                }}
-              >
-                <View style={{ width: "100%", height: height / 5 }}>
-                  <No_favorite_recipes_placeholder
-                    width="100%"
-                    height="100%"
-                  />
-                </View>
-                <Text style={{ color: colors.slate900, ...$sizeStyles.xl, textAlign: "center" }}>
-                  You haven’t added any favorites yet
-                </Text>
-              </View>
-            )}
-          </View>
-        </View>
+        </RNFadeInTransition>
 
         <RNButton
           onPress={logOut}
@@ -320,8 +342,6 @@ const styles = StyleSheet.create({
   $userDescriptionStyle: {
     color: colors.greyscale400,
     ...$sizeStyles.xs,
-    //maxWidth: "90%",
-    // backgroundColor: "red",
   },
 
   $profileContainerStyle: {
