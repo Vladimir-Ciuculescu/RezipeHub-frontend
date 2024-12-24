@@ -469,7 +469,17 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>SDWebImage-SDWebImage.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>SDWebImage.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>SDWebImageAVIFCoder.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -535,6 +545,16 @@
 			<false/>
 		</dict>
 		<key>hermes-engine.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>libavif.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>libdav1d.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

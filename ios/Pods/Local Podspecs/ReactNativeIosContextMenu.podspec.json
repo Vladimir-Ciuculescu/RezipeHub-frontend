@@ -1,6 +1,6 @@
 {
   "name": "ReactNativeIosContextMenu",
-  "version": "2.5.1",
+  "version": "2.5.3",
   "summary": "A react-native component to use context menu's (UIMenu) on iOS 13/14+",
   "description": "A react-native component to use context menu's (UIMenu) on iOS 13/14+",
   "license": "MIT",

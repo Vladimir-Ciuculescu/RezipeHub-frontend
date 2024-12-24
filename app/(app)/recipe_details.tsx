@@ -6,7 +6,6 @@ import {
   ListRenderItem,
   Alert,
   Pressable,
-  Image,
 } from "react-native";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
@@ -32,7 +31,7 @@ import useNutritionalTotals from "@/hooks/useNutritionalTotals";
 import { Ionicons } from "@expo/vector-icons";
 import * as DropdownMenu from "zeego/dropdown-menu";
 import useRecipeStore from "@/zustand/useRecipeStore";
-import FastImage from "react-native-fast-image";
+import { Image } from "expo-image";
 import RNIcon from "@/components/shared/RNIcon";
 import useUserData from "@/hooks/useUserData";
 import LottieView from "lottie-react-native";
@@ -384,7 +383,7 @@ const RecipeDetails = () => {
             />
           </View>
         ) : (
-          <FastImage
+          <Image
             resizeMode="cover"
             source={{ uri: recipePhotoUrl }}
             style={[{ height: heightValue }, styles.$imageBackgroundStyle]}
@@ -575,7 +574,7 @@ const RecipeDetails = () => {
                         style={{ alignItems: "center", gap: spacing.spacing16 }}
                       >
                         {userPhotoUrl ? (
-                          <FastImage
+                          <Image
                             source={{ uri: userPhotoUrl }}
                             style={{
                               height: horizontalScale(48),

@@ -3,7 +3,7 @@ import React, { useLayoutEffect, useMemo } from "react";
 import { Link, useLocalSearchParams, useNavigation } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import { $sizeStyles } from "@/theme/typography";
-import FastImage from "react-native-fast-image";
+import { Image } from "expo-image";
 import { View } from "react-native-ui-lib";
 import { spacing } from "@/theme/spacing";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -118,7 +118,7 @@ const AllByCategoryRecipes = () => {
           row
           style={{ justifyContent: "center", alignItems: "center", gap: spacing.spacing8 }}
         >
-          <FastImage
+          <Image
             style={{ width: horizontalScale(25), height: horizontalScale(25) }}
             source={path}
           />
@@ -179,8 +179,8 @@ const AllByCategoryRecipes = () => {
                   <View style={styles.$contentRowStyle}>
                     {item.photoUrl ? (
                       <View style={styles.$rowImageStyle}>
-                        <FastImage
-                          source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
+                        <Image
+                          source={{ uri: item.photoUrl }}
                           style={styles.$flexStyle}
                         />
                       </View>
@@ -216,7 +216,7 @@ const AllByCategoryRecipes = () => {
                       <View style={styles.$footerContainerStyle}>
                         <View style={styles.$userInfoContainerStyle}>
                           {item.user.photoUrl ? (
-                            <FastImage
+                            <Image
                               source={{ uri: item.user.photoUrl }}
                               style={styles.$userAvatarStyle}
                             />

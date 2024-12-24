@@ -43,7 +43,7 @@ File::File(MMKVPath_t path, OpenFlag flag) : m_path(std::move(path)), m_fd(INVAL
 
 static pair<int, int> OpenFlag2NativeFlag(OpenFlag flag) {
     int access = 0, create = OPEN_EXISTING;
-    if (flag & OpenFlag::ReadWrite) {
+    if ((flag & OpenFlagRWMask) == OpenFlag::ReadWrite) {
         access = (GENERIC_READ | GENERIC_WRITE);
     } else if (flag & OpenFlag::ReadOnly) {
         access |= GENERIC_READ;
@@ -70,10 +70,10 @@ bool File::open() {
     m_fd = CreateFile(m_path.c_str(), pair.first, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr,
                       pair.second, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (!isFileValid()) {
-        MMKVError("fail to open:[%ls], %d", m_path.c_str(), GetLastError());
+        MMKVError("fail to open:[%ls], flag %x, error %d", m_path.c_str(), m_flag, GetLastError());
         return false;
     }
-    MMKVInfo("open fd[%p], %ls", m_fd, m_path.c_str());
+    MMKVInfo("open fd[%p], flag %x, %ls", m_fd, m_flag, m_path.c_str());
     return true;
 }
 
@@ -94,11 +94,12 @@ size_t File::getActualFileSize() const {
     return size;
 }
 
-MemoryFile::MemoryFile(MMKVPath_t path, size_t expectedCapacity)
-    : m_diskFile(std::move(path), OpenFlag::ReadWrite | OpenFlag::Create)
+MemoryFile::MemoryFile(MMKVPath_t path, size_t expectedCapacity, bool readOnly)
+    : m_diskFile(std::move(path), readOnly ? OpenFlag::ReadOnly : (OpenFlag::ReadWrite | OpenFlag::Create))
     , m_fileMapping(nullptr)
     , m_ptr(nullptr)
-    , m_size(0) {
+    , m_size(0)
+    , m_readOnly(readOnly) {
     reloadFromFile(expectedCapacity);
 }
 
@@ -108,6 +109,10 @@ bool MemoryFile::truncate(size_t size) {
     }
     if (size == m_size) {
         return true;
+    }
+    if (m_readOnly) {
+        // truncate readonly file not allow
+        return false;
     }
 
     auto oldSize = m_size;
@@ -151,6 +156,10 @@ bool MemoryFile::truncate(size_t size) {
 }
 
 bool MemoryFile::msync(SyncFlag syncFlag) {
+    if (m_readOnly) {
+        // there's no point in msync() readonly memory
+        return true;
+    }
     if (m_ptr) {
         if (FlushViewOfFile(m_ptr, m_size)) {
             if (syncFlag == MMKV_SYNC) {
@@ -168,14 +177,16 @@ bool MemoryFile::msync(SyncFlag syncFlag) {
 }
 
 bool MemoryFile::mmap() {
-    m_fileMapping = CreateFileMapping(m_diskFile.getFd(), nullptr, PAGE_READWRITE, 0, 0, nullptr);
+    auto mode = m_readOnly ? PAGE_READONLY : PAGE_READWRITE;
+    m_fileMapping = CreateFileMapping(m_diskFile.getFd(), nullptr, mode, 0, 0, nullptr);
     if (!m_fileMapping) {
-        MMKVError("fail to CreateFileMapping [%ls], %d", m_diskFile.m_path.c_str(), GetLastError());
+        MMKVError("fail to CreateFileMapping [%ls], mode %x, %d", m_diskFile.m_path.c_str(), mode, GetLastError());
         return false;
     } else {
-        m_ptr = (char *) MapViewOfFile(m_fileMapping, FILE_MAP_ALL_ACCESS, 0, 0, 0);
+        auto viewMode = m_readOnly ? FILE_MAP_READ : FILE_MAP_ALL_ACCESS;
+        m_ptr = (char *) MapViewOfFile(m_fileMapping, viewMode, 0, 0, 0);
         if (!m_ptr) {
-            MMKVError("fail to mmap [%ls], %d", m_diskFile.m_path.c_str(), GetLastError());
+            MMKVError("fail to mmap [%ls], mode %x, %d", m_diskFile.m_path.c_str(), viewMode, GetLastError());
             return false;
         }
         MMKVInfo("mmap to address [%p], [%ls]", m_ptr, m_diskFile.m_path.c_str());
@@ -199,7 +210,7 @@ void MemoryFile::reloadFromFile(size_t expectedCapacity) {
         mmkv::getFileSize(m_diskFile.getFd(), m_size);
         size_t expectedSize = std::max<size_t>(DEFAULT_MMAP_SIZE, roundUp<size_t>(expectedCapacity, DEFAULT_MMAP_SIZE));
         // round up to (n * pagesize)
-        if (m_size < expectedSize || (m_size % DEFAULT_MMAP_SIZE != 0)) {
+        if (!m_readOnly && (m_size < expectedSize || (m_size % DEFAULT_MMAP_SIZE != 0))) {
             size_t roundSize = ((m_size / DEFAULT_MMAP_SIZE) + 1) * DEFAULT_MMAP_SIZE;;
             roundSize = std::max<size_t>(expectedSize, roundSize);
             truncate(roundSize);
@@ -282,7 +293,7 @@ MMBuffer *readWholeFile(const MMKVPath_t &nsFilePath) {
             buffer = new MMBuffer(static_cast<size_t>(fileLength));
             SetFilePointer(fd, 0, 0, FILE_BEGIN);
             DWORD readSize = 0;
-            if (ReadFile(fd, buffer->getPtr(), fileLength, &readSize, nullptr)) {
+            if (ReadFile(fd, buffer->getPtr(), (DWORD) fileLength, &readSize, nullptr)) {
                 //fileSize = readSize;
             } else {
                 MMKVWarning("fail to read %ls: %d", nsFilePath.c_str(), GetLastError());
@@ -323,7 +334,7 @@ bool zeroFillFile(MMKVFileHandle_t file, size_t startPos, size_t size) {
     }
     if (size > 0) {
         DWORD bytesWritten = 0;
-        if (!WriteFile(file, zeros, size, &bytesWritten, nullptr)) {
+        if (!WriteFile(file, zeros, (DWORD) size, &bytesWritten, nullptr)) {
             MMKVError("fail to write fd[%p], error:%d", file, GetLastError());
             return false;
         }
@@ -407,7 +418,7 @@ bool copyFileContent(const MMKVPath_t &srcPath, MMKVFileHandle_t dstFD, bool nee
     // the Win32 platform don't have sendfile()/fcopyfile() equivalent, do it the hard way
     while (true) {
         DWORD sizeRead = 0;
-        if (!ReadFile(srcFile.getFd(), buffer, bufferSize, &sizeRead, nullptr)) {
+        if (!ReadFile(srcFile.getFd(), buffer, (DWORD) bufferSize, &sizeRead, nullptr)) {
             MMKVError("fail to read %ls: %d", srcPath.c_str(), GetLastError());
             goto errorOut;
         }

@@ -17,7 +17,7 @@ import { useUserRecipes } from "@/hooks/recipes.hooks";
 import PersonalRecipeItem from "@/components/PersonalRecipeItem";
 import { useFavorites } from "@/hooks/favorites.hooks";
 import FavoriteRecipeItem from "@/components/FavoriteRecipeItem";
-import FastImage from "react-native-fast-image";
+import { Image } from "expo-image";
 import useUserStore from "@/zustand/useUserStore";
 import { AntDesign } from "@expo/vector-icons";
 import {
@@ -121,11 +121,9 @@ const Profile = () => {
             <View style={styles.$profileDetailsStyle}>
               {photoUrl ? (
                 <View style={styles.$imageStyle}>
-                  <FastImage
+                  <Image
                     source={{
                       uri: photoUrl,
-                      priority: FastImage.priority.high,
-                      cache: FastImage.cacheControl.web,
                     }}
                     style={{ flex: 1 }}
                   />
@@ -399,7 +397,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    gap: verticalScale(spacing.spacing16),
+    // gap: verticalScale(spacing.spacing16),
+    //gap: spacing.spacing16,
+    gap: verticalScale(12),
   },
 });
 

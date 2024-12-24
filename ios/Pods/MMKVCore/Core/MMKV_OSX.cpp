@@ -35,13 +35,14 @@
 #    include <sys/utsname.h>
 #    include <sys/sysctl.h>
 #    include "MMKV_OSX.h"
+#    include "MMKVLog.h"
 
 #    ifdef MMKV_IOS
 #        include <sys/mman.h>
 #    endif
 
 #    ifdef __aarch64__
-#        include "Checksum.h"
+#        include "crc32/Checksum.h"
 #    endif
 
 #    if __has_feature(objc_arc)
@@ -93,6 +94,9 @@ bool MLockPtr::isMLockPtrEnabled = true;
 static bool g_isInBackground = false;
 
 void MMKV::setIsInBackground(bool isInBackground) {
+    if (!g_instanceLock) {
+        return;
+    }
     SCOPED_LOCK(g_instanceLock);
 
     g_isInBackground = isInBackground;
@@ -100,6 +104,9 @@ void MMKV::setIsInBackground(bool isInBackground) {
 }
 
 bool MMKV::isInBackground() {
+    if (!g_instanceLock) {
+        return true;
+    }
     SCOPED_LOCK(g_instanceLock);
 
     return g_isInBackground;
@@ -139,7 +146,7 @@ bool MMKV::set(NSObject<NSCoding> *__unsafe_unretained obj, MMKVKey_t key, uint3
     if (tmpData) {
         // delay write the size needed for encoding tmpData
         // avoid memory copying
-        if (likely(!m_enableKeyExpire)) {
+        if (mmkv_likely(!m_enableKeyExpire)) {
             return setDataForKey(MMBuffer(tmpData, MMBufferNoCopy), key, true);
         } else {
             MMBuffer data(tmpData, MMBufferNoCopy);
@@ -167,7 +174,7 @@ bool MMKV::set(NSObject<NSCoding> *__unsafe_unretained obj, MMKVKey_t key, uint3
                     return false;
                 }
                 if (archived.length > 0) {
-                    if (likely(!m_enableKeyExpire)) {
+                    if (mmkv_likely(!m_enableKeyExpire)) {
                         return setDataForKey(MMBuffer(archived, MMBufferNoCopy), key);
                     } else {
                         MMBuffer data(archived, MMBufferNoCopy);
@@ -259,35 +266,21 @@ MMKV::appendDataWithKey(const MMBuffer &data, MMKVKey_t key, const KeyValueHolde
 
 pair<bool, KeyValueHolder>
 MMKV::overrideDataWithKey(const MMBuffer &data, MMKVKey_t key, const KeyValueHolderCrypt &kvHolder, bool isDataHolder) {
-    size_t old_actualSize = m_actualSize;
-    size_t old_position = m_output->getPosition();
-    // only one key in dict, do not append, just rewrite from beginning
-    m_actualSize = 0;
-    m_output->setPosition(0);
-
-    auto m_tmpDic = m_dic;
-    auto m_tmpDicCrypt = m_dicCrypt;
-    if (m_crypter) {
-        m_dicCrypt = new MMKVMapCrypt();
-    } else {
-        m_dic = new MMKVMap();
+    if (kvHolder.type != KeyValueHolderType_Offset) {
+        return overrideDataWithKey(data, key, isDataHolder);
     }
+    SCOPED_LOCK(m_exclusiveProcessLock);
 
-    auto ret = appendDataWithKey(data, key, kvHolder, isDataHolder);
-    if (!ret.first) {
-        // rollback
-        m_actualSize = old_actualSize;
-        m_output->setPosition(old_position);
-    }
+    uint32_t keyLength = kvHolder.keySize;
+    // size needed to encode the key
+    size_t rawKeySize = keyLength + pbRawVarint32Size(keyLength);
 
-    if (m_crypter) {
-        delete m_dicCrypt;
-        m_dicCrypt = m_tmpDicCrypt;
-    } else {
-        delete m_dic;
-        m_dic = m_tmpDic;
-    }
-    return ret;
+    auto basePtr = (uint8_t *) m_file->getMemory() + Fixed32Size;
+    MMBuffer keyData(rawKeySize);
+    AESCrypt decrypter = m_crypter->cloneWithStatus(kvHolder.cryptStatus);
+    decrypter.decrypt(basePtr + kvHolder.offset, keyData.getPtr(), rawKeySize);
+
+    return doOverrideDataWithKey(data, keyData, isDataHolder, keyLength);
 }
 #    endif
 
@@ -295,7 +288,7 @@ NSArray *MMKV::allKeys(bool filterExpire) {
     SCOPED_LOCK(m_lock);
     checkLoadData();
 
-    if (unlikely(filterExpire && m_enableKeyExpire)) {
+    if (mmkv_unlikely(filterExpire && m_enableKeyExpire)) {
         SCOPED_LOCK(m_exclusiveProcessLock);
         fullWriteback(nullptr, true);
     }
@@ -313,9 +306,13 @@ NSArray *MMKV::allKeys(bool filterExpire) {
     return keys;
 }
 
-void MMKV::removeValuesForKeys(NSArray *arrKeys) {
+bool MMKV::removeValuesForKeys(NSArray *arrKeys) {
+    if (isReadOnly()) {
+        MMKVWarning("[%s] file readonly", m_mmapID.c_str());
+        return false;
+    }
     if (arrKeys.count == 0) {
-        return;
+        return true;
     }
     if (arrKeys.count == 1) {
         return removeValueForKey(arrKeys[0]);
@@ -350,8 +347,9 @@ void MMKV::removeValuesForKeys(NSArray *arrKeys) {
     if (deleteCount > 0) {
         m_hasFullWriteback = false;
 
-        fullWriteback();
+        return fullWriteback();
     }
+    return true;
 }
 
 void MMKV::enumerateKeys(EnumerateBlock block) {

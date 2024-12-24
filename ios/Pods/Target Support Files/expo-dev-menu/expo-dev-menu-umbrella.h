@@ -11,8 +11,8 @@
 #endif
 
 #import "EXDevMenu/DevClientAppDelegate.h"
+#import "EXDevMenu/DevClientNoOpLoadingView.h"
 #import "EXDevMenu/DevClientRootViewFactory.h"
-#import "EXDevMenu/DevMenuLoadingView.h"
 #import "EXDevMenu/DevMenuRCTBridge.h"
 #import "EXDevMenu/DevMenuRCTDevSettings.h"
 #import "EXDevMenu/DevMenuRootView.h"

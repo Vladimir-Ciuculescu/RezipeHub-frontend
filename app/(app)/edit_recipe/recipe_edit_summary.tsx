@@ -17,7 +17,7 @@ import RnInput from "@/components/shared/RNInput";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import { spacing } from "@/theme/spacing";
 import { colors } from "@/theme/colors";
-import FastImage from "react-native-fast-image";
+import { Image } from "expo-image";
 import RNButton from "@/components/shared/RNButton";
 import { Formik, FormikProps, FormikValues } from "formik";
 import { recipeEditSchema } from "@/yup/recipe-edit.schema";
@@ -497,11 +497,10 @@ const RecipeEditSummary = () => {
                         />
                       </Pressable>
 
-                      <FastImage
+                      <Image
                         style={styles.$imageStyle}
                         source={{
                           uri: values.photoUrl,
-                          priority: FastImage.priority.normal,
                         }}
                       />
                     </View>

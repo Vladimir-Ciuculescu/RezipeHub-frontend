@@ -21,7 +21,6 @@
 #import "EXDevLauncher/RCTCxxBridge+Private.h"
 #import "EXDevLauncher/EXDevLauncherManifestParser.h"
 #import "EXDevLauncher/EXDevLauncherDeferredRCTRootView.h"
-#import "EXDevLauncher/EXDevLauncherLoadingView.h"
 #import "EXDevLauncher/EXDevLauncherRCTBridge.h"
 #import "EXDevLauncher/EXDevLauncherRCTDevSettings.h"
 #import "EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"

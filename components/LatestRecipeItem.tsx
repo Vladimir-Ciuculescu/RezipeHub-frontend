@@ -1,7 +1,7 @@
 import { Text, Pressable, StyleSheet } from "react-native";
 import React from "react";
 import RNShadowView from "./shared/RNShadowView";
-import FastImage from "react-native-fast-image";
+import { Image } from "expo-image";
 import { spacing } from "@/theme/spacing";
 import RNIcon from "./shared/RNIcon";
 import { Feather, Ionicons } from "@expo/vector-icons";
@@ -38,11 +38,9 @@ const LatestRecipeItem: React.FC<LatestRecipeItemProps> = ({ item }) => {
         <RNShadowView style={styles.$containerStyle}>
           {photoUrl ? (
             <View style={styles.$imageStyle}>
-              <FastImage
+              <Image
                 source={{
                   uri: photoUrl,
-                  priority: FastImage.priority.high,
-                  cache: FastImage.cacheControl.web,
                 }}
                 style={{ flex: 1 }}
               />
@@ -75,7 +73,7 @@ const LatestRecipeItem: React.FC<LatestRecipeItemProps> = ({ item }) => {
                 style={{ alignItems: "center", gap: spacing.spacing4 }}
               >
                 {user.photoUrl ? (
-                  <FastImage
+                  <Image
                     source={{ uri: user.photoUrl }}
                     style={styles.$userImageStyle}
                   />

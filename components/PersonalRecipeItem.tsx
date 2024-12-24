@@ -5,7 +5,7 @@ import { Link, useRouter } from "expo-router";
 import useUserData from "@/hooks/useUserData";
 import RNShadowView from "./shared/RNShadowView";
 import { spacing } from "@/theme/spacing";
-import FastImage from "react-native-fast-image";
+import { Image } from "expo-image";
 import { colors } from "@/theme/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
@@ -65,11 +65,9 @@ const PersonalRecipeItem: React.FC<PersonalRecipeItemProps> = ({ item }) => {
         <RNShadowView style={styles.$recipeItemStyle}>
           <View style={styles.$containerStyle}>
             {photoUrl ? (
-              <FastImage
+              <Image
                 source={{
                   uri: photoUrl,
-                  priority: FastImage.priority.high,
-                  cache: FastImage.cacheControl.web,
                 }}
                 onLoad={handleImageLoad}
                 style={styles.$imageStyle}

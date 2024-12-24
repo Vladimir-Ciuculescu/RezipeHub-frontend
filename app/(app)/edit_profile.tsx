@@ -15,7 +15,7 @@ import { useActionSheet } from "@expo/react-native-action-sheet";
 import * as ImagePicker from "expo-image-picker";
 import RNButton from "@/components/shared/RNButton";
 import { useEditProfileMutation } from "@/hooks/users.hooks";
-import FastImage from "react-native-fast-image";
+import { Image } from "expo-image";
 import { UpdateProfileRequest } from "@/types/user.types";
 import { handleError } from "@/api/handleError";
 import { ACCESS_TOKEN, storage } from "@/storage";
@@ -185,7 +185,7 @@ const EditProfile = () => {
               <View style={{ width: "100%", alignItems: "center" }}>
                 <View style={styles.$imageContainerStyle}>
                   {values.photoUrl ? (
-                    <FastImage
+                    <Image
                       source={{ uri: values.photoUrl }}
                       style={styles.$imageStyle}
                     />

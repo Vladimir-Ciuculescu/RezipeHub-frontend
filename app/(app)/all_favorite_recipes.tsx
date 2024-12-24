@@ -26,7 +26,7 @@ import { spacing } from "@/theme/spacing";
 import { View } from "react-native-ui-lib";
 import RNShadowView from "@/components/shared/RNShadowView";
 import RNButton from "@/components/shared/RNButton";
-import FastImage from "react-native-fast-image";
+import { Image } from "expo-image";
 import RNPressable from "@/components/shared/RNPressable";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
@@ -228,8 +228,8 @@ const AllFavoriteRecipes = () => {
                     <View style={styles.$contentRowStyle}>
                       {item.photoUrl ? (
                         <View style={styles.$rowImageStyle}>
-                          <FastImage
-                            source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
+                          <Image
+                            source={{ uri: item.photoUrl }}
                             style={{ flex: 1 }}
                           />
                           <View style={styles.$hearRowContainerstyle}>
@@ -278,7 +278,7 @@ const AllFavoriteRecipes = () => {
                           }}
                         >
                           {item.user.photoUrl ? (
-                            <FastImage
+                            <Image
                               source={{ uri: item.user.photoUrl }}
                               style={styles.userImageStyle}
                             />
@@ -325,8 +325,8 @@ const AllFavoriteRecipes = () => {
                   <View style={styles.$innerGridInfoStyle}>
                     {item.photoUrl ? (
                       <View style={styles.$gridImageStyle}>
-                        <FastImage
-                          source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
+                        <Image
+                          source={{ uri: item.photoUrl }}
                           style={{ flex: 1 }}
                         />
                         <View style={styles.$heartGridStyle}>
@@ -370,7 +370,7 @@ const AllFavoriteRecipes = () => {
                         }}
                       >
                         {item.user.photoUrl ? (
-                          <FastImage
+                          <Image
                             source={{ uri: item.user.photoUrl }}
                             style={styles.$userImageGridStyle}
                           />

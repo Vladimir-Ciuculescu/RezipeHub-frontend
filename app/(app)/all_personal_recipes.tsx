@@ -21,7 +21,7 @@ import RNShadowView from "@/components/shared/RNShadowView";
 import { colors } from "@/theme/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { spacing } from "@/theme/spacing";
-import FastImage from "react-native-fast-image";
+import { Image } from "expo-image";
 import RNSegmentedControl from "@/components/shared/RnSegmentedControl";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import RecipeService from "@/api/services/recipe.service";
@@ -226,8 +226,8 @@ const LayoutGridAnimation = () => {
                   <View style={styles.$innerRowInfoStyle}>
                     <View style={styles.$contentRowStyle}>
                       {item.photoUrl ? (
-                        <FastImage
-                          source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
+                        <Image
+                          source={{ uri: item.photoUrl }}
                           style={styles.$rowImageStyle}
                         />
                       ) : (
@@ -337,8 +337,8 @@ const LayoutGridAnimation = () => {
                 {layout === "GRID" && (
                   <View style={styles.$innerGridInfoStyle}>
                     {item.photoUrl ? (
-                      <FastImage
-                        source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
+                      <Image
+                        source={{ uri: item.photoUrl }}
                         style={styles.$gridImageStyle}
                       />
                     ) : (

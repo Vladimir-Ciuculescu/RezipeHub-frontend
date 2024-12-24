@@ -4,7 +4,7 @@ import RNButton from "./shared/RNButton";
 import RNIcon from "./shared/RNIcon";
 import { colors } from "@/theme/colors";
 import RNShadowView from "./shared/RNShadowView";
-import FastImage from "react-native-fast-image";
+import { Image } from "expo-image";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { $sizeStyles } from "@/theme/typography";
 import { spacing } from "@/theme/spacing";
@@ -41,8 +41,8 @@ const RecipeSearchResultItem: React.FC<RecipeSearchResultItemProps> = ({ recipe 
             <View style={styles.$innerRowInfoStyle}>
               <View style={styles.$contentRowStyle}>
                 {recipe.photoUrl ? (
-                  <FastImage
-                    source={{ uri: recipe.photoUrl, cache: FastImage.cacheControl.web }}
+                  <Image
+                    source={{ uri: recipe.photoUrl }}
                     style={styles.$rowImageStyle}
                   />
                 ) : (
@@ -81,7 +81,7 @@ const RecipeSearchResultItem: React.FC<RecipeSearchResultItemProps> = ({ recipe 
                     style={{ flexDirection: "row", alignItems: "center", gap: spacing.spacing8 }}
                   >
                     {user.photoUrl ? (
-                      <FastImage
+                      <Image
                         source={{
                           uri: user.photoUrl,
                         }}

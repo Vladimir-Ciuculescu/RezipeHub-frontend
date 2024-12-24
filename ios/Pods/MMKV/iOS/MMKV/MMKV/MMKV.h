@@ -25,8 +25,10 @@
 #endif
 
 typedef NS_ENUM(NSUInteger, MMKVMode) {
-    MMKVSingleProcess = 0x1,
-    MMKVMultiProcess = 0x2,
+    MMKVSingleProcess = 1 << 0,
+    MMKVMultiProcess = 1 << 1,
+    // 2~4 are preserved for Android
+    MMKVReadOnly = 1 << 5,
 };
 
 typedef NS_ENUM(UInt32, MMKVExpireDuration) {
@@ -87,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable instancetype)mmkvWithID:(NSString *)mmapID expectedCapacity:(size_t)expectedCapacity NS_SWIFT_NAME(init(mmapID:expectedCapacity:));
 
 /// @param mmapID any unique ID (com.tencent.xin.pay, etc), if you want a per-user mmkv, you could merge user-id within mmapID
-/// @param mode MMKVMultiProcess for multi-process MMKV
+/// @param mode MMKVReadOnly for readonly MMKV, MMKVMultiProcess for multi-process MMKV
 + (nullable instancetype)mmkvWithID:(NSString *)mmapID mode:(MMKVMode)mode NS_SWIFT_NAME(init(mmapID:mode:));
 
 /// @param mmapID any unique ID (com.tencent.xin.pay, etc), if you want a per-user mmkv, you could merge user-id within mmapID
@@ -101,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// @param mmapID any unique ID (com.tencent.xin.pay, etc), if you want a per-user mmkv, you could merge user-id within mmapID
 /// @param cryptKey 16 bytes at most
-/// @param mode MMKVMultiProcess for multi-process MMKV
+/// @param mode MMKVReadOnly for readonly MMKV, MMKVMultiProcess for multi-process MMKV
 + (nullable instancetype)mmkvWithID:(NSString *)mmapID cryptKey:(nullable NSData *)cryptKey mode:(MMKVMode)mode NS_SWIFT_NAME(init(mmapID:cryptKey:mode:));
 
 /// @param mmapID any unique ID (com.tencent.xin.pay, etc), if you want a per-user mmkv, you could merge user-id within mmapID
@@ -133,6 +135,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param expectedCapacity the file size you expected when opening or creating file
 + (nullable instancetype)mmkvWithID:(NSString *)mmapID cryptKey:(nullable NSData *)cryptKey rootPath:(nullable NSString *)rootPath expectedCapacity:(size_t)expectedCapacity NS_SWIFT_NAME(init(mmapID:cryptKey:rootPath:expectedCapacity:));
 
+/// @param mmapID any unique ID (com.tencent.xin.pay, etc), if you want a per-user mmkv, you could merge user-id within mmapID
+/// @param cryptKey 16 bytes at most
+/// @param rootPath custom path of the file, `NSDocumentDirectory/mmkv` by default
+/// @param mode MMKVReadOnly for readonly MMKV, MMKVMultiProcess for multi-process MMKV
+/// @param expectedCapacity the file size you expected when opening or creating file
++ (instancetype)mmkvWithID:(NSString *)mmapID cryptKey:(nullable NSData *)cryptKey rootPath:(nullable NSString *)rootPath mode:(MMKVMode)mode expectedCapacity:(size_t)expectedCapacity NS_SWIFT_NAME(init(mmapID:cryptKey:rootPath:mode:expectedCapacity:));
 
 /// you can call this on applicationWillTerminate, it's totally fine if you don't call
 + (void)onAppTerminate;
@@ -311,6 +319,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)sync;
 - (void)async;
 
+- (BOOL)isMultiProcess;
+
+- (BOOL)isReadOnly;
+
 /// backup one MMKV instance to dstDir
 /// @param mmapID the MMKV ID to backup
 /// @param rootPath the customize root path of the MMKV, if null then backup from the root dir of MMKV
@@ -366,9 +378,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setLogLevel:(MMKVLogLevel)logLevel __attribute__((deprecated("use +initializeMMKV:logLevel: instead", "initializeMMKV:nil logLevel")));
 
 /// Migrate NSUserDefault data to MMKV
-/// @param userDaults the NSUserDefaults instance to be imported
+/// @param userDaults the dictionaryRepresentation of the NSUserDefaults instance to be imported
 /// @return imported count of key-values
-- (uint32_t)migrateFromUserDefaults:(NSUserDefaults *)userDaults NS_SWIFT_NAME(migrateFrom(userDefaults:));
+- (uint64_t)migrateFromUserDefaultsDictionaryRepresentation:(NSDictionary *)userDaults NS_SWIFT_NAME(migrateFrom(userDefaultsDictionaryRepresentation:));
+// use [MMKV migrateFromUserDefaultsDictionaryRepresentation:] instead
+- (uint32_t)migrateFromUserDefaults:(id) userDaults NS_SWIFT_NAME(migrateFrom(userDefaults:)) NS_UNAVAILABLE;
 
 /// detect if the MMKV file is valid or not
 /// Note: Don't use this to check the existence of the instance, the return value is undefined if the file was never created.
@@ -379,6 +393,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// Note: the existing instance (if any) will be closed & destroyed
 + (BOOL)removeStorage:(NSString *)mmapID rootPath:(nullable NSString *)path NS_SWIFT_NAME(removeStorage(for:rootPath:));
 + (BOOL)removeStorage:(NSString *)mmapID mode:(MMKVMode)mode NS_SWIFT_NAME(removeStorage(for:mode:));
+
+// protection from potential misuse
++ (void)initialize NS_UNAVAILABLE;
 
 NS_ASSUME_NONNULL_END
 

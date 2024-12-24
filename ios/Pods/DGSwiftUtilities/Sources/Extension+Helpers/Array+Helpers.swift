@@ -24,7 +24,14 @@ public extension Array {
   }
   
   func index(forCyclicIndex cyclicIndex: Index) -> Index {
-    return cyclicIndex % self.count;
+    if cyclicIndex >= 0 {
+      return cyclicIndex % self.count;
+    };
+    
+    let rawIndex = (cyclicIndex % self.count);
+    let indexReversed = rawIndex + self.count;
+    
+    return indexReversed % self.count;
   };
   
   func first<T>(whereType type: T.Type) -> T? {
@@ -57,8 +64,74 @@ public extension Array {
     return (match.offset, match.element);
   };
   
+
+  /// Reverse search, starting from last -> first
+  /// Returns element that matches `predicate`
+  ///
+  func indexedLast(
+    where predicate: (_ index: Index, _ value: Element) -> Bool
+  ) -> IndexElementPair? {
+    let match = self.enumerated().reversed().first {
+      predicate($0.offset, $0.element);
+    };
+    
+    guard let match = match else {
+      return nil;
+    };
+    
+    return (match.offset, match.element);
+  };
+  
   mutating func unwrapThenAppend(_ element: Element?) {
     guard let element = element else { return };
     self.append(element);
+  };
+  
+  /// Create a new array containing a specific number of elements from the 
+  /// beginning of the original array. 
+  ///
+  /// Ensures that the requested count doesn't exceed the array's length.
+  ///
+  /// - Parameter count: 
+  ///   The number of elements to include in the new array.
+  ///
+  /// - Returns: 
+  ///   A new array containing the specified number of elements from the 
+  ///   beginning of the original array.
+  ///
+  /// **Note:** 
+  /// If `count` is greater than the array's length, the entire array is 
+  /// returned.
+  ///
+  /// If `count` is negative, an empty array is returned.
+  ///
+  func prefixCopy(count: Int) -> Self {
+    let countAdj = count.clamped(min: 0, max: self.count);
+    let slice = self.prefix(countAdj);
+    
+    return .init(slice);
+  };
+  
+  /// Creates a new array containing the specified number of elements from the 
+  /// end of the original array.
+  ///
+  /// - Parameter count: 
+  ///   The number of elements to include in the new array.
+  ///
+  /// - Returns: 
+  ///   A new array containing the specified number of elements from the end of 
+  ///   the original array.
+  ///
+  /// **Note:** 
+  /// If `count` is greater than the array's length, the entire array is 
+  /// returned.
+  ///
+  /// If `count` is negative, an empty array is returned.
+  ///
+  func suffixCopy(count: Int) -> Self {
+    let countAdj = count.clamped(min: 0, max: self.count);
+    let slice = self.suffix(countAdj);
+    
+    return .init(slice);
   };
 };

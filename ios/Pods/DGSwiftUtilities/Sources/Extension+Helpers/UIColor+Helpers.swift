@@ -305,8 +305,8 @@ public extension UIColor {
     return nil;
   };
   
-  // MARK: - Static Members
-  // ----------------------
+  // MARK: - Computed Properties
+  // ---------------------------
   
   var rgba: (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat) {
     var red  : CGFloat = 0;
@@ -316,6 +316,11 @@ public extension UIColor {
     
     getRed(&red, green: &green, blue: &blue, alpha: &alpha);
     return (red, green, blue, alpha);
+  };
+  
+  var components: [CGFloat] {
+    let rgba = self.rgba;
+    return [rgba.r, rgba.g, rgba.b, rgba.a];
   };
   
   // MARK: - Init
@@ -427,10 +432,17 @@ public extension UIColor {
   
   /// create color from `DynamicColorIOS` dictionary
   convenience init?(dynamicDict: NSDictionary) {
-    guard let dict        = dynamicDict["dynamic"] as? NSDictionary,
-          let stringDark  = dict["dark" ] as? String,
+    var dict = dynamicDict;
+    
+    if let innerDict = dynamicDict["dynamic"] as? NSDictionary {
+      dict = innerDict;
+    };
+  
+    guard let stringDark  = dict["dark" ] as? String,
           let stringLight = dict["light"] as? String
-    else { return nil };
+    else {
+      return nil;
+    };
     
     if #available(iOS 13.0, *),
        let colorDark  = UIColor(cssColor: stringDark ),
@@ -450,5 +462,4 @@ public extension UIColor {
       self.init(cssColor: stringLight);
     };
   };
-
 };

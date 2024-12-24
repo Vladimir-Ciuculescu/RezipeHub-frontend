@@ -24,10 +24,10 @@
 #import <MMKVCore/ScopedLock.hpp>
 #import <MMKVCore/ThreadLock.h>
 #import <MMKVCore/openssl_md5.h>
-
+#import <TargetConditionals.h>
 #import "AutoCleanInfo.hpp"
 
-#if defined(MMKV_IOS) && !defined(MMKV_IOS_EXTENSION)
+#if defined(MMKV_IOS) && !defined(MMKV_IOS_EXTENSION) && !defined(TARGET_OS_MACCATALYST)
 #import <UIKit/UIKit.h>
 #endif
 
@@ -44,7 +44,7 @@ static bool g_isLogRedirecting = false;
 static NSString *g_basePath = nil;
 static NSString *g_groupPath = nil;
 
-#if defined(MMKV_IOS) && !defined(MMKV_IOS_EXTENSION)
+#if defined(MMKV_IOS) && !defined(MMKV_IOS_EXTENSION) && !defined(TARGET_OS_MACCATALYST)
 static BOOL g_isRunningInAppExtension = NO;
 #endif
 
@@ -104,7 +104,7 @@ static BOOL g_hasCalledInitializeMMKV = NO;
         mmkv::MMKV::registerContentChangeHandler(ContentChangeHandler);
     }
 
-#if defined(MMKV_IOS) && !defined(MMKV_IOS_EXTENSION)
+#if defined(MMKV_IOS) && !defined(MMKV_IOS_EXTENSION) && !defined(TARGET_OS_MACCATALYST)
     // just in case someone forget to set the MMKV_IOS_EXTENSION macro
     if ([[[NSBundle mainBundle] bundlePath] hasSuffix:@".appex"]) {
         g_isRunningInAppExtension = YES;
@@ -166,7 +166,7 @@ static BOOL g_hasCalledInitializeMMKV = NO;
 }
 
 + (instancetype)mmkvWithID:(NSString *)mmapID mode:(MMKVMode)mode {
-    auto rootPath = (mode == MMKVSingleProcess) ? nil : g_groupPath;
+    auto rootPath = (mode & MMKVSingleProcess) ? nil : g_groupPath;
     return [MMKV mmkvWithID:mmapID cryptKey:nil rootPath:rootPath mode:mode];
 }
 
@@ -179,7 +179,7 @@ static BOOL g_hasCalledInitializeMMKV = NO;
 }
 
 + (instancetype)mmkvWithID:(NSString *)mmapID cryptKey:(nullable NSData *)cryptKey mode:(MMKVMode)mode {
-    auto rootPath = (mode == MMKVSingleProcess) ? nil : g_groupPath;
+    auto rootPath = (mode & MMKVSingleProcess) ? nil : g_groupPath;
     return [MMKV mmkvWithID:mmapID cryptKey:cryptKey rootPath:rootPath mode:mode];
 }
 
@@ -219,7 +219,7 @@ static BOOL g_hasCalledInitializeMMKV = NO;
 
     SCOPED_LOCK(g_lock);
 
-    if (mode == MMKVMultiProcess) {
+    if (mode & MMKVMultiProcess) {
         if (!rootPath) {
             rootPath = g_groupPath;
         }
@@ -262,7 +262,7 @@ static BOOL g_hasCalledInitializeMMKV = NO;
         }
         m_mmapID = [[NSString alloc] initWithUTF8String:m_mmkv->mmapID().c_str()];
 
-#if defined(MMKV_IOS) && !defined(MMKV_IOS_EXTENSION)
+#if defined(MMKV_IOS) && !defined(MMKV_IOS_EXTENSION) && !defined(TARGET_OS_MACCATALYST)
         if (!g_isRunningInAppExtension) {
             [[NSNotificationCenter defaultCenter] addObserver:self
                                                      selector:@selector(onMemoryWarning)
@@ -296,7 +296,7 @@ static BOOL g_hasCalledInitializeMMKV = NO;
 
 #pragma mark - Application state
 
-#if defined(MMKV_IOS) && !defined(MMKV_IOS_EXTENSION)
+#if defined(MMKV_IOS) && !defined(MMKV_IOS_EXTENSION) && !defined(TARGET_OS_MACCATALYST)
 - (void)onMemoryWarning {
     MMKVInfo("cleaning on memory warning %@", m_mmapID);
 
@@ -718,6 +718,14 @@ static BOOL g_hasCalledInitializeMMKV = NO;
     m_mmkv->checkContentChanged();
 }
 
+- (BOOL)isMultiProcess {
+    return m_mmkv->isMultiProcess();
+}
+
+- (BOOL)isReadOnly {
+    return m_mmkv->isReadOnly();
+}
+
 + (void)onAppTerminate {
     g_lock->lock();
 
@@ -790,7 +798,7 @@ static AutoCleanInfoQueue_t g_cleanQueue = {};
 + (void)tryAutoCleanUpInstances {
     SCOPED_LOCK(g_lock);
 
-#ifdef MMKV_IOS
+#if defined(MMKV_IOS) && !defined(TARGET_OS_MACCATALYST)
     if (mmkv::MMKV::isInBackground()) {
         MMKVInfo("don't cleanup in background, might just wakeup from suspend");
         return;
@@ -1036,14 +1044,13 @@ static NSString *md5(NSString *value) {
     mmkv::MMKV::setLogLevel((mmkv::MMKVLogLevel) logLevel);
 }
 
-- (uint32_t)migrateFromUserDefaults:(NSUserDefaults *)userDaults {
+- (uint64_t)migrateFromUserDefaultsDictionaryRepresentation:(NSDictionary *)dic {
+    if (dic.count <= 0) {
+        MMKVInfo("migrate data fail, dic is nil or empty");
+        return 0;
+    }
     @autoreleasepool {
-        NSDictionary *dic = [userDaults dictionaryRepresentation];
-        if (dic.count <= 0) {
-            MMKVInfo("migrate data fail, userDaults is nil or empty");
-            return 0;
-        }
-        __block uint32_t count = 0;
+        __block uint64_t count = 0;
         [dic enumerateKeysAndObjectsUsingBlock:^(id _Nonnull key, id _Nonnull obj, BOOL *_Nonnull stop) {
             if ([key isKindOfClass:[NSString class]]) {
                 NSString *stringKey = key;
@@ -1124,7 +1131,7 @@ static NSString *md5(NSString *value) {
 }
 
 + (BOOL)removeStorage:(NSString *)mmapID mode:(MMKVMode)mode NS_SWIFT_NAME(removeStorage(for:mode:)) {
-    auto rootPath = (mode == MMKVSingleProcess) ? nil : g_groupPath;
+    auto rootPath = (mode & MMKVSingleProcess) ? nil : g_groupPath;
     return [self removeStorage:mmapID rootPath:rootPath];
 }
 

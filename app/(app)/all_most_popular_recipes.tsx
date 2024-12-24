@@ -17,7 +17,7 @@ import useUserData from "@/hooks/useUserData";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "@/theme/colors";
 import RNShadowView from "@/components/shared/RNShadowView";
-import FastImage from "react-native-fast-image";
+import { Image } from "expo-image";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { spacing } from "@/theme/spacing";
 import RNPressable from "@/components/shared/RNPressable";
@@ -119,8 +119,8 @@ const AllMostPopularRecipes = () => {
                   <View style={styles.$contentRowStyle}>
                     {item.photoUrl ? (
                       <View style={styles.$rowImageStyle}>
-                        <FastImage
-                          source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
+                        <Image
+                          source={{ uri: item.photoUrl }}
                           style={styles.$flexStyle}
                         />
                       </View>
@@ -156,7 +156,7 @@ const AllMostPopularRecipes = () => {
                       <View style={styles.$footerContainerStyle}>
                         <View style={styles.$userInfoContainerStyle}>
                           {item.user.photoUrl ? (
-                            <FastImage
+                            <Image
                               source={{ uri: item.user.photoUrl }}
                               style={styles.$userAvatarStyle}
                             />

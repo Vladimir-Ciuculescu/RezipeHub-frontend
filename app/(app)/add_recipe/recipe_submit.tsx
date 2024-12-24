@@ -28,7 +28,7 @@ import IngredientsList from "@/components/IngredientsList";
 import StepsList from "@/components/StepsList";
 import useUserData from "@/hooks/useUserData";
 import Entypo from "@expo/vector-icons/Entypo";
-import FastImage from "react-native-fast-image";
+import { Image } from "expo-image";
 import { useQueryClient } from "@tanstack/react-query";
 import NutritionalInfo from "@/components/NutritionalInfo";
 import useNutritionalTotals from "@/hooks/useNutritionalTotals";
@@ -259,11 +259,10 @@ const RecipeSubmit = () => {
       <View style={styles.$headerContainerStyle}>
         <Animated.View style={[styles.$headerStyle, headerAnimatedStyle]}>
           {photo ? (
-            <FastImage
+            <Image
               style={styles.$imageContainerstyle}
               source={{
                 uri: photo,
-                priority: FastImage.priority.normal,
               }}
             />
           ) : (

@@ -182,4 +182,12 @@ public extension UIView {
     guard let match = match else { return nil };
     return match as? T;
   };
+  
+  func displayNow(){
+    self.setNeedsLayout();
+    self.layer.setNeedsDisplay();
+    
+    self.layer.displayIfNeeded();
+    self.layoutIfNeeded();
+  };
 };

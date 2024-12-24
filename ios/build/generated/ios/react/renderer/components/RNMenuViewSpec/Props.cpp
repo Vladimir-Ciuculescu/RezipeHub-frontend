@@ -21,7 +21,10 @@ MenuViewProps::MenuViewProps(
 
     actions(convertRawProp(context, rawProps, "actions", sourceProps.actions, {})),
     actionsHash(convertRawProp(context, rawProps, "actionsHash", sourceProps.actionsHash, {})),
-    title(convertRawProp(context, rawProps, "title", sourceProps.title, {}))
+    title(convertRawProp(context, rawProps, "title", sourceProps.title, {})),
+    themeVariant(convertRawProp(context, rawProps, "themeVariant", sourceProps.themeVariant, {})),
+    shouldOpenOnLongPress(convertRawProp(context, rawProps, "shouldOpenOnLongPress", sourceProps.shouldOpenOnLongPress, {false})),
+    hitSlop(convertRawProp(context, rawProps, "hitSlop", sourceProps.hitSlop, {}))
       {}
 
 } // namespace facebook::react

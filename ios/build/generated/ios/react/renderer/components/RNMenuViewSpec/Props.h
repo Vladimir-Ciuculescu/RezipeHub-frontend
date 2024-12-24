@@ -208,6 +208,38 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   }
 }
 
+
+struct MenuViewHitSlopStruct {
+  int top{0};
+  int bottom{0};
+  int left{0};
+  int right{0};
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, MenuViewHitSlopStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_top = map.find("top");
+  if (tmp_top != map.end()) {
+    fromRawValue(context, tmp_top->second, result.top);
+  }
+  auto tmp_bottom = map.find("bottom");
+  if (tmp_bottom != map.end()) {
+    fromRawValue(context, tmp_bottom->second, result.bottom);
+  }
+  auto tmp_left = map.find("left");
+  if (tmp_left != map.end()) {
+    fromRawValue(context, tmp_left->second, result.left);
+  }
+  auto tmp_right = map.find("right");
+  if (tmp_right != map.end()) {
+    fromRawValue(context, tmp_right->second, result.right);
+  }
+}
+
+static inline std::string toString(const MenuViewHitSlopStruct &value) {
+  return "[Object MenuViewHitSlopStruct]";
+}
 class MenuViewProps final : public ViewProps {
  public:
   MenuViewProps() = default;
@@ -218,6 +250,9 @@ class MenuViewProps final : public ViewProps {
   std::vector<MenuViewActionsStruct> actions{};
   std::string actionsHash{};
   std::string title{};
+  std::string themeVariant{};
+  bool shouldOpenOnLongPress{false};
+  MenuViewHitSlopStruct hitSlop{};
 };
 
 } // namespace facebook::react

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Link, useRouter } from "expo-router";
 import RNShadowView from "./shared/RNShadowView";
 import { spacing } from "@/theme/spacing";
-import FastImage from "react-native-fast-image";
+import { Image } from "expo-image";
 import { colors } from "@/theme/colors";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import RNIcon from "./shared/RNIcon";
@@ -62,11 +62,9 @@ const FavoriteRecipeItem: React.FC<FavoriteRecipeItemProps> = ({ item }) => {
           <View style={styles.$containerStyle}>
             {photoUrl ? (
               <View style={styles.$imageStyle}>
-                <FastImage
+                <Image
                   source={{
                     uri: photoUrl,
-                    priority: FastImage.priority.high,
-                    cache: FastImage.cacheControl.web,
                   }}
                   onLoad={handleImageLoad}
                   style={{ flex: 1 }}
@@ -96,7 +94,7 @@ const FavoriteRecipeItem: React.FC<FavoriteRecipeItemProps> = ({ item }) => {
               </Text>
               <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.spacing8 }}>
                 {user.photoUrl ? (
-                  <FastImage
+                  <Image
                     source={{ uri: user.photoUrl }}
                     style={styles.$userImageStyle}
                   />

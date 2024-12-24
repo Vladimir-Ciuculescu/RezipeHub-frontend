@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 import React from "react";
 import { spacing } from "@/theme/spacing";
 import { colors } from "@/theme/colors";
-import FastImage from "react-native-fast-image";
+import { Image } from "expo-image";
 import { $sizeStyles } from "@/theme/typography";
 import { useRouter } from "expo-router";
 import { moderateScale } from "@/utils/scale";
@@ -22,7 +22,7 @@ const CategoryItem: React.FC<any> = ({ category }) => {
         onPress={goToAllByCategoryRecipes}
         style={styles.$containerStyle}
       >
-        <FastImage
+        <Image
           source={path}
           style={{ width: moderateScale(30), height: moderateScale(30) }}
         />

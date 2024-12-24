@@ -3,5 +3,6 @@
   "vscode_custom_css.imports": [
     "file:///Users/ciuculescuvladimir/custom-vscode.css",
     "file:///Users/ciuculescuvladimir/vscode-script.js"
-  ]
+  ],
+  "git.ignoreLimitWarning": true
 }

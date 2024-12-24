@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-fast-image/ios/FastImage/FFFastImageViewManager.h
+../../../../../node_modules/@d11/react-native-fast-image/ios/FastImage/FFFastImageViewManager.h

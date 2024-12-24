@@ -15,7 +15,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import useRecipeStore from "@/zustand/useRecipeStore";
-import FastImage from "react-native-fast-image";
+import { Image } from "expo-image";
 import RNPickerSelect from "react-native-picker-select";
 import { RecipeType } from "@/types/enums";
 import { RECIPE_TYPES } from "@/constants";
@@ -217,12 +217,11 @@ function RecipeTitle() {
                     />
                   </Pressable>
 
-                  <FastImage
+                  <Image
                     style={styles.$imageStyle}
                     source={{
                       // uri: photo,
                       uri: values.photoUrl,
-                      priority: FastImage.priority.normal,
                     }}
                   />
                 </View>
@@ -325,7 +324,7 @@ function RecipeTitle() {
             />
           </Pressable>
 
-          <FastImage
+          <Image
             style={styles.$imageStyle}
             source={{
               uri: photo,

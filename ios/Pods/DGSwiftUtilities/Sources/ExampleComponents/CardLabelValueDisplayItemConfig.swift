@@ -49,6 +49,7 @@ public enum CardLabelValueDisplayItemConfig {
   );
   
   case multiLineRow(
+    spacing: CGFloat = 8,
     label: [AttributedStringConfig],
     value: [AttributedStringConfig]
   );
@@ -157,14 +158,14 @@ public enum CardLabelValueDisplayItemConfig {
         rootHStack.addArrangedSubview(imageView);
         return rootHStack;
         
-      case let .multiLineRow(labelConfigRaw, valueConfigRaw):
+      case let .multiLineRow(spacing, labelConfigRaw, valueConfigRaw):
         let rootVStack = {
           let stack = UIStackView();
           
           stack.axis = .vertical;
           //stack.distribution = .equalSpacing;
           stack.alignment = .leading;
-          stack.spacing = 8;
+          stack.spacing = spacing;
                     
           return stack;
         }();

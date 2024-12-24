@@ -45,7 +45,7 @@ public enum InterpolationEasing {
   case easeOutExpo;
   case easeInOutExpo;
   
-  func compute(percentValue: CGFloat) -> CGFloat {
+  public func compute(percentValue: CGFloat) -> CGFloat {
     switch self {
       case .linear:
         return percentValue;

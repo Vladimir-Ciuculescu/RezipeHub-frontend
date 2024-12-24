@@ -12,7 +12,7 @@ import { No_results } from "@/assets/illustrations";
 import { spacing } from "@/theme/spacing";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import RNShadowView from "@/components/shared/RNShadowView";
-import FastImage from "react-native-fast-image";
+import { Image } from "expo-image";
 import { View } from "react-native-ui-lib";
 import { LatestRecipeResponse } from "@/types/recipe.types";
 import { Link, router } from "expo-router";
@@ -116,8 +116,8 @@ const AllLatestRecipes = () => {
                   <View style={styles.$contentRowStyle}>
                     {item.photoUrl ? (
                       <View style={styles.$rowImageStyle}>
-                        <FastImage
-                          source={{ uri: item.photoUrl, cache: FastImage.cacheControl.web }}
+                        <Image
+                          source={{ uri: item.photoUrl }}
                           style={styles.$flexStyle}
                         />
                       </View>
@@ -153,7 +153,7 @@ const AllLatestRecipes = () => {
                       <View style={styles.$footerContainerStyle}>
                         <View style={styles.$userInfoContainerStyle}>
                           {item.user.photoUrl ? (
-                            <FastImage
+                            <Image
                               source={{ uri: item.user.photoUrl }}
                               style={styles.$userAvatarStyle}
                             />

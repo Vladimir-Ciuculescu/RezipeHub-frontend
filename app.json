@@ -22,7 +22,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.yumhub.test"
+      "package": "com.yumhub.test",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",

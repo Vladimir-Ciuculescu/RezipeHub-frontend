@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "037A1F31C4D99F52EC9FD2008FEC481C"
-               BuildableName = "ReactNativeUiLib"
+               BuildableName = "libReactNativeUiLib.a"
                BlueprintName = "ReactNativeUiLib"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>

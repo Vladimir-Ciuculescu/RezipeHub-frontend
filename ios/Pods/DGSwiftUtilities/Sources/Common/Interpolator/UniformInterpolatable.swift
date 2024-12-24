@@ -22,6 +22,9 @@ public protocol UniformInterpolatable: Comparable {
   ) -> InterpolatableValue;
 };
 
+// MARK: - UniformInterpolatable+StaticHelpers
+// -------------------------------------------
+
 public extension UniformInterpolatable {
 
   typealias Interpolator = DGSwiftUtilities.Interpolator<Self>;
@@ -110,3 +113,21 @@ public extension UniformInterpolatable {
   };
 };
 
+// MARK: - UniformInterpolatable+BinaryFloatingPointHelpers
+// --------------------------------------------------------
+
+public extension UniformInterpolatable where InterpolatableValue: BinaryFloatingPoint {
+    
+  static func inverseLerp(
+    valueStart: InterpolatableValue,
+    valueEnd: InterpolatableValue,
+    interpolatedValue: InterpolatableValue
+  ) -> InterpolatableValue {
+  
+    InterpolatorHelpers.inverseLerp(
+      valueStart: valueStart,
+      valueEnd: valueEnd,
+      interpolatedValue: interpolatedValue
+    );
+  };
+};
