@@ -25,12 +25,22 @@ import TokenService from "@/api/services/token.service";
 import Toast from "react-native-toast-message";
 import toastConfig from "@/components/Toast/ToastConfing";
 import NetInfo from "@react-native-community/netinfo";
+import { NotificationProvider } from "@/context/NotificationContext";
+import * as Notifications from "expo-notifications";
 
 LogBox.ignoreLogs([
   "Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead. ",
 ]);
 
 Appearance.setColorScheme("light");
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 const tokenCache = {
   getToken(key: string) {
@@ -285,23 +295,25 @@ const Layout = () => {
 
   return (
     <GestureHandlerRootView>
-      <QueryClientProvider client={queryClient}>
-        <ActionSheetProvider>
-          <BottomSheetModalProvider>
-            <ClerkProvider
-              publishableKey={clerkKey!}
-              tokenCache={tokenCache as any}
-            >
-              <AppLayout />
-              <Toast
-                visibilityTime={2000}
-                config={toastConfig}
-                position="bottom"
-              />
-            </ClerkProvider>
-          </BottomSheetModalProvider>
-        </ActionSheetProvider>
-      </QueryClientProvider>
+      <NotificationProvider>
+        <QueryClientProvider client={queryClient}>
+          <ActionSheetProvider>
+            <BottomSheetModalProvider>
+              <ClerkProvider
+                publishableKey={clerkKey!}
+                tokenCache={tokenCache as any}
+              >
+                <AppLayout />
+                <Toast
+                  visibilityTime={2000}
+                  config={toastConfig}
+                  position="bottom"
+                />
+              </ClerkProvider>
+            </BottomSheetModalProvider>
+          </ActionSheetProvider>
+        </QueryClientProvider>
+      </NotificationProvider>
     </GestureHandlerRootView>
   );
 };
