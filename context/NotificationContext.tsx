@@ -1,5 +1,6 @@
 import { registerForPushNotificationsAsync } from "@/utils/registerForPushNotificationsAsync";
 import * as Notifications from "expo-notifications";
+import { router } from "expo-router";
 import { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
 
 interface NotificationContextType {
@@ -33,27 +34,41 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const responseListener = useRef<any>();
 
   useEffect(() => {
+    const redirect = (notification: Notifications.Notification) => {
+      const url = notification.request.content.data.url;
+
+      if (url) {
+        router.push(url);
+      }
+    };
+
+    let isMounted = true;
+
     registerForPushNotificationsAsync().then(
       (token) => {
-        console.log("TOKEN:", token);
         setExpoPushToken(token as any);
       },
       (error) => setError(error),
     );
+
+    Notifications.getLastNotificationResponseAsync().then((response) => {
+      if (!isMounted || !response?.notification) {
+        return;
+      }
+      redirect(response?.notification);
+    });
 
     notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
       setNotification(notification);
     });
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
-      console.log(
-        "Notification Response",
-        JSON.stringify(response, null, 2),
-        JSON.stringify(response.notification.request.content.data, null, 2),
-      );
+      redirect(response.notification);
     });
 
     return () => {
+      isMounted = false;
+
       if (notificationListener.current) {
         Notifications.removeNotificationSubscription(notificationListener.current);
       }

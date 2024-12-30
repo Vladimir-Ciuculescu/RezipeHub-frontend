@@ -38,11 +38,15 @@ export interface SocialLoginUserRequest {
   email: string;
   firstName: string;
   lastName: string;
+  deviceToken: string;
+  platform: string;
 }
 
 export interface LoginUserRequest {
   email: string;
   password: string;
+  deviceToken: string;
+  platform: string;
 }
 
 export interface LoginUserResponse {

@@ -12,7 +12,7 @@ import {
 
 import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { Feather, Ionicons, Octicons } from "@expo/vector-icons";
-import _, { size } from "lodash";
+import _ from "lodash";
 import { Link, useNavigation, useRouter } from "expo-router";
 import RNButton from "@/components/shared/RNButton";
 import { View } from "react-native-ui-lib";
@@ -265,7 +265,6 @@ const LayoutGridAnimation = () => {
                           row
                           style={{
                             alignItems: "center",
-                            // gap: spacing.spacing8,
                             gap: horizontalScale(spacing.spacing8),
                             justifyContent: "space-between",
                           }}
@@ -325,8 +324,6 @@ const LayoutGridAnimation = () => {
                         <RNIcon
                           name="arrow_right"
                           color={colors.greyscale50}
-                          // height={12}
-                          // width={12}
                           height={moderateScale(12)}
                           width={moderateScale(12)}
                         />

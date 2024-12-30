@@ -1,6 +1,6 @@
 import RNButton from "@/components/shared/RNButton";
 import { useEffect, useLayoutEffect, useState } from "react";
-import { Alert, Pressable, StyleSheet, View } from "react-native";
+import { Alert, Platform, Pressable, StyleSheet, View } from "react-native";
 import { Text } from "react-native-ui-lib";
 import { useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
@@ -32,6 +32,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import * as Linking from "expo-linking";
 import TokenService from "@/api/services/token.service";
 import { horizontalScale, verticalScale } from "@/utils/scale";
+import { useNotification } from "@/context/NotificationContext";
+import * as Device from "expo-device";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -42,6 +44,8 @@ enum Strategy {
 
 const Login = () => {
   useWarmUpBrowser();
+
+  const { expoPushToken } = useNotification();
 
   const queryClient = useQueryClient();
   const { isSignedIn, signOut } = useAuth();
@@ -80,6 +84,8 @@ const Login = () => {
         email: primaryEmailAddress!.emailAddress,
         firstName: firstName!,
         lastName: lastName!,
+        deviceToken: Device.isDevice ? expoPushToken! : "",
+        platform: Platform.OS,
       };
 
       handleSocialLogin(payload);
@@ -175,10 +181,14 @@ const Login = () => {
     }
   };
 
-  const handleLogin = async (payload: LoginUserRequest) => {
+  const handleLogin = async (payload: Omit<LoginUserRequest, "platform" | "deviceToken">) => {
     setIsLoading(true);
     try {
-      const data = await AuthService.loginUser(payload);
+      const data = await AuthService.loginUser({
+        ...payload,
+        deviceToken: Device.isDevice ? expoPushToken! : "",
+        platform: Platform.OS,
+      });
 
       storeUser(data.access_token, data.refresh_token);
       storage.set(IS_LOGGED_IN, true);
