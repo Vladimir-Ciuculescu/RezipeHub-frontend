@@ -33,13 +33,26 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const notificationListener = useRef<any>();
   const responseListener = useRef<any>();
 
+  const incrementAppBadge = async () => {
+    const currentBadgeCount = await Notifications.getBadgeCountAsync();
+
+    await Notifications.setBadgeCountAsync(currentBadgeCount + 1);
+  };
+
+  const resetAppNotificationBadges = async () => {
+    await Notifications.setBadgeCountAsync(0);
+  };
+
   useEffect(() => {
-    const redirect = (notification: Notifications.Notification) => {
+    const redirect = async (notification: Notifications.Notification) => {
       const url = notification.request.content.data.url;
 
       if (url) {
-        router.push(url);
+        // router.push(url);
+        router.push("/(tabs)/notifications");
       }
+
+      await resetAppNotificationBadges();
     };
 
     let isMounted = true;
@@ -58,9 +71,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       redirect(response?.notification);
     });
 
-    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
-      setNotification(notification);
-    });
+    notificationListener.current = Notifications.addNotificationReceivedListener(
+      async (notification) => {
+        setNotification(notification);
+
+        await incrementAppBadge();
+      },
+    );
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
       redirect(response.notification);

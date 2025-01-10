@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, Dimensions, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, View } from "react-native-ui-lib";
@@ -10,7 +10,7 @@ import { ACCESS_TOKEN, IS_LOGGED_IN, storage } from "@/storage";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
 import { useAuth } from "@clerk/clerk-expo";
-import { useRouter } from "expo-router";
+import { useRouter, useSegments } from "expo-router";
 import RNShadowView from "@/components/shared/RNShadowView";
 import { Skeleton } from "moti/skeleton";
 import { useUserRecipes } from "@/hooks/recipes.hooks";
@@ -42,6 +42,9 @@ const Profile = () => {
 
   const scrollViewRef = useRef<ScrollView>(null);
 
+  const [firstFocus, setFirstFocus] = useState(false);
+  const segments = useSegments();
+
   const router = useRouter();
   const { id, firstName, lastName, photoUrl, bio } = useUserStore.use.user();
   const setLoggedStatus = useUserStore.use.setLoggedStatus();
@@ -59,6 +62,13 @@ const Profile = () => {
     page: 0,
     userId: id,
   });
+
+  useEffect(() => {
+    // Ensure the function runs only on initial focus when arriving at this screen
+    if (segments.includes("(tabs)") && !firstFocus) {
+      setFirstFocus(true);
+    }
+  }, [segments]);
 
   useEffect(() => {
     if (scrollViewRef.current && loggedStatus) {
@@ -103,7 +113,7 @@ const Profile = () => {
       >
         <RNFadeInTransition
           index={0}
-          animate={isFocused}
+          animate={firstFocus}
           direction="left"
         >
           <View style={styles.$headerStyle}>
@@ -167,7 +177,8 @@ const Profile = () => {
 
         <RNFadeInTransition
           index={1}
-          animate={isFocused}
+          // animate={isFocused}
+          animate={firstFocus}
           direction="top"
         >
           <View>
@@ -240,7 +251,8 @@ const Profile = () => {
         </RNFadeInTransition>
         <RNFadeInTransition
           index={2}
-          animate={isFocused}
+          // animate={isFocused}
+          animate={firstFocus}
           direction="top"
         >
           <View>

@@ -1,23 +1,36 @@
 import RNIcon from "@/components/shared/RNIcon";
-import { ACCESS_TOKEN, storage } from "@/storage";
 import { colors } from "@/theme/colors";
 import useRecipeStore from "@/zustand/useRecipeStore";
 import useUserStore from "@/zustand/useUserStore";
-import { useAuth } from "@clerk/clerk-expo";
 import { Tabs, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useEffect, useState } from "react";
 import { Platform, Pressable, StyleSheet } from "react-native";
+import * as Notifications from "expo-notifications";
 
 const TabLayout = () => {
   const router = useRouter();
 
   const reset = useRecipeStore.use.reset();
-  const setUser = useUserStore.use.setUser();
+  const [badgeCount, setBadgeCount] = useState(0);
 
   const openAddRecipeModal = () => {
     reset();
     router.navigate("add_recipe");
   };
+
+  useEffect(() => {
+    const updateBadgeCount = async () => {
+      const appBadgeCount = await Notifications.getBadgeCountAsync();
+      setBadgeCount(appBadgeCount);
+    };
+
+    updateBadgeCount();
+
+    const interval = setInterval(updateBadgeCount, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
@@ -28,7 +41,6 @@ const TabLayout = () => {
         screenOptions={{
           tabBarShowLabel: false,
           tabBarStyle: styles.$tabBarStyle,
-          unmountOnBlur: true,
         }}
       >
         <Tabs.Screen
@@ -75,6 +87,12 @@ const TabLayout = () => {
             tabBarIcon: ({ focused }) => (
               <RNIcon name={focused ? "notification_focused" : "notification"} />
             ),
+            tabBarBadge: badgeCount || undefined,
+          }}
+          listeners={{
+            tabPress: async () => {
+              await Notifications.setBadgeCountAsync(0);
+            },
           }}
         />
         <Tabs.Screen

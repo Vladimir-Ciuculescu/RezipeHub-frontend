@@ -89,110 +89,103 @@ const AllLatestRecipes = () => {
     const { id, photoUrl, user } = item;
 
     return (
-      <RNFadeInTransition
-        direction="top"
-        animate={isFocused}
-        key={`notification-event-${index}`}
-        index={2 + (index + 0.25)}
+      <Link
+        asChild
+        href={{
+          pathname: "/recipe_details",
+          params: {
+            id: id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            recipePhotoUrl: photoUrl,
+            userPhotoUrl: user.photoUrl,
+            userId: user.id,
+          },
+        }}
       >
-        <Link
-          asChild
-          href={{
-            pathname: "/recipe_details",
-            params: {
-              id: id,
-              firstName: user.firstName,
-              lastName: user.lastName,
-              recipePhotoUrl: photoUrl,
-              userPhotoUrl: user.photoUrl,
-              userId: user.id,
-            },
-          }}
-        >
-          <Pressable key={item.id}>
-            <RNShadowView style={[styles.$rowContainerStyle]}>
-              <View style={[styles.$innerContainerStyle, styles.$innerRowContainerStyle]}>
-                <View style={styles.$innerRowInfoStyle}>
-                  <View style={styles.$contentRowStyle}>
-                    {item.photoUrl ? (
-                      <View style={styles.$rowImageStyle}>
-                        <Image
-                          source={{ uri: item.photoUrl }}
-                          style={styles.$flexStyle}
-                        />
-                      </View>
-                    ) : (
-                      <View style={[styles.$rowImageStyle, styles.$placeholderImageStyle]}>
-                        <Ionicons
-                          name="image-outline"
-                          size={moderateScale(40)}
-                          color={colors.greyscale400}
-                        />
-                      </View>
-                    )}
-                    <View style={styles.$contentDetailsStyle}>
-                      <Text
-                        numberOfLines={3}
-                        style={styles.$rowTextStyle}
-                        ellipsizeMode="tail"
-                      >
-                        {item.title}
-                      </Text>
+        <Pressable key={item.id}>
+          <RNShadowView style={[styles.$rowContainerStyle]}>
+            <View style={[styles.$innerContainerStyle, styles.$innerRowContainerStyle]}>
+              <View style={styles.$innerRowInfoStyle}>
+                <View style={styles.$contentRowStyle}>
+                  {item.photoUrl ? (
+                    <View style={styles.$rowImageStyle}>
+                      <Image
+                        source={{ uri: item.photoUrl }}
+                        style={styles.$flexStyle}
+                      />
+                    </View>
+                  ) : (
+                    <View style={[styles.$rowImageStyle, styles.$placeholderImageStyle]}>
+                      <Ionicons
+                        name="image-outline"
+                        size={moderateScale(40)}
+                        color={colors.greyscale400}
+                      />
+                    </View>
+                  )}
+                  <View style={styles.$contentDetailsStyle}>
+                    <Text
+                      numberOfLines={3}
+                      style={styles.$rowTextStyle}
+                      ellipsizeMode="tail"
+                    >
+                      {item.title}
+                    </Text>
 
-                      <View style={styles.$arrowContainerStyle}>
-                        <View style={styles.$userDetailsBtnStyle}>
-                          <RNIcon
-                            name="arrow_right"
-                            color={colors.greyscale50}
-                            height={horizontalScale(12)}
-                            width={horizontalScale(12)}
+                    <View style={styles.$arrowContainerStyle}>
+                      <View style={styles.$userDetailsBtnStyle}>
+                        <RNIcon
+                          name="arrow_right"
+                          color={colors.greyscale50}
+                          height={horizontalScale(12)}
+                          width={horizontalScale(12)}
+                        />
+                      </View>
+                    </View>
+
+                    <View style={styles.$footerContainerStyle}>
+                      <View style={styles.$userInfoContainerStyle}>
+                        {item.user.photoUrl ? (
+                          <Image
+                            source={{ uri: item.user.photoUrl }}
+                            style={styles.$userAvatarStyle}
                           />
-                        </View>
-                      </View>
-
-                      <View style={styles.$footerContainerStyle}>
-                        <View style={styles.$userInfoContainerStyle}>
-                          {item.user.photoUrl ? (
-                            <Image
-                              source={{ uri: item.user.photoUrl }}
-                              style={styles.$userAvatarStyle}
+                        ) : (
+                          <View style={styles.$userAvatarPlaceholderStyle}>
+                            <Feather
+                              name="user"
+                              size={moderateScale(16)}
+                              color={colors.greyscale50}
                             />
-                          ) : (
-                            <View style={styles.$userAvatarPlaceholderStyle}>
-                              <Feather
-                                name="user"
-                                size={moderateScale(16)}
-                                color={colors.greyscale50}
-                              />
-                            </View>
-                          )}
-                          <Text
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                            style={styles.$userNameStyle}
-                          >
-                            {item.user ? item.user.lastName : ""}
-                          </Text>
-                        </View>
+                          </View>
+                        )}
+                        <Text
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                          style={styles.$userNameStyle}
+                        >
+                          {item.user ? item.user.lastName : ""}
+                        </Text>
+                      </View>
 
-                        <View style={styles.$timeContainerStyle}>
-                          <RNIcon
-                            name="clock"
-                            height={moderateScale(16)}
-                            width={moderateScale(16)}
-                            style={styles.$clockIconStyle}
-                          />
-                          <Text style={styles.$timeTextStyle}>{item.preparationTime} Min</Text>
-                        </View>
+                      <View style={styles.$timeContainerStyle}>
+                        <RNIcon
+                          name="clock"
+                          height={moderateScale(16)}
+                          width={moderateScale(16)}
+                          style={styles.$clockIconStyle}
+                        />
+                        <Text style={styles.$timeTextStyle}>{item.preparationTime} Min</Text>
                       </View>
                     </View>
                   </View>
                 </View>
               </View>
-            </RNShadowView>
-          </Pressable>
-        </Link>
-      </RNFadeInTransition>
+            </View>
+          </RNShadowView>
+        </Pressable>
+      </Link>
     );
   };
 

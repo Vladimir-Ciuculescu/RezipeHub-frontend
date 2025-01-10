@@ -10,8 +10,10 @@ import EXApplication
 import ExpoAsset
 import EXConstants
 import ExpoCrypto
+import ExpoDevice
 import ExpoFileSystem
 import ExpoFont
+import ExpoImage
 import ExpoImagePicker
 import ExpoKeepAwake
 import ExpoLinearGradient
@@ -37,8 +39,10 @@ public class ExpoModulesProvider: ModulesProvider {
       AssetModule.self,
       ConstantsModule.self,
       CryptoModule.self,
+      DeviceModule.self,
       FileSystemModule.self,
       FontLoaderModule.self,
+      ImageModule.self,
       ImagePickerModule.self,
       KeepAwakeModule.self,
       LinearGradientModule.self,
@@ -68,8 +72,10 @@ public class ExpoModulesProvider: ModulesProvider {
       AssetModule.self,
       ConstantsModule.self,
       CryptoModule.self,
+      DeviceModule.self,
       FileSystemModule.self,
       FontLoaderModule.self,
+      ImageModule.self,
       ImagePickerModule.self,
       KeepAwakeModule.self,
       LinearGradientModule.self,

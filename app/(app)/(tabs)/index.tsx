@@ -12,8 +12,8 @@ import { colors } from "@/theme/colors";
 import CategoryItem from "@/components/CategoryItem";
 import MostPopularRecipeItem from "@/components/MostPopularRecipeItem";
 import useUserStore from "@/zustand/useUserStore";
-import { useEffect, useRef } from "react";
-import { router } from "expo-router";
+import { useEffect, useRef, useState } from "react";
+import { router, useSegments } from "expo-router";
 import RNFadeInView from "@/components/shared/RNFadeInView";
 import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
 import { useIsFocused } from "@react-navigation/native";
@@ -102,6 +102,8 @@ const Home = () => {
   const loggedStatus = useUserStore.use.isLoggedIn();
 
   const scrollViewRef = useRef<ScrollView>(null);
+  const [firstFocus, setFirstFocus] = useState(false);
+  const segments = useSegments();
 
   const isFocused = useIsFocused();
 
@@ -110,6 +112,14 @@ const Home = () => {
       scrollViewRef.current.scrollTo({ y: 0, animated: false });
     }
   }, [loggedStatus]);
+
+  useEffect(() => {
+    // Ensure the function runs only on initial focus when arriving at this screen
+    if (segments.includes("(tabs)") && !firstFocus) {
+      console.log(segments);
+      setFirstFocus(true);
+    }
+  }, [segments]);
 
   const { data: latestRecipes, isLoading: areLatestRecipesLoading } = useLatestRecipes({
     page: 0,
@@ -194,7 +204,7 @@ const Home = () => {
       >
         <RNFadeInTransition
           index={0}
-          animate={isFocused}
+          animate={firstFocus}
           direction="top"
         >
           <View style={styles.$welcomeContainerstyle}>
@@ -213,7 +223,7 @@ const Home = () => {
 
         <RNFadeInTransition
           index={1}
-          animate={isFocused}
+          animate={firstFocus}
           direction="left"
         >
           <View style={{ gap: spacing.spacing16 }}>
@@ -262,7 +272,7 @@ const Home = () => {
 
         <RNFadeInTransition
           index={2}
-          animate={isFocused}
+          animate={firstFocus}
           direction="top"
         >
           <ScrollView
@@ -282,7 +292,7 @@ const Home = () => {
         </RNFadeInTransition>
         <RNFadeInTransition
           index={3}
-          animate={isFocused}
+          animate={firstFocus}
           direction="left"
         >
           <View style={{ gap: spacing.spacing16 }}>

@@ -17,32 +17,7 @@ interface NotificationItemProps {
 }
 
 const NotificationItem: React.FC<NotificationItemProps> = ({ notification }) => {
-  const { id, body, title, createdAt } = notification;
-
-  const getRelativeTime = (timestamp: Date) => {
-    const now = dayjs();
-    const date = dayjs(timestamp);
-    const diffInMinutes = now.diff(date, "minute");
-    const diffInHours = now.diff(date, "hour");
-    const diffInDays = now.diff(date, "day");
-    const diffInWeeks = now.diff(date, "week");
-    const diffInMonths = now.diff(date, "month");
-    const diffInYears = now.diff(date, "year");
-
-    if (diffInMinutes < 60) {
-      return `${diffInMinutes}m`;
-    } else if (diffInHours < 24) {
-      return `${diffInHours}h`;
-    } else if (diffInDays < 7) {
-      return `${diffInDays}d`;
-    } else if (diffInWeeks < 4) {
-      return `${diffInWeeks}w`;
-    } else if (diffInMonths < 12) {
-      return `${diffInMonths}mo`;
-    } else {
-      return `${diffInYears}y`;
-    }
-  };
+  const { id, body, title, timestamp } = notification;
 
   return (
     <RNShadowView>
@@ -76,8 +51,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification }) => 
           }}
         >
           <Text style={[{ marginLeft: spacing.spacing8 }, styles.$notificationTimeLapseStyle]}>
-            {/* 2m ago */}
-            {getRelativeTime(createdAt)}
+            {timestamp}
           </Text>
           <View
             style={{

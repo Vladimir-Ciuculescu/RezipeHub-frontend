@@ -64,7 +64,27 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>EXNotifications-ExpoNotifications_privacy.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>EXNotifications.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>EXSplashScreen.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>EXTaskManager-ExpoTaskManager_privacy.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>EXTaskManager.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -89,6 +109,16 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>ExpoDevice-ExpoDevice_privacy.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>ExpoDevice.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>ExpoFileSystem-ExpoFileSystem_privacy.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -105,6 +135,11 @@
 			<false/>
 		</dict>
 		<key>ExpoHead.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>ExpoImage.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -200,11 +235,6 @@
 			<false/>
 		</dict>
 		<key>RNCPicker.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>RNFastImage.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -484,12 +514,22 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>SDWebImageSVGCoder.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>SDWebImageWebPCoder.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
 		<key>SocketRocket.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>UMAppLoader.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

@@ -47,4 +47,4 @@ with_node \
   generate-modules-provider  \
   --target "/Users/ciuculescuvladimir/Documents/Software Development/React Native/YumHub/yumhub-frontend/ios/Pods/Target Support Files/Pods-YumHub/ExpoModulesProvider.swift" \
   --platform "apple" \
-  --packages "expo-application" "expo-asset" "expo-constants" "expo-crypto" "expo-dev-launcher" "expo-dev-menu" "expo-file-system" "expo-font" "expo-image-picker" "expo-keep-awake" "expo-linear-gradient" "expo-network" "expo-random" "expo-router" "expo-secure-store" "expo-system-ui" "expo-web-browser" "react-native-ios-context-menu" "react-native-ios-utilities"
+  --packages "expo-application" "expo-asset" "expo-constants" "expo-crypto" "expo-dev-launcher" "expo-dev-menu" "expo-device" "expo-file-system" "expo-font" "expo-image" "expo-image-picker" "expo-keep-awake" "expo-linear-gradient" "expo-network" "expo-random" "expo-router" "expo-secure-store" "expo-system-ui" "expo-web-browser" "react-native-ios-context-menu" "react-native-ios-utilities"
