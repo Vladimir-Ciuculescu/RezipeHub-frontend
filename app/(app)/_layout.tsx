@@ -77,7 +77,7 @@ const AppLayout = () => {
 
     // * Check internet connection
     NetInfo.fetch().then((state) => {
-      console.log(state.isConnected);
+      // console.log(state.isConnected);
 
       if (!state.isConnected) {
         Toast.show({
@@ -90,7 +90,7 @@ const AppLayout = () => {
     });
 
     const unsubscribe = NetInfo.addEventListener((state) => {
-      console.log(state);
+      // console.log(state);
     });
 
     if (!onboarded) {

@@ -1,5 +1,5 @@
-import { Text, StyleSheet, View } from "react-native";
-import React from "react";
+import { Text, StyleSheet, View, Dimensions, ActivityIndicator } from "react-native";
+import React, { useMemo } from "react";
 import RNFadeInView from "@/components/shared/RNFadeInView";
 import { $sizeStyles } from "@/theme/typography";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,16 +12,17 @@ import NotificationService from "@/api/services/notifications.service";
 import useUserData from "@/hooks/useUserData";
 import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
 import { useIsFocused } from "@react-navigation/native";
+import { No_notificatins } from "@/assets/illustrations";
+import { colors } from "@/theme/colors";
+import { Notification } from "@/types/notification.types";
+import dayjs from "dayjs";
 
 interface Contact {
   firstName: string;
   lastName: string;
 }
 
-interface Section {
-  title: string;
-  data: Contact[];
-}
+const { width, height } = Dimensions.get("screen");
 
 const Notifications = () => {
   const user = useUserData();
@@ -33,7 +34,7 @@ const Notifications = () => {
     isFetchingNextPage,
     hasNextPage,
   } = useInfiniteQuery({
-    queryKey: ["all-notifications"],
+    queryKey: ["all-notifications", user.id],
     queryFn: NotificationService.getNotifications,
     initialPageParam: { page: 0, userId: user.id },
     getNextPageParam: (lastPage, allPages, lastPageParam) => {
@@ -43,57 +44,77 @@ const Notifications = () => {
     },
   });
 
-  console.log(222, notifications);
+  const formatNotificationList = (notifications: Notification[]): any[] => {
+    const formattedList: any[] = [];
+    let currentSection = "";
 
-  const contacts: (string | Contact)[] = [
-    "Today",
-    { firstName: "John", lastName: "Aaron" },
-    { firstName: "Alice", lastName: "Anderson" },
-    { firstName: "Adam", lastName: "Avery" },
-    "Yesterday",
-    { firstName: "Bob", lastName: "Baker" },
-    { firstName: "Bill", lastName: "Brown" },
-    { firstName: "Betty", lastName: "Barnes" },
-    "Last Monday",
-    { firstName: "Chris", lastName: "Cooper" },
-    { firstName: "Carol", lastName: "Clark" },
-    { firstName: "Charles", lastName: "Campbell" },
-    "Last Tuesday",
-    { firstName: "David", lastName: "Davis" },
-    { firstName: "Daniel", lastName: "Diaz" },
-    { firstName: "Diana", lastName: "Dixon" },
-    "Last Wednesday",
-    { firstName: "Emily", lastName: "Evans" },
-    { firstName: "Edward", lastName: "Ellis" },
-    "Last Thursday",
-    { firstName: "Frank", lastName: "Foster" },
-    { firstName: "Fred", lastName: "Fisher" },
-    "Last Friday",
-    { firstName: "George", lastName: "Garcia" },
-    { firstName: "Grace", lastName: "Green" },
-    "Last Saturday",
-    { firstName: "Henry", lastName: "Harris" },
-    { firstName: "Helen", lastName: "Hall" },
-    "Last Sunday",
-    { firstName: "Michael", lastName: "Miller" },
-    { firstName: "Mary", lastName: "Martinez" },
-    "2 Weeks Ago",
-    { firstName: "Sarah", lastName: "Smith" },
-    { firstName: "Steve", lastName: "Scott" },
-    "Last Month",
-    { firstName: "William", lastName: "Wilson" },
-    { firstName: "Walter", lastName: "White" },
-  ];
+    notifications.forEach((notification) => {
+      const date = dayjs(notification.createdAt);
+      const now = dayjs();
+      const diffInDays = now.diff(date, "day");
+      const diffInWeeks = now.diff(date, "week");
+      const diffInMonths = now.diff(date, "month");
 
-  const ContactsFlashList = () => {
+      let section = "";
+
+      if (diffInDays === 0) {
+        section = "Today";
+      } else if (diffInDays === 1) {
+        section = "Yesterday";
+      } else if (diffInDays < 7) {
+        section = "This Week";
+      } else if (diffInDays < 14) {
+        section = "Last Week";
+      } else if (diffInWeeks < 4) {
+        section = `${diffInWeeks} Weeks Ago`;
+      } else if (diffInMonths === 1) {
+        section = "Last Month";
+      } else if (diffInMonths > 1) {
+        section = `${diffInMonths} Months Ago`;
+      }
+
+      // Add section header if we're entering a new section
+      if (section !== currentSection) {
+        formattedList.push(section);
+        currentSection = section;
+      }
+
+      formattedList.push(notification);
+    });
+
+    return formattedList;
+  };
+
+  const getNotifications = useMemo(() => {
+    if (notifications && notifications.pages) {
+      const allNotifications = notifications.pages.flatMap((notification) => notification);
+
+      return allNotifications;
+    }
+
+    return [];
+  }, [notifications]);
+
+  const loadNextPage = () => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  };
+
+  console.log(formatNotificationList(getNotifications));
+
+  const NotificationsFlashList = () => {
     return (
       <FlashList
+        keyExtractor={(item: Notification | string) =>
+          typeof item === "string" ? item : item.id.toString()
+        }
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingBottom: verticalScale(100),
         }}
         ItemSeparatorComponent={() => <View style={{ height: spacing.spacing16 }} />}
-        data={contacts}
+        data={formatNotificationList(getNotifications)}
         renderItem={({ item, index }) => {
           if (typeof item === "string") {
             // Rendering header
@@ -115,7 +136,7 @@ const Notifications = () => {
                 direction="top"
                 key={`notification-event-${index}`}
               >
-                <NotificationItem />
+                <NotificationItem notification={item} />
               </RNFadeInTransition>
             );
           }
@@ -125,6 +146,16 @@ const Notifications = () => {
           return typeof item === "string" ? "sectionHeader" : "row";
         }}
         estimatedItemSize={100}
+        onEndReached={loadNextPage}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <ActivityIndicator
+              size="large"
+              color={colors.brandPrimary}
+            />
+          ) : null
+        }
       />
     );
   };
@@ -139,9 +170,20 @@ const Notifications = () => {
         >
           <Text style={{ ...$sizeStyles.h2 }}>Notifications</Text>
         </RNFadeInTransition>
-        <View style={{ flex: 1, paddingTop: verticalScale(spacing.spacing24) }}>
-          <ContactsFlashList />
-        </View>
+
+        {getNotifications && getNotifications.length ? (
+          <View style={{ flex: 1, paddingTop: verticalScale(spacing.spacing24) }}>
+            <NotificationsFlashList />
+          </View>
+        ) : (
+          <View style={styles.$noResultsContainerStyle}>
+            <No_notificatins
+              height={height / 3}
+              width={width}
+            />
+            <Text style={styles.$noResultsTextStyle}>No notifications yet </Text>
+          </View>
+        )}
       </SafeAreaView>
     </RNFadeInView>
   );
@@ -158,5 +200,15 @@ const styles = StyleSheet.create({
   $sectionTitleStyle: {
     ...$sizeStyles.l,
     fontFamily: "sofia800",
+  },
+  $noResultsContainerStyle: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: spacing.spacing12,
+  },
+  $noResultsTextStyle: {
+    color: colors.slate900,
+    ...$sizeStyles.h2,
   },
 });

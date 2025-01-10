@@ -1,15 +1,7 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "react-native-ui-lib";
 import dayjs from "dayjs";
-import {
-  Easing,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { Platform, Pressable, ScrollView, StyleSheet, Text } from "react-native";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
 import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -21,9 +13,7 @@ import CategoryItem from "@/components/CategoryItem";
 import MostPopularRecipeItem from "@/components/MostPopularRecipeItem";
 import useUserStore from "@/zustand/useUserStore";
 import { useEffect, useRef } from "react";
-import RNButton from "@/components/shared/RNButton";
 import { router } from "expo-router";
-import Animated, { FadeIn, FadeInLeft, FadeOut } from "react-native-reanimated";
 import RNFadeInView from "@/components/shared/RNFadeInView";
 import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
 import { useIsFocused } from "@react-navigation/native";

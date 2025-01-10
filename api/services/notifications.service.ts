@@ -11,9 +11,9 @@ const NotificationService = {
         limit: 10,
       };
 
-      const { data } = await axiosInstance.get(`${NOTIFICATIONS}/`, { params: payload });
+      const data = await axiosInstance.get(`${NOTIFICATIONS}/`, { params: payload });
 
-      return data;
+      return data.data;
     } catch (error) {
       throw handleError(error);
     }
