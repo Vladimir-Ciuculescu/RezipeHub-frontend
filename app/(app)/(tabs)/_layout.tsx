@@ -7,12 +7,16 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { Platform, Pressable, StyleSheet } from "react-native";
 import * as Notifications from "expo-notifications";
+import { useNotification } from "@/context/NotificationContext";
+import NotificationService from "@/api/services/notifications.service";
 
 const TabLayout = () => {
   const router = useRouter();
 
   const reset = useRecipeStore.use.reset();
   const [badgeCount, setBadgeCount] = useState(0);
+
+  const { expoPushToken } = useNotification();
 
   const openAddRecipeModal = () => {
     reset();
@@ -92,6 +96,10 @@ const TabLayout = () => {
           listeners={{
             tabPress: async () => {
               await Notifications.setBadgeCountAsync(0);
+
+              if (expoPushToken && badgeCount > 0) {
+                await NotificationService.resetBadgeCountNotification(expoPushToken);
+              }
             },
           }}
         />

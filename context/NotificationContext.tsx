@@ -1,4 +1,6 @@
+import NotificationService from "@/api/services/notifications.service";
 import { registerForPushNotificationsAsync } from "@/utils/registerForPushNotificationsAsync";
+import { useQueryClient } from "@tanstack/react-query";
 import * as Notifications from "expo-notifications";
 import { router } from "expo-router";
 import { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
@@ -30,13 +32,15 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const [notification, setNotification] = useState<Notifications.Notification | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
+  const queryClient = useQueryClient();
+
   const notificationListener = useRef<any>();
   const responseListener = useRef<any>();
 
   const incrementAppBadge = async () => {
     const currentBadgeCount = await Notifications.getBadgeCountAsync();
 
-    await Notifications.setBadgeCountAsync(currentBadgeCount + 1);
+    await Notifications.setBadgeCountAsync(currentBadgeCount);
   };
 
   const resetAppNotificationBadges = async () => {
@@ -48,11 +52,16 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       const url = notification.request.content.data.url;
 
       if (url) {
-        // router.push(url);
         router.push("/(tabs)/notifications");
       }
 
       await resetAppNotificationBadges();
+
+      if (expoPushToken) {
+        await NotificationService.resetBadgeCountNotification(expoPushToken);
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["all-notifications"] });
     };
 
     let isMounted = true;
@@ -74,8 +83,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     notificationListener.current = Notifications.addNotificationReceivedListener(
       async (notification) => {
         setNotification(notification);
-
         await incrementAppBadge();
+
+        queryClient.invalidateQueries({ queryKey: ["all-notifications"] });
       },
     );
 

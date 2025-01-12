@@ -1,7 +1,7 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "react-native-ui-lib";
 import dayjs from "dayjs";
-import { Platform, Pressable, ScrollView, StyleSheet, Text } from "react-native";
+import { Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text } from "react-native";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
 import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -116,7 +116,6 @@ const Home = () => {
   useEffect(() => {
     // Ensure the function runs only on initial focus when arriving at this screen
     if (segments.includes("(tabs)") && !firstFocus) {
-      console.log(segments);
       setFirstFocus(true);
     }
   }, [segments]);

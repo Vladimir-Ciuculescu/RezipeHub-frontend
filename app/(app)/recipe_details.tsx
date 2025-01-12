@@ -384,14 +384,11 @@ const RecipeDetails = () => {
           </View>
         ) : (
           <Image
-            resizeMode="cover"
+            contentFit="cover"
+            transition={300}
             source={{ uri: recipePhotoUrl }}
             style={[{ height: heightValue }, styles.$imageBackgroundStyle]}
           />
-          // <Image
-          //   style={[{ height: heightValue }, styles.$imageBackgroundStyle]}
-          //   source={photoUrl}
-          // />
         )}
         <BottomSheet
           enableOverDrag={false}

@@ -3,7 +3,14 @@
 // }
 
 import React, { useEffect } from "react";
-import { Appearance, BackHandler, LogBox, StyleSheet } from "react-native";
+import {
+  Appearance,
+  AppState,
+  AppStateStatus,
+  BackHandler,
+  LogBox,
+  StyleSheet,
+} from "react-native";
 import { colors } from "@/theme/colors";
 import { useFonts } from "expo-font";
 import { fontsToLoad } from "@/theme/typography";
@@ -11,7 +18,7 @@ import { Stack } from "expo-router/stack";
 import { ClerkProvider } from "@clerk/clerk-expo";
 import * as SecureStore from "expo-secure-store";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
@@ -65,39 +72,57 @@ const queryClient = new QueryClient();
 const AppLayout = () => {
   const router = useRouter();
   const setUser = useUserStore.use.setUser();
+  const invalidateQueryClient = useQueryClient();
 
   const isLoggedIn = storage.getBoolean(IS_LOGGED_IN);
   const onboarded = storage.getBoolean(ONBOARDED);
 
   useEffect(() => {
-    // * Disable hardware back press from android bar
+    //* Change the change of app state (background, foreground, inactive, etc)
+    const appStateSubscription = AppState.addEventListener(
+      "change",
+      async (nextAppState: AppStateStatus) => {
+        const appBadgeCount = await Notifications.getBadgeCountAsync();
+
+        if (nextAppState === "active" && appBadgeCount > 0) {
+          invalidateQueryClient.invalidateQueries({ queryKey: ["all-notifications"] });
+        }
+        // if (nextAppState === "active") {
+        //   console.log("state changed", appBadgeCount);
+        // }
+      },
+    );
+
+    // * Disable hardware back press from android bottom bar devices
     const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
       return true;
     });
 
-    // * Check internet connection
-    NetInfo.fetch().then((state) => {
-      // console.log(state.isConnected);
+    // // * Check internet connection
+    // NetInfo.fetch().then((state) => {
+    //   // console.log(state.isConnected);
 
-      if (!state.isConnected) {
-        Toast.show({
-          type: "error",
-          props: {
-            title: "No internet connection",
-          },
-        });
-      }
-    });
+    //   if (!state.isConnected) {
+    //     Toast.show({
+    //       type: "error",
+    //       props: {
+    //         title: "No internet connection",
+    //       },
+    //     });
+    //   }
+    // });
 
-    const unsubscribe = NetInfo.addEventListener((state) => {
-      // console.log(state);
-    });
+    // const unsubscribe = NetInfo.addEventListener((state) => {
+    //   // console.log(state);
+    // });
 
+    //* Check if user is onboarded or not
     if (!onboarded) {
       router.replace("onboarding");
       return;
     }
 
+    //* Check if user is logged in or not
     if (!isLoggedIn || isLoggedIn === undefined) {
       router.replace("home");
     } else {
@@ -107,8 +132,8 @@ const AppLayout = () => {
     }
 
     return () => {
-      unsubscribe();
       backHandler.remove();
+      appStateSubscription.remove();
     };
   }, []);
 
@@ -181,7 +206,8 @@ const AppLayout = () => {
         name="onboarding"
       />
       <Stack.Screen
-        options={{ headerShown: false, gestureEnabled: false, animation: "fade" }}
+        // options={{ headerShown: false, gestureEnabled: false, animation: "fade" }}
+        options={{ headerShown: false, gestureEnabled: false }}
         name="home"
       />
       <Stack.Screen
@@ -295,8 +321,8 @@ const Layout = () => {
 
   return (
     <GestureHandlerRootView>
-      <NotificationProvider>
-        <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <NotificationProvider>
           <ActionSheetProvider>
             <BottomSheetModalProvider>
               <ClerkProvider
@@ -312,8 +338,8 @@ const Layout = () => {
               </ClerkProvider>
             </BottomSheetModalProvider>
           </ActionSheetProvider>
-        </QueryClientProvider>
-      </NotificationProvider>
+        </NotificationProvider>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   );
 };

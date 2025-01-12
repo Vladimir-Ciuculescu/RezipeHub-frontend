@@ -18,6 +18,14 @@ const NotificationService = {
       throw handleError(error);
     }
   },
+
+  resetBadgeCountNotification: async (deviceToken: string) => {
+    try {
+      await axiosInstance.post(`${NOTIFICATIONS}/reset-badge`, { deviceToken });
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
 };
 
 export default NotificationService;

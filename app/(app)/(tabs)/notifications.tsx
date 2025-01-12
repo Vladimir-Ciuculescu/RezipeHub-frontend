@@ -8,7 +8,7 @@ import NotificationItem from "@/components/NotificationItem";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import NotificationService from "@/api/services/notifications.service";
 import useUserData from "@/hooks/useUserData";
-import { No_results } from "@/assets/illustrations";
+import { No_notificatins, No_results } from "@/assets/illustrations";
 import { colors } from "@/theme/colors";
 import { Notification } from "@/types/notification.types";
 import dayjs from "dayjs";
@@ -35,7 +35,6 @@ const Notifications = () => {
         ? undefined
         : { ...lastPageParam, page: lastPageParam.page + 1 };
     },
-    // refetchInterval: 5000,
   });
 
   const getNotifications = useMemo(() => {
@@ -187,16 +186,16 @@ const Notifications = () => {
           style={{
             alignItems: "center",
             paddingTop: spacing.spacing64,
-            gap: spacing.spacing48,
+            // gap: spacing.spacing48,
           }}
         >
-          <No_results
-            height={height / 3}
-            width={width}
+          <No_notificatins
+            height={height / 2}
+            width={width - horizontalScale(40)}
           />
 
           <Text style={{ color: colors.slate900, ...$sizeStyles.h2 }}>
-            Oops, no results found ...{" "}
+            We'll let you know when there's something new
           </Text>
         </View>
       )}
