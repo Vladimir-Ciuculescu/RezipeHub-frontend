@@ -98,14 +98,6 @@ const RecipeDetails = () => {
 
   const userData = useUserData();
 
-  // const { id, userId, owner } = useLocalSearchParams<{
-  //   id: string;
-  //   userId: string;
-  //   owner: string;
-  // }>();
-
-  // const parsedOwner = owner ? JSON.parse(owner) : null;
-
   const { id, userId, firstName, lastName, recipePhotoUrl, userPhotoUrl } = useLocalSearchParams<{
     id: string;
     userId: string;
