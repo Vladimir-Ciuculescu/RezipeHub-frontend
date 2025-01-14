@@ -107,8 +107,6 @@ const RecipeDetails = () => {
     userPhotoUrl: string;
   }>();
 
-  // const parsedOwner = owner ? JSON.parse(owner) : null;
-
   const belongsToCurrentUser = parseInt(userId!) === userData.id;
 
   const { data: recipe, isLoading } = useRecipe(parseInt(id!));

@@ -4,5 +4,6 @@ export interface Notification {
   body: string;
   data: any;
   createdAt: Date;
+  read: boolean;
   timestamp?: string;
 }

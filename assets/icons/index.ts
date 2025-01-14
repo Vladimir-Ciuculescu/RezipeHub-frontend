@@ -28,6 +28,10 @@ import Filter from "./filter.svg";
 import Check from "./check.svg";
 import Heart from "./heart.svg";
 import Bio from "./bio.svg";
+import Info_Square from "./info_square.svg";
+import Diamond from "./diamond.svg";
+import Rate from "./rate.svg";
+import Logout from "./logout.svg";
 
 export {
   Email,
@@ -60,4 +64,8 @@ export {
   Check,
   Heart,
   Bio,
+  Info_Square,
+  Diamond,
+  Rate,
+  Logout,
 };

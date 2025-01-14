@@ -46,7 +46,6 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
-    
   }),
 });
 
@@ -302,6 +301,18 @@ const AppLayout = () => {
       />
       <Stack.Screen
         name="all_favorite_recipes"
+        options={{
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerTitleAlign: "center",
+          headerStyle: { backgroundColor: colors.greyscale75 },
+          contentStyle: { backgroundColor: colors.greyscale150 },
+          gestureEnabled: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="settings"
         options={{
           headerBackVisible: false,
           headerShadowVisible: false,

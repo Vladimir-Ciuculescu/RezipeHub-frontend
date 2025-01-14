@@ -101,6 +101,10 @@ const Profile = () => {
     router.navigate("add_recipe");
   };
 
+  const goToSettings = () => {
+    router.navigate("settings");
+  };
+
   const paddingBottom = Platform.OS === "ios" ? 210 : 190;
 
   return (
@@ -118,7 +122,7 @@ const Profile = () => {
         >
           <View style={styles.$headerStyle}>
             <Text style={styles.$titleStyle}>Account</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={goToSettings}>
               <Feather
                 name="settings"
                 size={moderateScale(24)}

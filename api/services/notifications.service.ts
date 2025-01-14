@@ -26,6 +26,14 @@ const NotificationService = {
       throw handleError(error);
     }
   },
+
+  markAsReadNotification: async (notificationId: number) => {
+    try {
+      await axiosInstance.put(`${NOTIFICATIONS}/mark-as-read`, { notificationId });
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
 };
 
 export default NotificationService;

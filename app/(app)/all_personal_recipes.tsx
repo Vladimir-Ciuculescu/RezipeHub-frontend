@@ -13,7 +13,7 @@ import {
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Feather, Ionicons, Octicons } from "@expo/vector-icons";
 import _ from "lodash";
-import { Link, useFocusEffect, useNavigation, useRouter, useSegments } from "expo-router";
+import { Link, useNavigation, useRouter, useSegments } from "expo-router";
 import RNButton from "@/components/shared/RNButton";
 import { View } from "react-native-ui-lib";
 import RNIcon from "@/components/shared/RNIcon";
@@ -30,8 +30,6 @@ import { $sizeStyles } from "@/theme/typography";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
 import RNPressable from "@/components/shared/RNPressable";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
-import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
-import { useIsFocused } from "@react-navigation/native";
 
 const { width } = Dimensions.get("screen");
 
@@ -41,9 +39,6 @@ const GRID_COLUMNS = 2;
 const LayoutGridAnimation = () => {
   const user = useUserData();
 
-  // const isFocused = useIsFocused();
-  const [firstFocus, setFirstFocus] = useState(false);
-  const segments = useSegments();
   const [layoutIndex, setLayoutIndex] = useState(0);
   const [layout, setLayout] = useState<"LIST" | "GRID">("LIST");
 
