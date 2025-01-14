@@ -11,6 +11,7 @@ import {
 import { Button, ButtonProps } from "react-native-ui-lib";
 import { ImageSourceType } from "react-native-ui-lib/src/components/image";
 import { spacing } from "@/theme/spacing";
+import React from "react";
 
 interface RNButtonProps extends TouchableOpacityProps {
   link?: boolean;
@@ -24,7 +25,7 @@ interface RNButtonProps extends TouchableOpacityProps {
     | null;
 }
 
-export default function RNButton(props: RNButtonProps) {
+const RNButton: React.FC<RNButtonProps> = (props) => {
   const { link, label, labelStyle, style, loading, iconSource, ...rest } = props;
 
   const buttonProps: ButtonProps = { ...rest };
@@ -52,7 +53,9 @@ export default function RNButton(props: RNButtonProps) {
       {...buttonProps}
     />
   );
-}
+};
+
+export default RNButton;
 
 const styles = StyleSheet.create({
   $baseViewStyle: {

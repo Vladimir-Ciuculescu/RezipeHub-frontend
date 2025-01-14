@@ -17,9 +17,11 @@ interface RNInputProps extends TextInputProps {
   error?: string;
   value: string | undefined;
   multiline?: TextInputProps["multiline"];
+  onFocus?: TextInputProps["onFocus"];
+  onBlur?: TextInputProps["onFocus"];
 }
 
-export default function RnInput(props: RNInputProps) {
+const RnInput: React.FC<RNInputProps> = (props) => {
   {
     const {
       leftIcon,
@@ -33,6 +35,9 @@ export default function RnInput(props: RNInputProps) {
       error,
       value,
       multiline,
+      onFocus,
+      onBlur,
+
       ...rest
     } = props;
 
@@ -46,17 +51,33 @@ export default function RnInput(props: RNInputProps) {
         {label && <Text style={[$sizeStyles.n, styles.$labelStyle]}>{label}</Text>}
         {/*  @ts-ignore */}
         <TextField
+          selectTextOnFocus={false}
+          keyboardAppearance="light"
           {...rest}
+          placeholderTextColor={colors.greyscale300}
           multiline={multiline}
+          selectionColor={colors.accent300}
           value={value}
           placeholder={placeholder}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onFocus={(e) => {
+            if (onFocus) {
+              onFocus(e);
+            }
+            setIsFocused(true);
+          }}
+          onBlur={(e) => {
+            if (onBlur) {
+              onBlur(e);
+            }
+            setIsFocused(false);
+          }}
           containerStyle={[
             styles.$baseContainerstyle,
             multiline ? styles.$multilineStyle : styles.$singlelineStyle,
             isFocused ? styles.$focusedStyle : styles.$unfocusedStyle,
             containerStyle,
+            // { minHeight: 200 },
+            // { justifyContent: "flex-start" },
           ]}
           style={[
             leftIcon && !rightIcon && styles.$hasLeftIconStyle,
@@ -71,14 +92,21 @@ export default function RnInput(props: RNInputProps) {
           trailingAccessory={<View style={styles.$trailingAccessoryContainer}>{rightIcon}</View>}
         />
         {touched && error && (
-          <Text style={[$sizeStyles.s, { paddingLeft: spacing.spacing8, color: colors.red500 }]}>
+          <Text
+            style={[
+              $sizeStyles.xs,
+              { paddingLeft: spacing.spacing8, color: colors.red500, fontFamily: "sofia400" },
+            ]}
+          >
             {error}
           </Text>
         )}
       </View>
     );
   }
-}
+};
+
+export default RnInput;
 
 const styles = StyleSheet.create({
   $baseWrapperStyle: {
@@ -90,7 +118,6 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     minHeight: 54,
     justifyContent: "center",
-
     borderColor: "blue",
     borderWidth: 2.5,
   },
@@ -102,6 +129,7 @@ const styles = StyleSheet.create({
   $multilineStyle: {
     paddingHorizontal: spacing.spacing16,
     paddingVertical: spacing.spacing16,
+    justifyContent: "flex-start",
   },
 
   $baseStyle: {
@@ -112,11 +140,11 @@ const styles = StyleSheet.create({
 
   $focusedStyle: {
     borderWidth: 2.5,
-    borderColor: colors.accent400,
+    borderColor: colors.accent200,
   },
   $unfocusedStyle: {
     borderWidth: 2,
-    borderColor: colors.greyscale150,
+    borderColor: colors.greyscale200,
   },
 
   $trailingAccessoryContainer: {

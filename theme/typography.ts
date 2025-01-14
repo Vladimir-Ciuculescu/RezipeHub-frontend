@@ -1,3 +1,4 @@
+import { moderateScale, normalize } from "@/utils/scale";
 import {
   SofiaSans_100Thin as sofia100,
   SofiaSans_200ExtraLight as sofia200,
@@ -66,12 +67,35 @@ export const fonts = {
 };
 
 export const $sizeStyles = {
-  xs: { fontSize: 12, lineHeight: 18 } satisfies TextStyle,
-  s: { fontSize: 14, lineHeight: 20 } satisfies TextStyle,
-  n: { fontSize: 16, lineHeight: 22 } satisfies TextStyle,
-  l: { fontSize: 18, lineHeight: 26, fontFamily: "sofia800" } satisfies TextStyle,
-  xl: { fontSize: 20, lineHeight: 30, fontFamily: "sofia800" } satisfies TextStyle,
-  h3: { fontSize: 24, lineHeight: 32, fontFamily: "sofia800" } satisfies TextStyle,
-  h2: { fontSize: 28, lineHeight: 36, fontFamily: "sofia800" } satisfies TextStyle,
-  h1: { fontSize: 32, lineHeight: 42, fontFamily: "sofia800" } satisfies TextStyle,
+  xs: { fontSize: normalize(12), lineHeight: normalize(18) } satisfies TextStyle,
+
+  s: { fontSize: normalize(14), lineHeight: normalize(20) } satisfies TextStyle,
+
+  n: { fontSize: moderateScale(16), lineHeight: moderateScale(22) } satisfies TextStyle,
+
+  l: {
+    fontSize: moderateScale(18),
+    lineHeight: moderateScale(26),
+    fontFamily: "sofia800",
+  } satisfies TextStyle,
+  xl: {
+    fontSize: moderateScale(20),
+    lineHeight: moderateScale(30),
+    fontFamily: "sofia800",
+  } satisfies TextStyle,
+  h3: {
+    fontSize: moderateScale(24),
+    lineHeight: moderateScale(32),
+    fontFamily: "sofia800",
+  } satisfies TextStyle,
+  h2: {
+    fontSize: moderateScale(28),
+    lineHeight: moderateScale(36),
+    fontFamily: "sofia800",
+  } satisfies TextStyle,
+  h1: {
+    fontSize: moderateScale(32),
+    lineHeight: moderateScale(42),
+    fontFamily: "sofia800",
+  } satisfies TextStyle,
 };

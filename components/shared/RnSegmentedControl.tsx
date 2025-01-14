@@ -1,36 +1,45 @@
 import { colors } from "@/theme/colors";
 import { $sizeStyles } from "@/theme/typography";
+import { verticalScale } from "@/utils/scale";
 import { StyleSheet } from "react-native";
-import { SegmentedControl } from "react-native-ui-lib";
+import { SegmentedControl, SegmentedControlProps } from "react-native-ui-lib";
 
 export interface SegmentItem {
   label: string;
 }
 
-interface SegmentedControlProps {
+interface SegmentedControlInterface extends SegmentedControlProps {
   segments: SegmentItem[];
-  onChangeIndex: React.Dispatch<React.SetStateAction<number>>;
+  onChangeIndex: (e: number) => void;
   initialIndex: number;
+  segmentLabelStyle?: SegmentedControlProps["segmentLabelStyle"];
+  segmentsStyle?: SegmentedControlProps["segmentsStyle"];
+  borderRadius?: SegmentedControlProps["borderRadius"];
+  backgroundColor?: SegmentedControlProps["backgroundColor"];
 }
 
-const RNSegmentedControl: React.FC<SegmentedControlProps> = ({
+const RNSegmentedControl: React.FC<SegmentedControlInterface> = ({
   segments,
   onChangeIndex,
   initialIndex,
+  segmentLabelStyle,
+  segmentsStyle,
+  borderRadius,
+  backgroundColor,
 }) => {
   return (
     <SegmentedControl
       initialIndex={initialIndex}
       segments={segments}
       activeColor={colors.greyscale50}
-      borderRadius={16}
+      borderRadius={borderRadius}
       onChangeIndex={onChangeIndex}
       throttleTime={5}
-      backgroundColor={colors.greyscale150}
+      backgroundColor={backgroundColor || colors.greyscale50}
       activeBackgroundColor={colors.brandPrimary}
       inactiveColor={colors.brandPrimary}
-      segmentsStyle={styles.$segmentStyle}
-      segmentLabelStyle={styles.$segmentLabelstyle}
+      segmentsStyle={[styles.$segmentStyle, segmentsStyle]}
+      segmentLabelStyle={[styles.$segmentLabelstyle, segmentLabelStyle]}
     />
   );
 };
@@ -39,10 +48,14 @@ export default RNSegmentedControl;
 
 const styles = StyleSheet.create({
   $segmentStyle: {
-    height: 54,
+    //TODO : Pay attention to the recipe details where you use it. There it shouldbe 54px or higher
+    height: verticalScale(44),
   },
 
   $segmentLabelstyle: {
     ...$sizeStyles.n,
+    justifyContent: "center",
+    display: "flex",
+    alignItems: "center",
   },
 });

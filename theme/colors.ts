@@ -5,6 +5,7 @@ export const colors = {
   accent400: "#353535",
 
   greyscale50: "#FFFFFF",
+  greyscale75: "#f1f5f9",
   greyscale100: "#F1F5F5",
   greyscale150: "#E6EBF2",
   greyscale200: "#CBD4DE",

@@ -1,32 +1,31 @@
 {
+  "cli": {
+    "version": ">= 9.0.7"
+  },
   "build": {
-    "development": {
+    "development-simulator": {
       "developmentClient": true,
       "distribution": "internal",
-      "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.production.com"
-      },
       "ios": {
         "simulator": true
       }
     },
-
-    "development-android": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      },
       "android": {
         "buildType": "apk"
       }
     },
-    "preview2": {
-      "android": {
-        "gradleCommand": ":app:assembleRelease"
-      }
-    },
-    "preview3": {
-      "developmentClient": true
-    },
-    "preview4": {
-      "distribution": "internal"
-    },
+    "production": {}
+  },
+  "submit": {
     "production": {}
   }
 }

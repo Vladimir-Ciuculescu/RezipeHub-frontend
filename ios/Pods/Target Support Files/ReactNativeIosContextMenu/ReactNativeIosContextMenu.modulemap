@@ -1,0 +1,6 @@
+module ReactNativeIosContextMenu {
+  umbrella header "ReactNativeIosContextMenu-umbrella.h"
+
+  export *
+  module * { export * }
+}

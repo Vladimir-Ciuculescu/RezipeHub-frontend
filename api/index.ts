@@ -1,10 +1,15 @@
 import { ACCESS_TOKEN, REFRESH_TOKEN, storage } from "@/storage";
 import axios from "axios";
 
-const baseURL = "http://192.168.1.132:3000";
+const baseURL = "http://192.168.1.149:3000";
+const iosBaseUrL = "http://localhost:3000";
+const andrdoidBaseUrl = "http://192.168.0.1:3000";
 
 const axiosPublicInstance = axios.create({
-  //baseURL: 'http://localhost:3000', // Replace with your API base URL
+  //
+
+  //baseURL: "http://localhost:3000", // Replace with your API base URL
+  //baseURL: Platform.OS === "ios" ? iosBaseUrL : andrdoidBaseUrl,
   baseURL,
 
   timeout: 10000,
@@ -20,8 +25,9 @@ axiosPublicInstance.interceptors.request.use((config) => {
 });
 
 const axiosInstance = axios.create({
-  //baseURL: 'http://localhost:3000', // Replace with your API base URL
+  //baseURL: "http://localhost:3000", // Replace with your API base URL
   baseURL,
+  // baseURL: Platform.OS === "ios" ? iosBaseUrL : andrdoidBaseUrl,
 
   timeout: 10000,
   headers: {
@@ -36,7 +42,11 @@ axiosInstance.interceptors.request.use(
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
 
-    config.params = config.params || config.data.params || {};
+    if (config.data) {
+      config.data.params = config.params || {};
+    }
+
+    // config.params = config.params || config.data.params || {};
     return config;
   },
   (error) => Promise.reject(error),
@@ -46,6 +56,8 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
+    console.log("interceptor error: ", error);
 
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;

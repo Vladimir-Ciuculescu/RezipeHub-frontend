@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Yumhub",
+    "name": "YumHub",
     "slug": "test",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icon2.png",
     "scheme": "yumhub-frontend",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -12,22 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "packagerOpts": {
-      "config": "metro.config.js",
-      "sourceExts": [
-        "expo.ts",
-        "expo.tsx",
-        "expo.js",
-        "expo.jsx",
-        "ts",
-        "tsx",
-        "js",
-        "jsx",
-        "json",
-        "wasm",
-        "svg"
-      ]
-    },
+
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.youmhub.test"
@@ -37,7 +22,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.yumhub.test"
+      "package": "com.yumhub.test",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -60,6 +46,12 @@
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "enableBackgroundRemoteNotifications": true
         }
       ]
     ],

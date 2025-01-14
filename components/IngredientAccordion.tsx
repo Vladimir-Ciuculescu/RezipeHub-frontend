@@ -1,5 +1,5 @@
 import { LayoutChangeEvent, Pressable, StyleSheet, Text, View } from "react-native";
-import React, { FC, useEffect, useRef } from "react";
+import React, { FC, useRef } from "react";
 import Animated, {
   ReduceMotion,
   useAnimatedStyle,
@@ -9,10 +9,11 @@ import Animated, {
 import { AntDesign } from "@expo/vector-icons";
 import { spacing } from "@/theme/spacing";
 import { useRouter } from "expo-router";
-import { IngredientResponse, Nutrient } from "@/types/ingredient";
+import { IngredientResponse, Nutrient } from "@/types/ingredient.types";
 import { $sizeStyles } from "@/theme/typography";
 import { colors } from "@/theme/colors";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
+import RNShadowView from "./shared/RNShadowView";
 
 const COLLAPSED_HEIGHT = 50;
 
@@ -40,8 +41,9 @@ const nutrientLabels: { key: keyof Nutrient; label: string }[] = [
 
 interface IngredientAccordionProps {
   ingredient: IngredientResponse;
+  flow: "create" | "update";
 }
-const IngredientAccordion: FC<IngredientAccordionProps> = ({ ingredient }) => {
+const IngredientAccordion: FC<IngredientAccordionProps> = ({ ingredient, flow }) => {
   const router = useRouter();
 
   const fullHeight = useRef(0);
@@ -71,7 +73,10 @@ const IngredientAccordion: FC<IngredientAccordionProps> = ({ ingredient }) => {
 
   const gotToConfirmIngredient = () => {
     router.navigate({
-      pathname: "recipe_modal_stack/recipe_confirm_ingredient",
+      pathname:
+        flow === "create"
+          ? "add_recipe/recipe_confirm_ingredient"
+          : "edit_recipe/recipe_edit_add_ingredient",
       params: { ingredient: JSON.stringify(ingredient) },
     });
   };
@@ -79,55 +84,106 @@ const IngredientAccordion: FC<IngredientAccordionProps> = ({ ingredient }) => {
   const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
   return (
-    <View style={styles.$containerStyle}>
-      <AnimatedPressable
-        onPress={gotToConfirmIngredient}
-        onLayout={handleOnLayout}
-        style={[styles.$pressableContainerStyle, accordionAnimatedStyle]}
-      >
-        <Animated.View style={{ gap: spacing.spacing16 }}>
-          <View style={styles.header}>
-            <View style={styles.$titleContainerstyle}>
-              <AnimatedPressable
-                style={{ transform: [{ rotate: iconRotation }] }}
-                onPress={handleAccordionPress}
-              >
-                <AntDesign
-                  name="plus"
-                  size={24}
-                  color="black"
-                />
-              </AnimatedPressable>
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={styles.title}
-              >
-                {ingredient.food.label}
-              </Text>
-            </View>
-            <AntDesign
-              name="right"
-              size={24}
-              color="black"
-            />
-          </View>
+    // <View style={styles.$containerStyle}>
+    //   <AnimatedPressable
+    //     onPress={gotToConfirmIngredient}
+    //     onLayout={handleOnLayout}
+    //     style={[styles.$pressableContainerStyle, accordionAnimatedStyle]}
+    //   >
+    //     <Animated.View style={{ gap: spacing.spacing16 }}>
+    //       <View style={styles.header}>
+    //         <View style={styles.$titleContainerstyle}>
+    //           <AnimatedPressable
+    //             style={{ transform: [{ rotate: iconRotation }] }}
+    //             onPress={handleAccordionPress}
+    //           >
+    //             <AntDesign
+    //               name="plus"
+    //               size={24}
+    //               color="black"
+    //             />
+    //           </AnimatedPressable>
+    //           <Text
+    //             numberOfLines={1}
+    //             ellipsizeMode="tail"
+    //             style={styles.title}
+    //           >
+    //             {ingredient.food.label}
+    //           </Text>
+    //         </View>
+    //         <AntDesign
+    //           name="right"
+    //           size={24}
+    //           color="black"
+    //         />
+    //       </View>
 
-          {nutrientLabels.map(({ key, label }) => {
-            const value = ingredient.food.nutrients[key];
-            return value || value === 0 ? (
-              <Text
-                key={key}
-                style={styles.$nutrientInfoStyle}
-              >
-                {label}:{" "}
-                <Text style={styles.$nutrientValueStyle}>{formatFloatingValue(value)}</Text>
-              </Text>
-            ) : null;
-          })}
-        </Animated.View>
-      </AnimatedPressable>
-    </View>
+    //       {nutrientLabels.map(({ key, label }) => {
+    //         const value = ingredient.food.nutrients[key];
+    //         return value || value === 0 ? (
+    //           <Text
+    //             key={key}
+    //             style={styles.$nutrientInfoStyle}
+    //           >
+    //             {label}:{" "}
+    //             <Text style={styles.$nutrientValueStyle}>{formatFloatingValue(value)}</Text>
+    //           </Text>
+    //         ) : null;
+    //       })}
+    //     </Animated.View>
+    //   </AnimatedPressable>
+    // </View>
+    <RNShadowView>
+      <View style={styles.$containerStyle}>
+        <AnimatedPressable
+          onPress={gotToConfirmIngredient}
+          onLayout={handleOnLayout}
+          style={[styles.$pressableContainerStyle, accordionAnimatedStyle]}
+        >
+          <Animated.View style={{ gap: spacing.spacing16 }}>
+            <View style={styles.header}>
+              <View style={styles.$titleContainerstyle}>
+                <AnimatedPressable
+                  style={{ transform: [{ rotate: iconRotation }] }}
+                  onPress={handleAccordionPress}
+                >
+                  <AntDesign
+                    name="plus"
+                    size={24}
+                    color="black"
+                  />
+                </AnimatedPressable>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={styles.title}
+                >
+                  {ingredient.food.label}
+                </Text>
+              </View>
+              <AntDesign
+                name="right"
+                size={24}
+                color="black"
+              />
+            </View>
+
+            {nutrientLabels.map(({ key, label }) => {
+              const value = ingredient.food.nutrients[key];
+              return value || value === 0 ? (
+                <Text
+                  key={key}
+                  style={styles.$nutrientInfoStyle}
+                >
+                  {label}:{" "}
+                  <Text style={styles.$nutrientValueStyle}>{formatFloatingValue(value)}</Text>
+                </Text>
+              ) : null;
+            })}
+          </Animated.View>
+        </AnimatedPressable>
+      </View>
+    </RNShadowView>
   );
 };
 
@@ -142,16 +198,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.spacing12,
     backgroundColor: "white",
     borderRadius: 16,
-    shadowColor: "#171717",
-    // Shadow for iOS
-    shadowOpacity: 0.1,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowRadius: 8,
-    // Shadow for Android
-    elevation: 5,
+    // shadowColor: "#171717",
+    // // Shadow for iOS
+    // shadowOpacity: 0.1,
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowRadius: 8,
+    // // Shadow for Android
+    // elevation: 5,
   },
 
   $titleContainerstyle: {

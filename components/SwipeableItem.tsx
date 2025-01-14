@@ -1,238 +1,64 @@
-// import React, { forwardRef, useCallback, useEffect, useRef } from "react";
-// import { Animated, StyleSheet } from "react-native";
-// import Reanimated, {
-//   runOnJS,
-//   useAnimatedStyle,
-//   useSharedValue,
-//   withTiming,
-// } from "react-native-reanimated";
-// import { RectButton, Swipeable } from "react-native-gesture-handler";
-// import { View } from "react-native-ui-lib";
-// import { colors } from "@/theme/colors";
-// import { AntDesign } from "@expo/vector-icons";
-// import RNIcon from "./shared/RNIcon";
-// import { useFocusEffect } from "expo-router";
-
-// const HEIGHT = 80;
-
-// interface SwipeableListItemProps {
-//   isEditing: boolean;
-//   onDelete: () => void;
-//   children: React.ReactNode;
-//   rowStyle: any;
-//   editButtonStyle: any;
-//   resizable?: boolean;
-//   onReset?: () => void;
-// }
-
-// const SwipeableListItem: React.FC<SwipeableListItemProps> = (props) => {
-//   const { resizable, isEditing, onDelete, children, rowStyle, editButtonStyle } = props;
-
-//   const heightValue = useSharedValue<number | string>(resizable ? "auto" : HEIGHT);
-
-//   const containerRef = useRef<any>(null);
-//   const swipeableRef = useRef<Swipeable>(null);
-
-//   const containerStyle = useAnimatedStyle(() => ({
-//     minHeight: resizable ? HEIGHT : undefined,
-//     //height: typeof heightValue.value === "number" ? heightValue.value : "auto",
-//     //height: resizable ? undefined : 80,
-//     transform: [{ translateX: withTiming(isEditing ? 0 : -20) }],
-//   }));
-
-//   useEffect(() => {
-//     if (containerRef.current && resizable) {
-//       containerRef.current.measure((_: any, __: any, ___: any, height: number) => {
-//         heightValue.value = height;
-//       });
-//     }
-//   }, []);
-
-//   useFocusEffect(
-//     useCallback(() => {
-//       if (swipeableRef.current) {
-//         swipeableRef.current.close();
-//       }
-//     }, [isEditing]),
-//   );
-
-//   const renderRightActionItem = (
-//     color: string,
-//     x: number,
-//     progress: Animated.AnimatedInterpolation<number>,
-//   ) => {
-//     const trans = progress.interpolate({
-//       inputRange: [0, 1],
-//       outputRange: [x, 0],
-//     });
-
-//     return (
-//       <Animated.View style={{ flex: 1, transform: [{ translateX: trans }] }}>
-//         <RectButton
-//           rippleColor="transparent"
-//           onPress={deleteItem}
-//           style={[styles.$rightActionStyle, { backgroundColor: color }]}
-//         >
-//           <RNIcon
-//             name="trash"
-//             color={colors.greyscale50}
-//           />
-//         </RectButton>
-//       </Animated.View>
-//     );
-//   };
-
-//   const renderRightActions = (progress: Animated.AnimatedInterpolation<number>) => {
-//     return (
-//       <View
-//         style={{
-//           width: 90,
-//           flexDirection: "row",
-//         }}
-//       >
-//         {renderRightActionItem(colors.red500, 64, progress)}
-//       </View>
-//     );
-//   };
-
-//   const deleteItem = () => {
-//     heightValue.value = withTiming(0, { duration: 300 }, (isFinished) => {
-//       if (isFinished) {
-//         runOnJS(onDelete)();
-//       }
-//     });
-//   };
-
-//   return (
-//     <Swipeable
-//       ref={swipeableRef}
-//       friction={2}
-//       enableTrackpadTwoFingerGesture
-//       leftThreshold={30}
-//       rightThreshold={40}
-//       dragOffsetFromRightEdge={isEditing ? Number.MAX_VALUE : 0}
-//       renderRightActions={renderRightActions}
-//     >
-//       <Reanimated.View
-//         ref={containerRef}
-//         style={[rowStyle, containerStyle]}
-//       >
-//         <Reanimated.View style={editButtonStyle}>
-//           <RectButton onPress={deleteItem}>
-//             <AntDesign
-//               name="minuscircle"
-//               size={22}
-//               color={colors.red600}
-//             />
-//           </RectButton>
-//         </Reanimated.View>
-//         <View row>{children}</View>
-//       </Reanimated.View>
-//     </Swipeable>
-//   );
-// };
-
-// // export default SwipeableListItem
-
-// export default SwipeableListItem;
-
-// const styles = StyleSheet.create({
-//   $rightActionStyle: {
-//     alignItems: "center",
-//     flex: 1,
-//     justifyContent: "center",
-//   },
-// });
-
 import React, { useCallback, useRef } from "react";
-import { StyleSheet, LayoutChangeEvent, Animated, DimensionValue } from "react-native";
-import Reanimated, {
+import { LayoutChangeEvent, DimensionValue, Pressable, StyleSheet } from "react-native";
+import Animated, {
   runOnJS,
+  SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { RectButton, Swipeable } from "react-native-gesture-handler";
 import { View } from "react-native-ui-lib";
 import { colors } from "@/theme/colors";
-import { AntDesign } from "@expo/vector-icons";
+import ReanimatedSwipeable, {
+  SwipeableMethods,
+} from "react-native-gesture-handler/ReanimatedSwipeable";
 import RNIcon from "./shared/RNIcon";
 import { useFocusEffect } from "expo-router";
 
+type action = "delete" | "edit";
+
+const ITEM_OFFSET = 64;
+
 interface SwipeableListItemProps {
-  isEditing: boolean;
-  onDelete: () => void;
+  onDelete?: () => void;
+  onEdit?: () => void;
   children: React.ReactNode;
-  rowStyle: any;
-  editButtonStyle: any;
-  onReset?: () => void;
+  actions: action[];
 }
 
 const SwipeableListItem: React.FC<SwipeableListItemProps> = (props) => {
-  const { isEditing, onDelete, children, rowStyle, editButtonStyle } = props;
+  const { onDelete, onEdit, children, actions } = props;
+
+  const swipeabeRef = useRef<SwipeableMethods>(null);
 
   const heightValue = useSharedValue<undefined | DimensionValue>("auto");
 
-  const swipeableRef = useRef<Swipeable>(null);
-
   const containerStyle = useAnimatedStyle(() => ({
     height: heightValue.value,
-    transform: [{ translateX: withTiming(isEditing ? 0 : -20) }],
   }));
 
   useFocusEffect(
     useCallback(() => {
-      if (swipeableRef.current) {
-        swipeableRef.current.close();
-      }
-    }, [isEditing]),
+      return () => {
+        setTimeout(() => {
+          if (swipeabeRef && swipeabeRef.current) {
+            swipeabeRef.current!.reset();
+          }
+        }, 100);
+      };
+    }, []),
   );
-
-  const renderRightActionItem = (
-    color: string,
-    x: number,
-    progress: Animated.AnimatedInterpolation<number>,
-  ) => {
-    const trans = progress.interpolate({
-      inputRange: [0, 1],
-      outputRange: [x, 0],
-    });
-
-    return (
-      <Animated.View style={{ flex: 1, transform: [{ translateX: trans }] }}>
-        <RectButton
-          rippleColor="transparent"
-          onPress={deleteItem}
-          style={[styles.$rightActionStyle, { backgroundColor: color }]}
-        >
-          <RNIcon
-            name="trash"
-            color={colors.greyscale50}
-          />
-        </RectButton>
-      </Animated.View>
-    );
-  };
-
-  const renderRightActions = (progress: Animated.AnimatedInterpolation<number>) => {
-    return (
-      <View
-        style={{
-          width: 90,
-          flexDirection: "row",
-        }}
-      >
-        {renderRightActionItem(colors.red500, 64, progress)}
-      </View>
-    );
-  };
 
   const deleteItem = () => {
     heightValue.value = withTiming(0, { duration: 300 }, (isFinished) => {
       if (isFinished) {
-        runOnJS(onDelete)();
+        runOnJS(onDelete!)();
       }
     });
+  };
+
+  const editItem = () => {
+    onEdit!();
   };
 
   const handleLayout = (event: LayoutChangeEvent) => {
@@ -242,41 +68,102 @@ const SwipeableListItem: React.FC<SwipeableListItemProps> = (props) => {
     }
   };
 
+  const renderRightActions = (_: SharedValue<number>, drag: SharedValue<number>) => {
+    const animatedStyle = useAnimatedStyle(() => {
+      return {
+        transform: [{ translateX: drag.value + ITEM_OFFSET * actions.length }],
+      };
+    });
+
+    return (
+      <View style={{ width: ITEM_OFFSET * actions.length, flexDirection: "row" }}>
+        {actions.map((action, key) => {
+          let icon;
+          let backgroundColor;
+
+          switch (action) {
+            case "delete":
+              icon = (
+                <Pressable
+                  style={styles.$actionContainerStyle}
+                  onPress={deleteItem}
+                >
+                  <RNIcon
+                    name="trash"
+                    color={colors.greyscale50}
+                  />
+                </Pressable>
+              );
+              backgroundColor = colors.red600;
+              break;
+
+            case "edit":
+              icon = (
+                <Pressable
+                  style={styles.$actionContainerStyle}
+                  onPress={editItem}
+                >
+                  <RNIcon
+                    name="edit"
+                    color={colors.greyscale50}
+                  />
+                </Pressable>
+              );
+              backgroundColor = colors.accent200;
+          }
+
+          return (
+            <Animated.View
+              key={`${action}-${key}`}
+              style={[{ flex: 1 }, animatedStyle]}
+            >
+              <Pressable
+                style={[
+                  {
+                    alignItems: "center",
+                    flex: 1,
+                    justifyContent: "center",
+                    backgroundColor,
+                  },
+                  { width: ITEM_OFFSET },
+                ]}
+              >
+                {icon}
+              </Pressable>
+            </Animated.View>
+          );
+        })}
+      </View>
+    );
+  };
+
   return (
-    <Swipeable
-      ref={swipeableRef}
+    <ReanimatedSwipeable
+      ref={swipeabeRef}
+      overshootRight={false}
       friction={2}
+      leftThreshold={80}
       enableTrackpadTwoFingerGesture
-      leftThreshold={30}
       rightThreshold={40}
-      dragOffsetFromRightEdge={isEditing ? Number.MAX_VALUE : 0}
       renderRightActions={renderRightActions}
     >
-      <Reanimated.View
-        style={[rowStyle, containerStyle]}
+      <Animated.View
+        style={[containerStyle]}
         onLayout={handleLayout}
       >
-        <Reanimated.View style={editButtonStyle}>
-          <RectButton onPress={deleteItem}>
-            <AntDesign
-              name="minuscircle"
-              size={22}
-              color={colors.red600}
-            />
-          </RectButton>
-        </Reanimated.View>
         <View row>{children}</View>
-      </Reanimated.View>
-    </Swipeable>
+      </Animated.View>
+    </ReanimatedSwipeable>
   );
 };
 
 export default SwipeableListItem;
 
 const styles = StyleSheet.create({
-  $rightActionStyle: {
-    alignItems: "center",
-    flex: 1,
+  $actionContainerStyle: {
+    width: "100%",
+    height: "100%",
     justifyContent: "center",
+    alignItems: "center",
   },
 });
