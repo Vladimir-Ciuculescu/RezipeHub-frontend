@@ -23,7 +23,7 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
 
-import { ACCESS_TOKEN, IS_LOGGED_IN, ONBOARDED, storage } from "@/storage";
+import { ACCESS_TOKEN, IS_LOGGED_IN, NOTIFICATIONS, ONBOARDED, storage } from "@/storage";
 import { jwtDecode } from "jwt-decode";
 import { CurrentUser } from "@/types/user.types";
 import UserService from "@/api/services/user.service";
@@ -31,7 +31,6 @@ import useUserStore from "@/zustand/useUserStore";
 import TokenService from "@/api/services/token.service";
 import Toast from "react-native-toast-message";
 import toastConfig from "@/components/Toast/ToastConfing";
-import NetInfo from "@react-native-community/netinfo";
 import { NotificationProvider } from "@/context/NotificationContext";
 import * as Notifications from "expo-notifications";
 
@@ -87,6 +86,17 @@ const AppLayout = () => {
         if (nextAppState === "active" && appBadgeCount > 0) {
           invalidateQueryClient.invalidateQueries({ queryKey: ["all-notifications"] });
         }
+
+        // if (nextAppState === "background") {
+        //   await Notifications.setNotificationHandler({
+        //     // handleNotification: async () => ({
+        //     //   shouldShowAlert: notificationsEnabled ? true : false,
+        //     //   shouldPlaySound: notificationsEnabled ? true : false,
+        //     //   shouldSetBadge: notificationsEnabled ? true : false,
+        //     // }),
+        //   });
+        // }
+
         // if (nextAppState === "active") {
         //   console.log("state changed", appBadgeCount);
         // }

@@ -2,6 +2,7 @@ import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import Constants from "expo-constants";
 import { Platform } from "react-native";
+import { NOTIFICATIONS, storage } from "@/storage";
 
 export async function registerForPushNotificationsAsync() {
   if (Platform.OS === "android") {
@@ -22,6 +23,11 @@ export async function registerForPushNotificationsAsync() {
       const { status } = await Notifications.requestPermissionsAsync({
         ios: { allowAlert: true, allowBadge: true, allowSound: true },
       });
+
+      if (status === "granted") {
+        storage.set(NOTIFICATIONS, true);
+      }
+
       finalStatus = status;
     }
 

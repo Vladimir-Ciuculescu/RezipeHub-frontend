@@ -10,6 +10,9 @@ import RNShadowView from "@/components/shared/RNShadowView";
 import { spacing } from "@/theme/spacing";
 import { Switch } from "react-native-ui-lib";
 import RNButton from "@/components/shared/RNButton";
+import { NOTIFICATIONS, storage } from "@/storage";
+import { useNotification } from "@/context/NotificationContext";
+import NotificationService from "@/api/services/notifications.service";
 
 interface NotificationItemProps {
   label: string;
@@ -55,7 +58,17 @@ const Settings = () => {
   const navigation = useNavigation();
   const router = useRouter();
 
-  const [notifications, toggleNotifications] = useState(true);
+  const { expoPushToken } = useNotification();
+
+  const notificationsPermissions = storage.getBoolean(NOTIFICATIONS);
+
+  const [notifications, toggleNotifications] = useState(notificationsPermissions ? true : false);
+
+  const toggleSystemNotifications = async () => {
+    toggleNotifications((oldValue) => !oldValue);
+
+    await NotificationService.toggleDeviceNotifications(expoPushToken!);
+  };
 
   const ITEMS = [
     {
@@ -67,7 +80,8 @@ const Settings = () => {
           <Switch
             onColor={colors.accent300}
             value={notifications}
-            onValueChange={toggleNotifications}
+            // onValueChange={toggleNotifications}
+            onValueChange={toggleSystemNotifications}
           />
         </View>
       ),
@@ -125,8 +139,9 @@ const Settings = () => {
       contentContainerStyle={styles.$contentContainerStyle}
       showsVerticalScrollIndicator={false}
     >
-      {ITEMS.map((item) => (
+      {ITEMS.map((item, index) => (
         <NotificationItem
+          key={index}
           label={item.label}
           icon={item.icon}
           rightElement={item.rightElement}

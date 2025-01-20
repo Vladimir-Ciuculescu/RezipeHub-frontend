@@ -89,7 +89,10 @@ const TabLayout = () => {
           options={{
             headerShown: false,
             tabBarIcon: ({ focused }) => (
-              <RNIcon name={focused ? "notification_focused" : "notification"} />
+              <RNIcon
+                name={focused ? "notification_focused" : "notification"}
+                color={colors.greyscale300}
+              />
             ),
             tabBarBadge: badgeCount || undefined,
           }}

@@ -34,6 +34,14 @@ const NotificationService = {
       throw handleError(error);
     }
   },
+
+  toggleDeviceNotifications: async (expoPushToken: string) => {
+    try {
+      await axiosInstance.put(`${NOTIFICATIONS}/toggle-notifications`, { expoPushToken });
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
 };
 
 export default NotificationService;
