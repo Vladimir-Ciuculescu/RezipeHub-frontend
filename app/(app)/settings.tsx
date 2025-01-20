@@ -18,9 +18,15 @@ interface NotificationItemProps {
   label: string;
   icon: string;
   rightElement?: React.ReactNode;
+  onPress: () => void;
 }
 
-const NotificationItem: React.FC<NotificationItemProps> = ({ label, icon, rightElement }) => {
+const NotificationItem: React.FC<NotificationItemProps> = ({
+  label,
+  icon,
+  rightElement,
+  onPress,
+}) => {
   return (
     <RNShadowView>
       <View style={styles.$settingsItemContainerStyle}>
@@ -39,6 +45,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ label, icon, rightE
         {rightElement || (
           <RNButton
             style={styles.$arrowBtnStyle}
+            onPress={onPress}
             iconSource={() => (
               <RNIcon
                 name="arrow_right"
@@ -70,6 +77,10 @@ const Settings = () => {
     await NotificationService.toggleDeviceNotifications(expoPushToken!);
   };
 
+  const goToSection = (section: string) => {
+    router.navigate(section);
+  };
+
   const ITEMS = [
     {
       label: "Notifications",
@@ -80,17 +91,15 @@ const Settings = () => {
           <Switch
             onColor={colors.accent300}
             value={notifications}
-            // onValueChange={toggleNotifications}
             onValueChange={toggleSystemNotifications}
           />
         </View>
       ),
-      onPress: () => {},
     },
     {
       label: "About the app",
       icon: "info_square",
-      onPress: () => {},
+      onPress: () => goToSection("about"),
     },
     {
       label: "Contact",
@@ -145,6 +154,7 @@ const Settings = () => {
           label={item.label}
           icon={item.icon}
           rightElement={item.rightElement}
+          onPress={item.onPress}
         />
       ))}
     </ScrollView>

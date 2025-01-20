@@ -28,6 +28,7 @@ import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 import RNFadeInView from "@/components/shared/RNFadeInView";
 import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
 import { useIsFocused } from "@react-navigation/native";
+import RNPressable from "@/components/shared/RNPressable";
 
 const { width: screenWidth, height } = Dimensions.get("window");
 const numColumns = 2;
@@ -122,13 +123,13 @@ const Profile = () => {
         >
           <View style={styles.$headerStyle}>
             <Text style={styles.$titleStyle}>Account</Text>
-            <TouchableOpacity onPress={goToSettings}>
+            <RNPressable onPress={goToSettings}>
               <Feather
                 name="settings"
                 size={moderateScale(24)}
                 color={colors.slate900}
               />
-            </TouchableOpacity>
+            </RNPressable>
           </View>
 
           <RNShadowView style={styles.$profileContainerStyle}>
