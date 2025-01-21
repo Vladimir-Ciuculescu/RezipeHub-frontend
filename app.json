@@ -4,7 +4,7 @@
     "slug": "test",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon2.png",
+    "icon": "./assets/images/icon3.png",
     "scheme": "yumhub-frontend",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -15,7 +15,10 @@
 
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.youmhub.test"
+      "bundleIdentifier": "com.youmhub.test",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": ["instagram", "linkedin"]
+      }
     },
     "android": {
       "adaptiveIcon": {

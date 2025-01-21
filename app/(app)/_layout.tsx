@@ -340,7 +340,19 @@ const AppLayout = () => {
           headerShadowVisible: false,
           headerTitleAlign: "center",
           headerStyle: { backgroundColor: colors.greyscale75 },
-          contentStyle: { backgroundColor: colors.greyscale150 },
+          contentStyle: { backgroundColor: colors.greyscale75 },
+
+          gestureEnabled: false,
+        }}
+      />
+      <Stack.Screen
+        name="contact"
+        options={{
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerTitleAlign: "center",
+          headerStyle: { backgroundColor: colors.greyscale75 },
+          contentStyle: { backgroundColor: colors.greyscale75 },
           gestureEnabled: false,
         }}
       />

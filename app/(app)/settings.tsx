@@ -31,7 +31,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
     <RNShadowView>
       <View style={styles.$settingsItemContainerStyle}>
         <View style={styles.$settingsLabelContainerStyle}>
-          <View style={{}}>
+          <View>
             <RNIcon
               name={icon}
               color={colors.accent300}
@@ -104,7 +104,7 @@ const Settings = () => {
     {
       label: "Contact",
       icon: "profile",
-      onPress: () => {},
+      onPress: () => goToSection("contact"),
     },
     {
       label: "Rate",
