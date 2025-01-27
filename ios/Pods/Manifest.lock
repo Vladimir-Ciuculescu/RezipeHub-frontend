@@ -6,6 +6,8 @@ PODS:
     - DGSwiftUtilities (~> 0.29)
   - DGSwiftUtilities (0.37.0)
   - DoubleConversion (1.1.6)
+  - EASClient (0.12.0):
+    - ExpoModulesCore
   - EXApplication (5.9.1):
     - ExpoModulesCore
   - EXConstants (16.0.2):
@@ -307,9 +309,35 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - EXTaskManager (11.8.2):
+  - EXStructuredHeaders (3.8.0)
+  - EXUpdates (0.25.27):
+    - DoubleConversion
+    - EASClient
+    - EXManifests
     - ExpoModulesCore
-    - UMAppLoader
+    - EXStructuredHeaders
+    - EXUpdatesInterface
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - ReachabilitySwift
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - "sqlite3 (~> 3.45.3+1)"
+    - Yoga
   - EXUpdatesInterface (0.16.2):
     - ExpoModulesCore
   - FBLazyVector (0.74.6)
@@ -361,6 +389,11 @@ PODS:
   - MMKV (2.0.0):
     - MMKVCore (~> 2.0.0)
   - MMKVCore (2.0.0)
+  - PurchasesHybridCommon (13.14.0):
+    - RevenueCat (= 5.14.0)
+  - PurchasesHybridCommonUI (13.14.0):
+    - PurchasesHybridCommon (= 13.14.0)
+    - RevenueCatUI (= 5.14.0)
   - RCT-Folly (2024.01.01.00):
     - boost
     - DoubleConversion
@@ -383,6 +416,7 @@ PODS:
     - FBLazyVector (= 0.74.6)
     - RCTRequired (= 0.74.6)
     - React-Core (= 0.74.6)
+  - ReachabilitySwift (5.2.4)
   - React (0.74.6):
     - React-Core (= 0.74.6)
     - React-Core/DevSupport (= 0.74.6)
@@ -1557,6 +1591,9 @@ PODS:
     - ExpoModulesCore
   - ReactNativeUiLib (4.3.2):
     - React
+  - RevenueCat (5.14.0)
+  - RevenueCatUI (5.14.0):
+    - RevenueCat (= 5.14.0)
   - RNCPicker (2.7.5):
     - React-Core
   - RNFlashList (1.6.4):
@@ -1582,6 +1619,12 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNPaywalls (8.5.0):
+    - PurchasesHybridCommonUI (= 13.14.0)
+    - React-Core
+  - RNPurchases (8.5.0):
+    - PurchasesHybridCommon (= 13.14.0)
+    - React-Core
   - RNReanimated (3.10.1):
     - DoubleConversion
     - glog
@@ -1639,12 +1682,15 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.0)
-  - UMAppLoader (4.6.0)
+  - "sqlite3 (3.45.3+1)":
+    - "sqlite3/common (= 3.45.3+1)"
+  - "sqlite3/common (3.45.3+1)"
   - Yoga (0.0.0)
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
+  - EASClient (from `../node_modules/expo-eas-client/ios`)
   - EXApplication (from `../node_modules/expo-application/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - EXImageLoader (from `../node_modules/expo-image-loader/ios`)
@@ -1673,7 +1719,8 @@ DEPENDENCIES:
   - ExpoSystemUI (from `../node_modules/expo-system-ui/ios`)
   - ExpoWebBrowser (from `../node_modules/expo-web-browser/ios`)
   - EXSplashScreen (from `../node_modules/expo-splash-screen/ios`)
-  - EXTaskManager (from `../node_modules/expo-task-manager/ios`)
+  - EXStructuredHeaders (from `../node_modules/expo-structured-headers/ios`)
+  - EXUpdates (from `../node_modules/expo-updates/ios`)
   - EXUpdatesInterface (from `../node_modules/expo-updates-interface/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
@@ -1739,10 +1786,11 @@ DEPENDENCIES:
   - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
   - "RNFlashList (from `../node_modules/@shopify/flash-list`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNPaywalls (from `../node_modules/react-native-purchases-ui`)
+  - RNPurchases (from `../node_modules/react-native-purchases`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
-  - UMAppLoader (from `../node_modules/unimodules-app-loader/ios`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -1756,17 +1804,25 @@ SPEC REPOS:
     - lottie-ios
     - MMKV
     - MMKVCore
+    - PurchasesHybridCommon
+    - PurchasesHybridCommonUI
+    - ReachabilitySwift
+    - RevenueCat
+    - RevenueCatUI
     - SDWebImage
     - SDWebImageAVIFCoder
     - SDWebImageSVGCoder
     - SDWebImageWebPCoder
     - SocketRocket
+    - sqlite3
 
 EXTERNAL SOURCES:
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
+  EASClient:
+    :path: "../node_modules/expo-eas-client/ios"
   EXApplication:
     :path: "../node_modules/expo-application/ios"
   EXConstants:
@@ -1823,8 +1879,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-web-browser/ios"
   EXSplashScreen:
     :path: "../node_modules/expo-splash-screen/ios"
-  EXTaskManager:
-    :path: "../node_modules/expo-task-manager/ios"
+  EXStructuredHeaders:
+    :path: "../node_modules/expo-structured-headers/ios"
+  EXUpdates:
+    :path: "../node_modules/expo-updates/ios"
   EXUpdatesInterface:
     :path: "../node_modules/expo-updates-interface/ios"
   FBLazyVector:
@@ -1952,14 +2010,16 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@shopify/flash-list"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNPaywalls:
+    :path: "../node_modules/react-native-purchases-ui"
+  RNPurchases:
+    :path: "../node_modules/react-native-purchases"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNSVG:
     :path: "../node_modules/react-native-svg"
-  UMAppLoader:
-    :path: "../node_modules/unimodules-app-loader/ios"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -1969,6 +2029,7 @@ SPEC CHECKSUMS:
   ContextMenuAuxiliaryPreview: 20be0be795b783b68f8792732eed4bed9f202c1c
   DGSwiftUtilities: db5a361b89ae6ae344ae4b55acaa23eb79cdc5fb
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
+  EASClient: 1509a9a6b48b932ec61667644634daf2562983b8
   EXApplication: c08200c34daca7af7fd76ac4b9d606077410e8ad
   EXConstants: 409690fbfd5afea964e5e9d6c4eb2c2b59222c59
   EXImageLoader: ab589d67d6c5f2c33572afea9917304418566334
@@ -1997,7 +2058,8 @@ SPEC CHECKSUMS:
   ExpoSystemUI: d4f065a016cae6721b324eb659cdee4d4cf0cb26
   ExpoWebBrowser: 7595ccac6938eb65b076385fd23d035db9ecdc8e
   EXSplashScreen: 3cad09949c2ca6730cbb2801b8c51cb87692425a
-  EXTaskManager: 9c3520305c3aa1b4a12a7c6d1e3f85f2779c06e9
+  EXStructuredHeaders: cb8d1f698e144f4c5547b4c4963e1552f5d2b457
+  EXUpdates: fe42e1cdace89a8db450351fbc38577b237af76b
   EXUpdatesInterface: 996527fd7d1a5d271eb523258d603f8f92038f24
   FBLazyVector: 4b1589d37c9ff4dba11a63083fe7515fad3ac111
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
@@ -2010,10 +2072,13 @@ SPEC CHECKSUMS:
   lottie-react-native: f851c0e235f171d99083c803f728f644be1dcf65
   MMKV: f7d1d5945c8765f97f39c3d121f353d46735d801
   MMKVCore: c04b296010fcb1d1638f2c69405096aac12f6390
+  PurchasesHybridCommon: ea662e5a551e6fc79c1eb17feb0478c01c59f3e6
+  PurchasesHybridCommonUI: 7f6a7707655327740f4b7e2842985bcb38745030
   RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
   RCTDeprecation: 5f1d7e1f8ef6c53f0207e3ac0d0ca23575e8a6ab
   RCTRequired: dcfd24ece09940bbf24b7c2974f4eb68a9baee55
   RCTTypeSafety: 3d65944055cc73f3bb28c3f05c7eaff2bb7ceb83
+  ReachabilitySwift: 32793e867593cfc1177f5d16491e3a197d2fccda
   React: c5e9f3c07a890a7e2a1ec9b79faa5c53dd7aee01
   React-callinvoker: 9ac986dbbd0e1b3463cb740b12c0b37dbcd15fed
   React-Codegen: f5bd8446ba2b7d4a7bb4b25e137f44f286eb98f7
@@ -2064,9 +2129,13 @@ SPEC CHECKSUMS:
   ReactNativeIosContextMenu: 4601cc5113ca45bc7295707bf5c76987caac8bd7
   ReactNativeIosUtilities: 4980803356bff7906929d5d034da58bfc9bb824a
   ReactNativeUiLib: acf5e70a64140d6f38a969978f090c16862c2d3d
+  RevenueCat: 34f4147c8d26d2f3c691be4e3c9f033698e557f2
+  RevenueCatUI: d07cd11f991f9fe72fbc64aa14257438ff1b3189
   RNCPicker: 3e2c37a8328f368ce14da050cdc8231deb5fc9f9
   RNFlashList: b521ebdd7f9352673817f1d98e8bdc0c8cf8545b
   RNGestureHandler: 6fee3422fd8c81c5ee756fa72e3d1780e9943d9d
+  RNPaywalls: 87b0a5aaa0ae343f7e4416c9541287ecd57adcde
+  RNPurchases: a99a9d9139c977811e5db73178ea21d8c12f11ac
   RNReanimated: 35f9ac9c3ac42d0497ebd1cce5c39d7687a8493e
   RNScreens: b32a9ff15bea7fcdbe5dff6477bc503f792b1208
   RNSVG: 43b64ed39c14ce830d840903774154ca0c1f27ec
@@ -2075,9 +2144,9 @@ SPEC CHECKSUMS:
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  UMAppLoader: f17a5ee8e85b536ace0fc254b447a37ed198d57e
+  sqlite3: 02d1f07eaaa01f80a1c16b4b31dfcbb3345ee01a
   Yoga: 4f4f07a17818e76d1b04edc01b68b6d49a682100
 
-PODFILE CHECKSUM: 050dc425b69a6b12ac3722cf1ea82c464bff255a
+PODFILE CHECKSUM: 01edda19a2ef0f619a4bd48b8ce843d47b98290d
 
 COCOAPODS: 1.15.2

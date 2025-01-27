@@ -67,6 +67,8 @@ export const fonts = {
 };
 
 export const $sizeStyles = {
+  xxs: { fontSize: normalize(10), lineHeight: normalize(18) } satisfies TextStyle,
+
   xs: { fontSize: normalize(12), lineHeight: normalize(18) } satisfies TextStyle,
 
   s: { fontSize: normalize(14), lineHeight: normalize(20) } satisfies TextStyle,

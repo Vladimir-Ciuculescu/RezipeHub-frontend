@@ -176,7 +176,7 @@ const AllLatestRecipes = () => {
                           width={moderateScale(16)}
                           style={styles.$clockIconStyle}
                         />
-                        <Text style={styles.$timeTextStyle}>{item.preparationTime} Min</Text>
+                        <Text style={styles.$timeTextStyle}>{item.preparationTime} min</Text>
                       </View>
                     </View>
                   </View>
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   $userNameStyle: {
-    ...$sizeStyles.xs,
+    ...$sizeStyles.xxs,
     fontFamily: "sofia400",
     color: colors.greyscale300,
     maxWidth: horizontalScale(100),
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
     color: colors.greyscale300,
   },
   $timeTextStyle: {
-    ...$sizeStyles.xs,
+    ...$sizeStyles.xxs,
     color: colors.greyscale300,
   },
   $noResultsContainerStyle: {

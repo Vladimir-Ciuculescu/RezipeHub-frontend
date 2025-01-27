@@ -1,14 +1,14 @@
 import RNButton from "@/components/shared/RNButton";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Alert, Platform, Pressable, StyleSheet, View } from "react-native";
 import { Text } from "react-native-ui-lib";
-import { useNavigation, useRouter } from "expo-router";
+import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import { $sizeStyles } from "@/theme/typography";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { spacing } from "@/theme/spacing";
 import { StatusBar } from "expo-status-bar";
-import { Formik } from "formik";
+import { Formik, FormikProps } from "formik";
 import { loginSchema } from "@/yup/login.schema";
 import RnInput from "@/components/shared/RNInput";
 import { Feather } from "@expo/vector-icons";
@@ -34,6 +34,7 @@ import TokenService from "@/api/services/token.service";
 import { horizontalScale, verticalScale } from "@/utils/scale";
 import { useNotification } from "@/context/NotificationContext";
 import * as Device from "expo-device";
+import Purchases from "react-native-purchases";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -46,7 +47,6 @@ const Login = () => {
   useWarmUpBrowser();
 
   const { expoPushToken } = useNotification();
-
   const queryClient = useQueryClient();
   const { isSignedIn, signOut } = useAuth();
   const { user } = useUser();
@@ -56,6 +56,8 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [provider, setProvider] = useState<SocialProvider | null>(null);
   const router = useRouter();
+
+  const formikRef = useRef<FormikProps<any>>(null);
 
   const setUser = useUserStore.use.setUser();
   const setLoggedStatus = useUserStore.use.setLoggedStatus();
@@ -91,6 +93,14 @@ const Login = () => {
       handleSocialLogin(payload);
     }
   }, [isSignedIn, loggedIn]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (formikRef.current) {
+        formikRef.current.resetForm();
+      }
+    }, []),
+  );
 
   const goToHome = () => {
     router.navigate("home");
@@ -147,8 +157,10 @@ const Login = () => {
     }
   };
 
-  const storeUser = (accessToken: string, refreshToken: string) => {
+  const storeUser = async (accessToken: string, refreshToken: string) => {
     const userData = jwtDecode(accessToken!) as CurrentUser;
+
+    await Purchases.logIn(userData.id.toString());
 
     storage.set(ACCESS_TOKEN, accessToken);
     storage.set(REFRESH_TOKEN, refreshToken);
@@ -221,6 +233,7 @@ const Login = () => {
       <StatusBar style="dark" />
       <View style={{ width: "100%", gap: spacing.spacing24 }}>
         <Formik
+          innerRef={formikRef}
           initialValues={initialValues}
           onSubmit={handleLogin}
           validationSchema={loginSchema}

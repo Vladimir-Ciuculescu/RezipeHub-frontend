@@ -24,6 +24,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>EASClient.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>EXApplication-ExpoApplication_privacy.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -79,12 +84,17 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>EXTaskManager-ExpoTaskManager_privacy.xcscheme</key>
+		<key>EXStructuredHeaders.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>EXTaskManager.xcscheme</key>
+		<key>EXUpdates-EXUpdates.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>EXUpdates.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -209,7 +219,22 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-YumHub.xcscheme</key>
+		<key>Pods-RezipeHub.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>PurchasesHybridCommon-PurchasesHybridCommon.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>PurchasesHybridCommon.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>PurchasesHybridCommonUI.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -249,6 +274,16 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>RNPaywalls.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>RNPurchases.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>RNReanimated.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -260,6 +295,16 @@
 			<false/>
 		</dict>
 		<key>RNScreens.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>ReachabilitySwift-ReachabilitySwift.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>ReachabilitySwift.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -499,6 +544,26 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>RevenueCat-RevenueCat.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>RevenueCat.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>RevenueCatUI-RevenueCat_RevenueCatUI.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>RevenueCatUI.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>SDWebImage-SDWebImage.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -525,11 +590,6 @@
 			<false/>
 		</dict>
 		<key>SocketRocket.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>UMAppLoader.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -640,6 +700,11 @@
 			<false/>
 		</dict>
 		<key>react-native-safe-area-context.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>sqlite3.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

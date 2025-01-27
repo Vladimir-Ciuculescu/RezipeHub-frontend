@@ -1,14 +1,11 @@
-// if (__DEV__) {
-//   require("../ReactotronConfig");
-// }
-
 import React, { useEffect } from "react";
 import {
+  Alert,
   Appearance,
   AppState,
   AppStateStatus,
   BackHandler,
-  LogBox,
+  Platform,
   StyleSheet,
 } from "react-native";
 import { colors } from "@/theme/colors";
@@ -22,7 +19,6 @@ import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/reac
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
-
 import { ACCESS_TOKEN, IS_LOGGED_IN, ONBOARDED, storage } from "@/storage";
 import { jwtDecode } from "jwt-decode";
 import { CurrentUser } from "@/types/user.types";
@@ -31,13 +27,11 @@ import useUserStore from "@/zustand/useUserStore";
 import TokenService from "@/api/services/token.service";
 import Toast from "react-native-toast-message";
 import toastConfig from "@/components/Toast/ToastConfing";
-import NetInfo from "@react-native-community/netinfo";
 import { NotificationProvider } from "@/context/NotificationContext";
 import * as Notifications from "expo-notifications";
+import Purchases from "react-native-purchases";
 
-LogBox.ignoreLogs([
-  "Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead. ",
-]);
+Purchases.setLogLevel(Purchases.LOG_LEVEL.VERBOSE);
 
 Appearance.setColorScheme("light");
 
@@ -67,6 +61,7 @@ const tokenCache = {
 };
 
 const clerkKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
 const queryClient = new QueryClient();
 
 const AppLayout = () => {
@@ -87,9 +82,6 @@ const AppLayout = () => {
         if (nextAppState === "active" && appBadgeCount > 0) {
           invalidateQueryClient.invalidateQueries({ queryKey: ["all-notifications"] });
         }
-        // if (nextAppState === "active") {
-        //   console.log("state changed", appBadgeCount);
-        // }
       },
     );
 
@@ -97,24 +89,6 @@ const AppLayout = () => {
     const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
       return true;
     });
-
-    // // * Check internet connection
-    // NetInfo.fetch().then((state) => {
-    //   // console.log(state.isConnected);
-
-    //   if (!state.isConnected) {
-    //     Toast.show({
-    //       type: "error",
-    //       props: {
-    //         title: "No internet connection",
-    //       },
-    //     });
-    //   }
-    // });
-
-    // const unsubscribe = NetInfo.addEventListener((state) => {
-    //   // console.log(state);
-    // });
 
     //* Check if user is onboarded or not
     if (!onboarded) {
@@ -145,6 +119,8 @@ const AppLayout = () => {
     const newAccessToken = await UserService.getProfile(userData.id);
 
     const newUserData = jwtDecode(newAccessToken) as CurrentUser;
+
+    await Purchases.logIn(newUserData.id.toString());
 
     setUser(newUserData);
 
@@ -248,7 +224,6 @@ const AppLayout = () => {
       <Stack.Screen
         name="otp_verification"
         options={{
-          animation: "fade",
           headerBackVisible: false,
           headerShadowVisible: false,
           headerTitleAlign: "center",
@@ -322,12 +297,53 @@ const AppLayout = () => {
           gestureEnabled: false,
         }}
       />
+
+      <Stack.Screen
+        name="about"
+        options={{
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerTitleAlign: "center",
+          headerStyle: { backgroundColor: colors.greyscale75 },
+          contentStyle: { backgroundColor: colors.greyscale75 },
+
+          gestureEnabled: false,
+        }}
+      />
+      <Stack.Screen
+        name="contact"
+        options={{
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerTitleAlign: "center",
+          headerStyle: { backgroundColor: colors.greyscale75 },
+          contentStyle: { backgroundColor: colors.greyscale75 },
+          gestureEnabled: false,
+        }}
+      />
     </Stack>
   );
 };
 
 const Layout = () => {
   let [fontsLoaded] = useFonts(fontsToLoad);
+
+  useEffect(() => {
+    if (Platform.OS === "ios") {
+      if (!process.env.EXPO_PUBLIC_RC_IOS) {
+        Alert.alert("Error configuring RC", "RevenueCat API key not provided");
+      } else {
+        Purchases.configure({ apiKey: process.env.EXPO_PUBLIC_RC_IOS });
+      }
+    } else if (Platform.OS === "android") {
+      // Purchases.configure({ apiKey: process.env.EXPO_PUBLIC_RC_ANDROID });
+      if (!process.env.EXPO_PUBLIC_RC_ANDROID) {
+        Alert.alert("Error configuring RC", "RevenueCat API key not provided");
+      } else {
+        Purchases.configure({ apiKey: process.env.EXPO_PUBLIC_RC_ANDROID });
+      }
+    }
+  }, []);
 
   if (!fontsLoaded) return null;
 

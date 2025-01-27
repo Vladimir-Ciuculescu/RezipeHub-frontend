@@ -6,7 +6,7 @@ import {
   User,
 } from "@/types/user.types";
 import { handleError } from "../handleError";
-import { axiosPublicInstance } from "..";
+import { axiosInstance, axiosPublicInstance } from "..";
 import { AUTH } from "../constants";
 
 const AuthService = {
@@ -40,6 +40,14 @@ const AuthService = {
   resetPassword: async (payload: ResetPasswordRequest) => {
     try {
       await axiosPublicInstance.post(`${AUTH}/reset-password`, payload);
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+
+  logOut: async (userId: number) => {
+    try {
+      await axiosInstance.delete(`${AUTH}/logout`, { data: { id: userId } });
     } catch (error) {
       throw handleError(error);
     }

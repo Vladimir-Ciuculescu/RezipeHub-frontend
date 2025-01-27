@@ -223,7 +223,7 @@ const SearchScreen = () => {
     const hasPreparationTimeRange =
       preparationTimeRange[0] !== 0 || preparationTimeRange[1] !== 180;
 
-    const hasCaloriesRange = caloriesRange[0] !== 0 || caloriesRange[1] !== 3000;
+    const hasCaloriesRange = caloriesRange[0] !== 0 || caloriesRange[1] !== MAX_CALORIES;
 
     if (selectedCategories.length === 0 && !hasPreparationTimeRange && !hasCaloriesRange) {
       return null;

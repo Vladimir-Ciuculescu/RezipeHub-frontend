@@ -8,11 +8,13 @@
       "distribution": "internal",
       "ios": {
         "simulator": true
-      }
+      },
+      "environment": "development"
     },
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "environment": "development"
     },
     "preview": {
       "distribution": "internal",
@@ -21,9 +23,12 @@
       },
       "android": {
         "buildType": "apk"
-      }
+      },
+      "environment": "preview"
     },
-    "production": {}
+    "production": {
+      "environment": "production"
+    }
   },
   "submit": {
     "production": {}

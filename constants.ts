@@ -21,5 +21,5 @@ export const RECIPE_TYPES = [
   { label: "🍽️ Other", value: "Other" },
 ];
 
-export const MAX_CALORIES = 3000;
+export const MAX_CALORIES = 10000;
 export const MAX_PREPARATION_TIME = 180;

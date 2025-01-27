@@ -1,15 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, Dimensions, Platform } from "react-native";
+import { ScrollView, StyleSheet, Dimensions, Platform, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, View } from "react-native-ui-lib";
 import Feather from "@expo/vector-icons/Feather";
 import { colors } from "@/theme/colors";
 import RNButton from "@/components/shared/RNButton";
 import RNIcon from "@/components/shared/RNIcon";
-import { ACCESS_TOKEN, IS_LOGGED_IN, storage } from "@/storage";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
-import { useAuth } from "@clerk/clerk-expo";
 import { useRouter, useSegments } from "expo-router";
 import RNShadowView from "@/components/shared/RNShadowView";
 import { Skeleton } from "moti/skeleton";
@@ -19,7 +17,7 @@ import { useFavorites } from "@/hooks/favorites.hooks";
 import FavoriteRecipeItem from "@/components/FavoriteRecipeItem";
 import { Image } from "expo-image";
 import useUserStore from "@/zustand/useUserStore";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import {
   No_favorite_recipes_placeholder,
   No_personal_recipes_placeholder,
@@ -27,7 +25,7 @@ import {
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 import RNFadeInView from "@/components/shared/RNFadeInView";
 import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
-import { useIsFocused } from "@react-navigation/native";
+import RNPressable from "@/components/shared/RNPressable";
 
 const { width: screenWidth, height } = Dimensions.get("window");
 const numColumns = 2;
@@ -38,8 +36,6 @@ const itemSize = (screenWidth - paddingHorizontal - (numColumns - 1) * gap) / nu
 const Profile = () => {
   const { top } = useSafeAreaInsets();
 
-  const isFocused = useIsFocused();
-
   const scrollViewRef = useRef<ScrollView>(null);
 
   const [firstFocus, setFirstFocus] = useState(false);
@@ -47,10 +43,7 @@ const Profile = () => {
 
   const router = useRouter();
   const { id, firstName, lastName, photoUrl, bio } = useUserStore.use.user();
-  const setLoggedStatus = useUserStore.use.setLoggedStatus();
   const loggedStatus = useUserStore.use.isLoggedIn();
-
-  const { signOut } = useAuth();
 
   const { data: recipes, isLoading: areRecipesLoading } = useUserRecipes({
     limit: 5,
@@ -84,15 +77,6 @@ const Profile = () => {
     router.navigate("/all_favorite_recipes");
   };
 
-  const logOut = async () => {
-    await signOut();
-
-    storage.delete(ACCESS_TOKEN);
-    storage.delete(IS_LOGGED_IN);
-    setLoggedStatus(false);
-    router.replace("home");
-  };
-
   const goToEditProfile = () => {
     router.navigate("/edit_profile");
   };
@@ -123,8 +107,8 @@ const Profile = () => {
           <View style={styles.$headerStyle}>
             <Text style={styles.$titleStyle}>Account</Text>
             <TouchableOpacity onPress={goToSettings}>
-              <Feather
-                name="settings"
+              <Ionicons
+                name="settings-outline"
                 size={moderateScale(24)}
                 color={colors.slate900}
               />
@@ -313,11 +297,6 @@ const Profile = () => {
             </View>
           </View>
         </RNFadeInTransition>
-
-        <RNButton
-          onPress={logOut}
-          label="Log out"
-        />
       </ScrollView>
     </RNFadeInView>
   );
