@@ -24,7 +24,6 @@ import RNPressable from "@/components/shared/RNPressable";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 import { No_results } from "@/assets/illustrations";
 import { FlashList } from "@shopify/flash-list";
-import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
 import { useIsFocused } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("screen");
@@ -179,7 +178,7 @@ const AllMostPopularRecipes = () => {
                           width={moderateScale(16)}
                           style={styles.$clockIconStyle}
                         />
-                        <Text style={styles.$timeTextStyle}>{item.preparationTime} Min</Text>
+                        <Text style={styles.$timeTextStyle}>{item.preparationTime} min</Text>
                       </View>
                     </View>
                   </View>
@@ -357,7 +356,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   $userNameStyle: {
-    ...$sizeStyles.s,
+    ...$sizeStyles.xxs,
     fontFamily: "sofia400",
     color: colors.greyscale300,
     maxWidth: horizontalScale(100),
@@ -371,7 +370,7 @@ const styles = StyleSheet.create({
     color: colors.greyscale300,
   },
   $timeTextStyle: {
-    ...$sizeStyles.s,
+    ...$sizeStyles.xxs,
     color: colors.greyscale300,
   },
   $noResultsContainerStyle: {

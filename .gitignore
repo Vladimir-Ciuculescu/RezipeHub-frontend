@@ -13,6 +13,9 @@ npm-debug.*
 web-build/
 
 .env
+.env.local
+.env.preview
+.env.production
 yumhub-4f070-firebase-adminsdk-onysf-5c572aa516.json
 google-services.json
 

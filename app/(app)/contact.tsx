@@ -31,13 +31,11 @@ const ContactItem: React.FC<ContactItemProps> = ({ contact }) => {
             <View>{icon}</View>
             <Text style={styles.$socialLabelStyle}>{label}</Text>
           </View>
-          <RNPressable onPress={() => {}}>
-            <Feather
-              name="external-link"
-              size={24}
-              color={colors.accent200}
-            />
-          </RNPressable>
+          <Feather
+            name="external-link"
+            size={24}
+            color={colors.accent200}
+          />
         </View>
       </RNShadowView>
     </TouchableOpacity>

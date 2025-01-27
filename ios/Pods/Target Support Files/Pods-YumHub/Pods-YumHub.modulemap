@@ -1,6 +1,0 @@
-module Pods_YumHub {
-  umbrella header "Pods-YumHub-umbrella.h"
-
-  export *
-  module * { export * }
-}

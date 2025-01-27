@@ -41,6 +41,7 @@ import Toast from "react-native-toast-message";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
+import { checkSubscription } from "@/utils/checkSubscription";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -141,6 +142,21 @@ const RecipeDetails = () => {
   );
 
   const toggleFavorite = async () => {
+    const favorites = await FavoritesService.getFavorties({
+      limit: 5,
+      page: 0,
+      userId: userData.id,
+    });
+
+    //If the recipe is not added to favorites and user has already 3 in list, display paywall
+    if (!isFavorite && favorites && favorites.length === 3) {
+      const hasSubscription = await checkSubscription();
+
+      if (!hasSubscription) {
+        return;
+      }
+    }
+
     const payload = { recipeId: parseInt(id!), userId: userData.id };
 
     await FavoritesService.toggleFavoriteRecipe(payload);

@@ -9,16 +9,32 @@ import { Platform, Pressable, StyleSheet } from "react-native";
 import * as Notifications from "expo-notifications";
 import { useNotification } from "@/context/NotificationContext";
 import NotificationService from "@/api/services/notifications.service";
+import { checkSubscription } from "@/utils/checkSubscription";
+import RecipeService from "@/api/services/recipe.service";
 
 const TabLayout = () => {
   const router = useRouter();
 
   const reset = useRecipeStore.use.reset();
+  const { id } = useUserStore.use.user();
+
   const [badgeCount, setBadgeCount] = useState(0);
 
   const { expoPushToken } = useNotification();
 
-  const openAddRecipeModal = () => {
+  const openAddRecipeModal = async () => {
+    //TODO: Comment it just for testing
+
+    const recipes = await RecipeService.getRecipesByUser({ limit: 5, page: 0, userId: id });
+
+    if (recipes && recipes.length === 3) {
+      const hasSubscription = await checkSubscription();
+
+      if (!hasSubscription) {
+        return;
+      }
+    }
+
     reset();
     router.navigate("add_recipe");
   };
