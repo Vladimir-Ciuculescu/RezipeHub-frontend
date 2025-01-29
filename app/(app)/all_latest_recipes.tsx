@@ -3,7 +3,6 @@ import React, { useLayoutEffect, useMemo } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import RecipeService from "@/api/services/recipe.service";
-import useUserData from "@/hooks/useUserData";
 import RNIcon from "@/components/shared/RNIcon";
 import { $sizeStyles } from "@/theme/typography";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
@@ -20,6 +19,7 @@ import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 import RNPressable from "@/components/shared/RNPressable";
 import { FlashList } from "@shopify/flash-list";
 import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
+import { useCurrentUser } from "@/context/UserContext";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -27,11 +27,9 @@ const GRID_CONTAINER_SIZE = width * 0.4;
 const GRID_COLUMNS = 2;
 
 const AllLatestRecipes = () => {
-  const user = useUserData();
+  const { user } = useCurrentUser();
 
   const navigation = useNavigation();
-
-  const isFocused = useIsFocused();
 
   const {
     data: latestRecipes,

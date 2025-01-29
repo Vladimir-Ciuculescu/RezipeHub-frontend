@@ -20,15 +20,15 @@ import { UpdateProfileRequest } from "@/types/user.types";
 import { handleError } from "@/api/handleError";
 import { ACCESS_TOKEN, storage } from "@/storage";
 import { jwtDecode } from "jwt-decode";
-import useUserStore from "@/zustand/useUserStore";
 import RNPressable from "@/components/shared/RNPressable";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
+import { useCurrentUser } from "@/context/UserContext";
 
 const EditProfile = () => {
   const navigation = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
-  const setUser = useUserStore.use.setUser();
-  const userData = useUserStore.use.user();
+
+  const { user, setUser } = useCurrentUser();
 
   const { mutateAsync: editProfileMutation, isPending } = useEditProfileMutation();
 
@@ -48,11 +48,11 @@ const EditProfile = () => {
   }, [navigation]);
 
   const initialValues = {
-    firstName: userData.firstName,
-    lastName: userData.lastName,
-    email: userData.email,
-    bio: userData.bio || "",
-    photoUrl: userData.photoUrl,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    bio: user.bio || "",
+    photoUrl: user.photoUrl,
   };
 
   const handleUpdate = async (values: UpdateProfileRequest) => {
@@ -64,10 +64,10 @@ const EditProfile = () => {
       formData.append("file", {
         uri: values.photoUrl,
         type: "image/jpeg",
-        name: `users-${userData.id}-profile`,
+        name: `users-${user.id}-profile`,
       } as any);
     }
-    formData.append("id", userData.id.toString());
+    formData.append("id", user.id.toString());
     formData.append("firstName", firstName);
     formData.append("lastName", lastName);
     formData.append("email", email);
@@ -188,6 +188,7 @@ const EditProfile = () => {
                     <Image
                       source={{ uri: values.photoUrl }}
                       style={styles.$imageStyle}
+                      cachePolicy="none"
                     />
                   ) : (
                     <RNIcon

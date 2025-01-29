@@ -8,7 +8,6 @@ import { View } from "react-native-ui-lib";
 import { spacing } from "@/theme/spacing";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import RecipeService from "@/api/services/recipe.service";
-import useUserData from "@/hooks/useUserData";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "@/theme/colors";
 import { No_results } from "@/assets/illustrations";
@@ -19,6 +18,7 @@ import { horizontalScale, moderateScale } from "@/utils/scale";
 import { FlashList } from "@shopify/flash-list";
 import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
 import { useIsFocused } from "@react-navigation/native";
+import { useCurrentUser } from "@/context/UserContext";
 
 interface SearchParams {
   [key: string]: string;
@@ -32,11 +32,10 @@ const GRID_COLUMNS = 2;
 
 const AllByCategoryRecipes = () => {
   const navigation = useNavigation();
-  const isFocused = useIsFocused();
 
   const { category } = useLocalSearchParams<SearchParams>();
 
-  const user = useUserData();
+  const { user } = useCurrentUser();
 
   const {
     data: byCategoryRecipes,

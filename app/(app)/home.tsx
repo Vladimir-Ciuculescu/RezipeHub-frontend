@@ -11,11 +11,11 @@ import { Text, View } from "react-native-ui-lib";
 
 const Home = () => {
   const goToLogin = () => {
-    router.navigate("login");
+    router.navigate("/login");
   };
 
   const goToRegister = () => {
-    router.navigate("register");
+    router.navigate("/register");
   };
 
   return (

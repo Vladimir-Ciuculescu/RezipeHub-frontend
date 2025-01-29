@@ -13,7 +13,7 @@ const CategoryItem: React.FC<any> = ({ category }) => {
   const router = useRouter();
 
   const goToAllByCategoryRecipes = () => {
-    router.push(`all_by_category_recipes?category=${title}`);
+    router.push(`/all_by_category_recipes?category=${title}`);
   };
 
   return (

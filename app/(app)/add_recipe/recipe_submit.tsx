@@ -26,7 +26,6 @@ import { View } from "react-native-ui-lib";
 import RNSegmentedControl, { SegmentItem } from "@/components/shared/RnSegmentedControl";
 import IngredientsList from "@/components/IngredientsList";
 import StepsList from "@/components/StepsList";
-import useUserData from "@/hooks/useUserData";
 import Entypo from "@expo/vector-icons/Entypo";
 import { Image } from "expo-image";
 import { useQueryClient } from "@tanstack/react-query";
@@ -39,6 +38,7 @@ import {
 } from "@/hooks/recipes.hooks";
 import RNPressable from "@/components/shared/RNPressable";
 import { moderateScale } from "@/utils/scale";
+import { useCurrentUser } from "@/context/UserContext";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -52,7 +52,8 @@ const RecipeSubmit = () => {
   const router = useRouter();
   const [segmentIndex, setSegmentIndex] = useState(0);
   const inputsFlatlListRef = useRef<FlatList>(null);
-  const user = useUserData();
+
+  const { user } = useCurrentUser();
 
   const title = useRecipeStore.use.title();
   const servings = useRecipeStore.use.servings();

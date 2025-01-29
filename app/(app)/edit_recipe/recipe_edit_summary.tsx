@@ -37,9 +37,8 @@ import {
   useEditRecipeMutation,
   useUploadToS3Mutation,
 } from "@/hooks/recipes.hooks";
-import useUserData from "@/hooks/useUserData";
 import { AddPhotoRequest } from "@/types/s3.types";
-import { EditRecipeRequest, PaginatedRecipeItem, RecipeBriefResponse } from "@/types/recipe.types";
+import { EditRecipeRequest, PaginatedRecipeItem } from "@/types/recipe.types";
 import Toast from "react-native-toast-message";
 import toastConfig from "@/components/Toast/ToastConfing";
 import RNIcon from "@/components/shared/RNIcon";
@@ -48,6 +47,7 @@ import { RECIPE_TYPES } from "@/constants";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import RNPressable from "@/components/shared/RNPressable";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
+import { useCurrentUser } from "@/context/UserContext";
 
 const { width } = Dimensions.get("screen");
 
@@ -63,7 +63,7 @@ const RecipeEditSummary = () => {
   const router = useRouter();
   const navigation = useNavigation();
   const queryClient = useQueryClient();
-  const user = useUserData();
+  const { user } = useCurrentUser();
 
   const recipedId = useRecipeStore.use.id!();
   const title = useRecipeStore.use.title();
@@ -134,14 +134,14 @@ const RecipeEditSummary = () => {
 
   const onEditIngreidient = (ingredient: IngredientItem) => {
     router.navigate({
-      pathname: "edit_recipe/recipe_edit_ingredient",
+      pathname: "/edit_recipe/recipe_edit_ingredient",
       params: { ingredient: JSON.stringify(ingredient) },
     });
   };
 
   const onEditStep = (step: Step) => {
     router.navigate({
-      pathname: "edit_recipe/recipe_edit_edit_step",
+      pathname: "/edit_recipe/recipe_edit_edit_step",
       params: { step: JSON.stringify(step) },
     });
   };

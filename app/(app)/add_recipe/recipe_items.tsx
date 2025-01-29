@@ -75,15 +75,15 @@ const RecipeItems = () => {
       return;
     }
 
-    router.navigate("add_recipe/recipe_submit");
+    router.navigate("/add_recipe/recipe_submit");
   };
 
   const goToSearchIngredients = () => {
-    router.navigate("add_recipe/recipe_search_ingredients");
+    router.navigate("/add_recipe/recipe_search_ingredients");
   };
 
   const gotToAddSteps = () => {
-    router.navigate("add_recipe/recipe_add_steps");
+    router.navigate("/add_recipe/recipe_add_steps");
   };
 
   const onEditIngredient = (ingredient: IngredientItem) => {
@@ -92,14 +92,14 @@ const RecipeItems = () => {
     const payload = { ...ingredient, quantity: numericQuantity };
 
     router.navigate({
-      pathname: "add_recipe/recipe_confirm_edit_ingredient",
+      pathname: "/add_recipe/recipe_confirm_edit_ingredient",
       params: { ingredient: JSON.stringify(payload) },
     });
   };
 
   const onEditStep = (step: Step) => {
     router.navigate({
-      pathname: "add_recipe/recipe_confirm_edit_step",
+      pathname: "/add_recipe/recipe_confirm_edit_step",
       params: { step: JSON.stringify(step) },
     });
   };

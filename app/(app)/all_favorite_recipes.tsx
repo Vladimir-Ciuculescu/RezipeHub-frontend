@@ -18,7 +18,6 @@ import { Feather, Ionicons, Octicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import FavoritesService from "@/api/services/favorites.service";
-import useUserData from "@/hooks/useUserData";
 import _ from "lodash";
 import { No_results } from "@/assets/illustrations";
 import { $sizeStyles } from "@/theme/typography";
@@ -31,6 +30,7 @@ import RNPressable from "@/components/shared/RNPressable";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
 import { useIsFocused } from "@react-navigation/native";
+import { useCurrentUser } from "@/context/UserContext";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -38,13 +38,11 @@ const GRID_CONTAINER_SIZE = width * 0.4;
 const GRID_COLUMNS = 2;
 
 const AllFavoriteRecipes = () => {
-  const isFocused = useIsFocused();
+  const { user } = useCurrentUser();
 
   const navigation = useNavigation();
 
   const router = useRouter();
-
-  const user = useUserData();
 
   const [layoutIndex, setLayoutIndex] = useState(0);
   const [layout, setLayout] = useState<"LIST" | "GRID">("LIST");

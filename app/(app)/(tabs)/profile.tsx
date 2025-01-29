@@ -16,7 +16,6 @@ import PersonalRecipeItem from "@/components/PersonalRecipeItem";
 import { useFavorites } from "@/hooks/favorites.hooks";
 import FavoriteRecipeItem from "@/components/FavoriteRecipeItem";
 import { Image } from "expo-image";
-import useUserStore from "@/zustand/useUserStore";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import {
   No_favorite_recipes_placeholder,
@@ -25,7 +24,8 @@ import {
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 import RNFadeInView from "@/components/shared/RNFadeInView";
 import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
-import RNPressable from "@/components/shared/RNPressable";
+import { useCurrentUser } from "@/context/UserContext";
+import { ACCESS_TOKEN, storage } from "@/storage";
 
 const { width: screenWidth, height } = Dimensions.get("window");
 const numColumns = 2;
@@ -42,22 +42,23 @@ const Profile = () => {
   const segments = useSegments();
 
   const router = useRouter();
-  const { id, firstName, lastName, photoUrl, bio } = useUserStore.use.user();
-  const loggedStatus = useUserStore.use.isLoggedIn();
+  const loggedStatus = storage.getString(ACCESS_TOKEN);
+  const { user } = useCurrentUser();
 
   const { data: recipes, isLoading: areRecipesLoading } = useUserRecipes({
     limit: 5,
     page: 0,
-    userId: id,
+    userId: user?.id,
   });
   const { data: favorites, isLoading: areFavoritesLoading } = useFavorites({
     limit: 5,
     page: 0,
-    userId: id,
+    userId: user?.id,
   });
 
   useEffect(() => {
     // Ensure the function runs only on initial focus when arriving at this screen
+    //@ts-ignore
     if (segments.includes("(tabs)") && !firstFocus) {
       setFirstFocus(true);
     }
@@ -82,11 +83,11 @@ const Profile = () => {
   };
 
   const goToAddRecipe = () => {
-    router.navigate("add_recipe");
+    router.navigate("/add_recipe");
   };
 
   const goToSettings = () => {
-    router.navigate("settings");
+    router.navigate("/settings");
   };
 
   const paddingBottom = Platform.OS === "ios" ? 210 : 190;
@@ -117,13 +118,14 @@ const Profile = () => {
 
           <RNShadowView style={styles.$profileContainerStyle}>
             <View style={styles.$profileDetailsStyle}>
-              {photoUrl ? (
+              {user?.photoUrl ? (
                 <View style={styles.$imageStyle}>
                   <Image
                     source={{
-                      uri: photoUrl,
+                      uri: user?.photoUrl,
                     }}
                     style={{ flex: 1 }}
+                    cachePolicy="none"
                   />
                 </View>
               ) : (
@@ -136,15 +138,16 @@ const Profile = () => {
                 </View>
               )}
               <View style={{ flex: 1, justifyContent: "center" }}>
-                <Text style={styles.$userNameStyle}>{firstName + " " + lastName}</Text>
-                {bio && (
+                <Text style={styles.$userNameStyle}>{user?.firstName + " " + user?.lastName}</Text>
+
+                {user?.bio && (
                   <View>
                     <Text
                       numberOfLines={1}
                       ellipsizeMode="tail"
                       style={styles.$userDescriptionStyle}
                     >
-                      {bio}
+                      {user?.bio}
                     </Text>
                   </View>
                 )}
@@ -165,7 +168,6 @@ const Profile = () => {
 
         <RNFadeInTransition
           index={1}
-          // animate={isFocused}
           animate={firstFocus}
           direction="top"
         >
@@ -239,7 +241,6 @@ const Profile = () => {
         </RNFadeInTransition>
         <RNFadeInTransition
           index={2}
-          // animate={isFocused}
           animate={firstFocus}
           direction="top"
         >

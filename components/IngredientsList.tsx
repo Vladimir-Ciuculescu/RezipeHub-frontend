@@ -88,7 +88,7 @@ const IngredientsList: React.FC<IngredientsListProps> = ({
   const router = useRouter();
 
   const goToSearchIngredient = () => {
-    router.navigate("edit_recipe/recipe_edit_search_ingredients");
+    router.navigate("/edit_recipe/recipe_edit_search_ingredients");
   };
 
   return (

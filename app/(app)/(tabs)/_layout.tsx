@@ -1,7 +1,6 @@
 import RNIcon from "@/components/shared/RNIcon";
 import { colors } from "@/theme/colors";
 import useRecipeStore from "@/zustand/useRecipeStore";
-import useUserStore from "@/zustand/useUserStore";
 import { Tabs, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
@@ -11,12 +10,13 @@ import { useNotification } from "@/context/NotificationContext";
 import NotificationService from "@/api/services/notifications.service";
 import { checkSubscription } from "@/utils/checkSubscription";
 import RecipeService from "@/api/services/recipe.service";
+import { useCurrentUser } from "@/context/UserContext";
 
 const TabLayout = () => {
   const router = useRouter();
 
   const reset = useRecipeStore.use.reset();
-  const { id } = useUserStore.use.user();
+  const { user } = useCurrentUser();
 
   const [badgeCount, setBadgeCount] = useState(0);
 
@@ -25,7 +25,7 @@ const TabLayout = () => {
   const openAddRecipeModal = async () => {
     //TODO: Comment it just for testing
 
-    const recipes = await RecipeService.getRecipesByUser({ limit: 5, page: 0, userId: id });
+    const recipes = await RecipeService.getRecipesByUser({ limit: 5, page: 0, userId: user.id });
 
     if (recipes && recipes.length === 3) {
       const hasSubscription = await checkSubscription();
@@ -36,7 +36,7 @@ const TabLayout = () => {
     }
 
     reset();
-    router.navigate("add_recipe");
+    router.navigate("/add_recipe");
   };
 
   useEffect(() => {

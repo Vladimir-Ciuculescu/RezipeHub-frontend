@@ -1,5 +1,5 @@
-import { Text, StyleSheet, Pressable, Alert } from "react-native";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import { Text, StyleSheet, Pressable } from "react-native";
+import React, { useLayoutEffect, useRef } from "react";
 import { useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import { AntDesign } from "@expo/vector-icons";
@@ -29,12 +29,6 @@ function RecipeTitle() {
 
   const addInfoAction = useRecipeStore.use.addInfoAction();
   const reset = useRecipeStore.use.reset();
-
-  // const [title, setTitle] = useState("");
-  // const [servings, setServings] = useState("");
-  // const [photo, setPhoto] = useState("");
-  // const [preparationTime, setPreparationTime] = useState("");
-  // const [type, setType] = useState<RecipeType | "">("");
 
   const formikRef = useRef<FormikProps<any>>(null);
 
@@ -118,7 +112,7 @@ function RecipeTitle() {
 
     addInfoAction(payload);
 
-    router.navigate("add_recipe/recipe_items");
+    router.navigate("/add_recipe/recipe_items");
   };
 
   const openSheet = (setFieldValue: (label: string, value: string) => void) => {
@@ -178,8 +172,6 @@ function RecipeTitle() {
               <RnInput
                 value={values.servings}
                 onChangeText={handleChange("servings")}
-                // value={servings}
-                // onChangeText={setServings}
                 keyboardType="numeric"
                 returnKeyType="done"
                 label="Servings"
@@ -393,10 +385,7 @@ const styles = StyleSheet.create({
 
   $removePhotoBtnStyle: {
     position: "absolute",
-    // right: 10,
-    // top: 10,
-    // width: 40,
-    // height: 40,
+
     right: horizontalScale(10),
     top: horizontalScale(10),
     width: horizontalScale(40),

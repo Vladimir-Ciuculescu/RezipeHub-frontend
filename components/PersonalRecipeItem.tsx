@@ -2,7 +2,6 @@ import { Text, Pressable, StyleSheet, Dimensions } from "react-native";
 import React, { useState } from "react";
 import { RecipeType } from "@/types/enums";
 import { Link, useRouter } from "expo-router";
-import useUserData from "@/hooks/useUserData";
 import RNShadowView from "./shared/RNShadowView";
 import { spacing } from "@/theme/spacing";
 import { Image } from "expo-image";
@@ -13,6 +12,7 @@ import RNIcon from "./shared/RNIcon";
 import { View } from "react-native-ui-lib";
 import { $sizeStyles } from "@/theme/typography";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
+import { useCurrentUser } from "@/context/UserContext";
 
 const { width: screenWidth } = Dimensions.get("window");
 const numColumns = 2;
@@ -34,9 +34,7 @@ interface PersonalRecipeItemProps {
 }
 
 const PersonalRecipeItem: React.FC<PersonalRecipeItemProps> = ({ item }) => {
-  const router = useRouter();
-
-  const user = useUserData();
+  const { user } = useCurrentUser();
 
   const { id, title, photoUrl, totalCalories, preparationTime } = item;
 

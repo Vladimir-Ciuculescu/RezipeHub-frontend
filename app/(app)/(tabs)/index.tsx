@@ -1,7 +1,7 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "react-native-ui-lib";
 import dayjs from "dayjs";
-import { Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text } from "react-native";
+import { Platform, Pressable, ScrollView, StyleSheet, Text } from "react-native";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
 import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -11,12 +11,12 @@ import { Skeleton } from "moti/skeleton";
 import { colors } from "@/theme/colors";
 import CategoryItem from "@/components/CategoryItem";
 import MostPopularRecipeItem from "@/components/MostPopularRecipeItem";
-import useUserStore from "@/zustand/useUserStore";
 import { useEffect, useRef, useState } from "react";
 import { router, useSegments } from "expo-router";
 import RNFadeInView from "@/components/shared/RNFadeInView";
 import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
-import { useIsFocused } from "@react-navigation/native";
+import { useCurrentUser } from "@/context/UserContext";
+import { ACCESS_TOKEN, storage } from "@/storage";
 
 const categories = [
   {
@@ -98,14 +98,13 @@ const categories = [
 ];
 
 const Home = () => {
-  const userData = useUserStore.use.user();
-  const loggedStatus = useUserStore.use.isLoggedIn();
+  const { user } = useCurrentUser();
+
+  const loggedStatus = storage.getString(ACCESS_TOKEN);
 
   const scrollViewRef = useRef<ScrollView>(null);
   const [firstFocus, setFirstFocus] = useState(false);
   const segments = useSegments();
-
-  const isFocused = useIsFocused();
 
   useEffect(() => {
     if (scrollViewRef.current && loggedStatus) {
@@ -123,11 +122,18 @@ const Home = () => {
   const { data: latestRecipes, isLoading: areLatestRecipesLoading } = useLatestRecipes({
     page: 0,
     limit: 10,
-    userId: userData.id,
+    // userId: userData.id,
+    userId: user ? user.id : null,
   });
 
   const { data: mostPopularRecipes, isLoading: areMostPopularRecipesLoading } =
-    useMostPopularRecipes({ page: 0, limit: 10, userId: userData.id });
+    useMostPopularRecipes({
+      page: 0,
+      limit: 10,
+      //userId: userData.id
+      // userId: user.id,
+      userId: user ? user.id : null,
+    });
 
   const getGreetingData = () => {
     const currentHour = dayjs().hour();
@@ -186,11 +192,11 @@ const Home = () => {
   const paddingBottom = Platform.OS === "ios" ? 210 : 190;
 
   const goToAllLatestRecipes = () => {
-    router.push("all_latest_recipes");
+    router.push("/all_latest_recipes");
   };
 
   const goToAllMostPopularRecipes = () => {
-    router.push("all_most_popular_recipes");
+    router.push("/all_most_popular_recipes");
   };
 
   return (
@@ -214,9 +220,7 @@ const Home = () => {
               {icon}
               <Text style={styles.$messageStyle}>{message}</Text>
             </View>
-            <Text
-              style={styles.$userNameStyle}
-            >{`${userData.firstName} ${userData.lastName}`}</Text>
+            <Text style={styles.$userNameStyle}>{`${user?.firstName} ${user?.lastName}`}</Text>
           </View>
         </RNFadeInTransition>
 

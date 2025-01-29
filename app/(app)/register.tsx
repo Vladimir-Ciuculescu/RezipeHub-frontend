@@ -73,7 +73,7 @@ const Register = () => {
   };
 
   const goToOtpVerification = (userId: number, email: string) => {
-    router.push({ pathname: "otp_verification", params: { userId, email } });
+    router.push({ pathname: "/otp_verification", params: { userId, email } });
   };
 
   return (
