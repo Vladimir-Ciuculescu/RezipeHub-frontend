@@ -91,7 +91,7 @@ const StepsList: React.FC<StepsListProps> = ({
   const router = useRouter();
 
   const goToAddSteps = () => {
-    router.navigate("edit_recipe/recipe_edit_add_steps");
+    router.navigate("/edit_recipe/recipe_edit_add_steps");
   };
 
   return (

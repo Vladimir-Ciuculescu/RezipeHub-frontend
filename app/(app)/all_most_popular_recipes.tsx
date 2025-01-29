@@ -13,7 +13,6 @@ import RNIcon from "@/components/shared/RNIcon";
 import { $sizeStyles } from "@/theme/typography";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import RecipeService from "@/api/services/recipe.service";
-import useUserData from "@/hooks/useUserData";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "@/theme/colors";
 import RNShadowView from "@/components/shared/RNShadowView";
@@ -25,6 +24,7 @@ import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 import { No_results } from "@/assets/illustrations";
 import { FlashList } from "@shopify/flash-list";
 import { useIsFocused } from "@react-navigation/native";
+import { useCurrentUser } from "@/context/UserContext";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -33,8 +33,8 @@ const GRID_COLUMNS = 2;
 
 const AllMostPopularRecipes = () => {
   const navigation = useNavigation();
-  const user = useUserData();
-  const isFocused = useIsFocused();
+
+  const { user } = useCurrentUser();
 
   const goBack = () => {
     navigation.goBack();

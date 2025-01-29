@@ -15,26 +15,18 @@ import { Feather } from "@expo/vector-icons";
 import { colors } from "@/theme/colors";
 import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import AuthService from "@/api/services/auth.service";
-import {
-  CurrentUser,
-  LoginUserRequest,
-  LoginUserResponse,
-  SocialLoginUserRequest,
-} from "@/types/user.types";
-import { ACCESS_TOKEN, IS_LOGGED_IN, REFRESH_TOKEN, storage } from "@/storage";
+import { LoginUserRequest, LoginUserResponse, SocialLoginUserRequest } from "@/types/user.types";
 import * as WebBrowser from "expo-web-browser";
 import { useWarmUpBrowser } from "@/hooks/useWarmUpBrowser";
 import { useAuth, useOAuth, useUser } from "@clerk/clerk-expo";
 import { SocialProvider } from "@/types/enums";
-import useUserStore from "@/zustand/useUserStore";
-import { jwtDecode } from "jwt-decode";
 import { useQueryClient } from "@tanstack/react-query";
 import * as Linking from "expo-linking";
 import TokenService from "@/api/services/token.service";
 import { horizontalScale, verticalScale } from "@/utils/scale";
 import { useNotification } from "@/context/NotificationContext";
 import * as Device from "expo-device";
-import Purchases from "react-native-purchases";
+import { useCurrentUser } from "@/context/UserContext";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -50,6 +42,7 @@ const Login = () => {
   const queryClient = useQueryClient();
   const { isSignedIn, signOut } = useAuth();
   const { user } = useUser();
+  const { login } = useCurrentUser();
   const navigation = useNavigation();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
@@ -58,9 +51,6 @@ const Login = () => {
   const router = useRouter();
 
   const formikRef = useRef<FormikProps<any>>(null);
-
-  const setUser = useUserStore.use.setUser();
-  const setLoggedStatus = useUserStore.use.setLoggedStatus();
 
   const { startOAuthFlow: googleFlow } = useOAuth({ strategy: "oauth_google" });
   const { startOAuthFlow: facebookFlow } = useOAuth({ strategy: "oauth_facebook" });
@@ -103,11 +93,11 @@ const Login = () => {
   );
 
   const goToHome = () => {
-    router.navigate("home");
+    router.navigate("/home");
   };
 
   const goToForgotPassword = () => {
-    router.navigate("forgot_password");
+    router.navigate("/forgot_password");
   };
 
   const onSelectAuth = async (strategy: Strategy) => {
@@ -146,55 +136,43 @@ const Login = () => {
 
   const goToApp = async (user: LoginUserResponse) => {
     if (user.isVerified) {
-      router.navigate("(tabs)");
+      router.navigate("/(tabs)");
     } else {
       const payload = { userId: user.id, email: user.email as string };
       await TokenService.resendToken(payload);
       router.navigate({
-        pathname: "otp_verification",
+        pathname: "/otp_verification",
         params: { userId: user.id, email: user.email },
       });
     }
   };
 
-  const storeUser = async (accessToken: string, refreshToken: string) => {
-    const userData = jwtDecode(accessToken!) as CurrentUser;
-
-    await Purchases.logIn(userData.id.toString());
-
-    storage.set(ACCESS_TOKEN, accessToken);
-    storage.set(REFRESH_TOKEN, refreshToken);
-    setUser(userData);
-    setLoggedStatus(true);
-    queryClient.invalidateQueries({ queryKey: ["recipes-per-user", "favorites"] });
-  };
-
   const handleSocialLogin = async (payload: SocialLoginUserRequest) => {
+    setIsLoading(true);
+
     try {
       const data = await AuthService.socialLoginUser(payload);
 
-      storeUser(data.access_token, data.refresh_token);
+      await login(data.access_token, data.refresh_token);
 
-      storage.set(IS_LOGGED_IN, true);
+      queryClient.invalidateQueries({ queryKey: ["recipes-per-user", "favorites"] });
 
-      goToApp(data.user);
+      await goToApp(data.user);
     } catch (error: any) {
-      console.log(error);
       Alert.alert(
-        "Error",
-        error.error,
-        [
-          {
-            text: "OK",
-          },
-        ],
+        error.code === 404 ? "Not found" : "Error",
+        error.code === 404 ? "The user does not exist !" : "An unexpected error occurred !",
+        [{ text: "OK" }],
         { cancelable: false, userInterfaceStyle: "light" },
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleLogin = async (payload: Omit<LoginUserRequest, "platform" | "deviceToken">) => {
     setIsLoading(true);
+
     try {
       const data = await AuthService.loginUser({
         ...payload,
@@ -202,24 +180,25 @@ const Login = () => {
         platform: Platform.OS,
       });
 
-      storeUser(data.access_token, data.refresh_token);
-      storage.set(IS_LOGGED_IN, true);
+      await login(data.access_token, data.refresh_token);
 
-      goToApp(data.user);
+      queryClient.invalidateQueries({ queryKey: ["recipes-per-user", "favorites"] });
+
+      await goToApp(data.user);
     } catch (error: any) {
+      if (formikRef.current) {
+        formikRef.current.resetForm();
+      }
+
       Alert.alert(
-        "Error",
-        error.error,
-        [
-          {
-            text: "OK",
-          },
-        ],
+        error.code === 404 ? "Not found" : "Error",
+        error.code === 404 ? "The user does not exist !" : "An unexpected error occurred !",
+        [{ text: "OK" }],
         { cancelable: false, userInterfaceStyle: "light" },
       );
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (

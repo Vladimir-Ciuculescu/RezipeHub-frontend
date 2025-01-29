@@ -7,17 +7,17 @@ import { spacing } from "@/theme/spacing";
 import NotificationItem from "@/components/NotificationItem";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import NotificationService from "@/api/services/notifications.service";
-import useUserData from "@/hooks/useUserData";
-import { No_notificatins, No_results } from "@/assets/illustrations";
+import { No_notificatins } from "@/assets/illustrations";
 import { colors } from "@/theme/colors";
 import { Notification } from "@/types/notification.types";
 import dayjs from "dayjs";
 import { Skeleton } from "moti/skeleton";
+import { useCurrentUser } from "@/context/UserContext";
 
 const { width, height } = Dimensions.get("screen");
 
 const Notifications = () => {
-  const user = useUserData();
+  const { user } = useCurrentUser();
 
   const {
     data: notifications,

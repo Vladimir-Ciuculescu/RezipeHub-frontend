@@ -1,13 +1,13 @@
 import TokenService from "@/api/services/token.service";
 import RNButton from "@/components/shared/RNButton";
 import RNIcon from "@/components/shared/RNIcon";
-import { ACCESS_TOKEN, IS_LOGGED_IN, storage } from "@/storage";
+import { useCurrentUser } from "@/context/UserContext";
+import { ACCESS_TOKEN, storage } from "@/storage";
 import { colors } from "@/theme/colors";
 import { spacing } from "@/theme/spacing";
 import { $sizeStyles } from "@/theme/typography";
 import { hideEmail } from "@/utils/hideEmail";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
-import useUserStore from "@/zustand/useUserStore";
 import { useAuth } from "@clerk/clerk-expo";
 import { Feather } from "@expo/vector-icons";
 import { useLocalSearchParams, useNavigation, router } from "expo-router";
@@ -15,6 +15,7 @@ import { StatusBar } from "expo-status-bar";
 import React, { useState, useRef, memo, useLayoutEffect } from "react";
 import { TouchableOpacity, StyleSheet, FlatList, Alert } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import Purchases from "react-native-purchases";
 import { TextField, TextFieldRef, Text, View } from "react-native-ui-lib";
 
 interface OtpInputProps {
@@ -68,14 +69,14 @@ const OtpInput = memo((props: OtpInputProps) => {
 const OtpVerification = () => {
   const navigation = useNavigation();
   const { userId, email } = useLocalSearchParams<SearchParams>();
+  const { setError } = useCurrentUser();
 
   const [loading, setLoading] = useState({ confirm: false, resend: false });
   const [otp, setOtp] = useState(["", "", "", ""]);
 
   const inputs = useRef<(TextFieldRef | null)[]>([]);
-  const setLoggedStatus = useUserStore.use.setLoggedStatus();
 
-  const isLoggedIn = storage.getBoolean(IS_LOGGED_IN);
+  const isLoggedIn = storage.getString(ACCESS_TOKEN);
 
   const { signOut } = useAuth();
 
@@ -97,16 +98,12 @@ const OtpVerification = () => {
   }, [navigation]);
 
   const logOut = async () => {
-    await signOut();
-
     storage.delete(ACCESS_TOKEN);
-    storage.delete(IS_LOGGED_IN);
-    setLoggedStatus(false);
-    router.replace("home");
-  };
+    setError(null);
+    router.replace("/home");
 
-  const goBack = () => {
-    navigation.goBack();
+    await signOut();
+    await Purchases.logOut();
   };
 
   const handleLoading = (key: string, state: boolean) => {
@@ -213,7 +210,7 @@ const OtpVerification = () => {
   };
 
   const goNext = () => {
-    router.replace(isLoggedIn ? "(tabs)" : "login");
+    router.replace(isLoggedIn ? "/(tabs)" : "/login");
   };
 
   const DIAL_PAD = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "del"];

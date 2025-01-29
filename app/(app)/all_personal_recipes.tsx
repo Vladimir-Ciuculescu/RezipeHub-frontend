@@ -25,11 +25,11 @@ import { Image } from "expo-image";
 import RNSegmentedControl from "@/components/shared/RnSegmentedControl";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import RecipeService from "@/api/services/recipe.service";
-import useUserData from "@/hooks/useUserData";
 import { $sizeStyles } from "@/theme/typography";
 import { formatFloatingValue } from "@/utils/formatFloatingValue";
 import RNPressable from "@/components/shared/RNPressable";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
+import { useCurrentUser } from "@/context/UserContext";
 
 const { width } = Dimensions.get("screen");
 
@@ -37,7 +37,7 @@ const GRID_CONTAINER_SIZE = width * 0.4;
 const GRID_COLUMNS = 2;
 
 const LayoutGridAnimation = () => {
-  const user = useUserData();
+  const { user } = useCurrentUser();
 
   const [layoutIndex, setLayoutIndex] = useState(0);
   const [layout, setLayout] = useState<"LIST" | "GRID">("LIST");

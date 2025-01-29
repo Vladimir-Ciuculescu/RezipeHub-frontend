@@ -34,11 +34,11 @@ import FilterCard from "@/components/FilterCard";
 import { CategoryItem } from "@/types/category.types";
 import { isEqual } from "lodash";
 import { SafeAreaView } from "react-native-safe-area-context";
-import useUserData from "@/hooks/useUserData";
 import RNPressable from "@/components/shared/RNPressable";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 import { FlashList } from "@shopify/flash-list";
 import { useIsFocused } from "@react-navigation/native";
+import { useCurrentUser } from "@/context/UserContext";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -47,7 +47,8 @@ const SearchScreen = () => {
   const preparationTimeRange = useFilterStore.use.preparationTimeRange();
   const caloriesRange = useFilterStore.use.caloriesRange();
   const text = useFilterStore.use.text();
-  const user = useUserData();
+
+  const { user } = useCurrentUser();
 
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 

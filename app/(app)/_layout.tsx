@@ -19,17 +19,14 @@ import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/reac
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
-import { ACCESS_TOKEN, IS_LOGGED_IN, ONBOARDED, storage } from "@/storage";
-import { jwtDecode } from "jwt-decode";
-import { CurrentUser } from "@/types/user.types";
-import UserService from "@/api/services/user.service";
-import useUserStore from "@/zustand/useUserStore";
+import { ACCESS_TOKEN, ONBOARDED, storage } from "@/storage";
 import TokenService from "@/api/services/token.service";
 import Toast from "react-native-toast-message";
 import toastConfig from "@/components/Toast/ToastConfing";
 import { NotificationProvider } from "@/context/NotificationContext";
 import * as Notifications from "expo-notifications";
 import Purchases from "react-native-purchases";
+import { useCurrentUser, UserProvider } from "@/context/UserContext";
 
 Purchases.setLogLevel(Purchases.LOG_LEVEL.VERBOSE);
 
@@ -65,15 +62,65 @@ const clerkKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 const queryClient = new QueryClient();
 
 const AppLayout = () => {
+  const [fontsLoaded, error] = useFonts(fontsToLoad);
+  const { user, mounted } = useCurrentUser();
+
   const router = useRouter();
-  const setUser = useUserStore.use.setUser();
   const invalidateQueryClient = useQueryClient();
 
-  const isLoggedIn = storage.getBoolean(IS_LOGGED_IN);
   const onboarded = storage.getBoolean(ONBOARDED);
+  const accessToken = storage.getString(ACCESS_TOKEN);
 
   useEffect(() => {
-    //* Change the change of app state (background, foreground, inactive, etc)
+    //TODO : Configure revenuecat subscriber id
+    const checkOnboarding = async () => {
+      if (!onboarded) {
+        router.replace("/onboarding");
+        return;
+      }
+
+      if (!accessToken) {
+        router.replace("/home");
+        return;
+      }
+      if (user) {
+        if (user.isVerified) {
+          router.replace("/(tabs)");
+        } else {
+          const payload = { userId: user.id, email: user.email as string };
+          await TokenService.resendToken(payload);
+          router.replace({
+            pathname: "/otp_verification",
+            params: { userId: user.id, email: user.email },
+          });
+        }
+      }
+    };
+
+    if (mounted && fontsLoaded) {
+      checkOnboarding();
+    }
+  }, [mounted, fontsLoaded]);
+
+  useEffect(() => {
+    const configurePurchases = () => {
+      if (Platform.OS === "ios") {
+        if (!process.env.EXPO_PUBLIC_RC_IOS) {
+          Alert.alert("Error configuring RC", "RevenueCat API key not provided");
+        } else {
+          Purchases.configure({ apiKey: process.env.EXPO_PUBLIC_RC_IOS });
+        }
+      } else if (Platform.OS === "android") {
+        if (!process.env.EXPO_PUBLIC_RC_ANDROID) {
+          Alert.alert("Error configuring RC", "RevenueCat API key not provided");
+        } else {
+          Purchases.configure({ apiKey: process.env.EXPO_PUBLIC_RC_ANDROID });
+        }
+      }
+    };
+
+    configurePurchases();
+
     const appStateSubscription = AppState.addEventListener(
       "change",
       async (nextAppState: AppStateStatus) => {
@@ -90,51 +137,15 @@ const AppLayout = () => {
       return true;
     });
 
-    //* Check if user is onboarded or not
-    if (!onboarded) {
-      router.replace("onboarding");
-      return;
-    }
-
-    //* Check if user is logged in or not
-    if (!isLoggedIn || isLoggedIn === undefined) {
-      router.replace("home");
-    } else {
-      (async () => {
-        await getProfile();
-      })();
-    }
-
     return () => {
       backHandler.remove();
       appStateSubscription.remove();
     };
   }, []);
 
-  const getProfile = async () => {
-    const accessToken = storage.getString(ACCESS_TOKEN);
-
-    const userData = jwtDecode(accessToken!) as CurrentUser;
-
-    const newAccessToken = await UserService.getProfile(userData.id);
-
-    const newUserData = jwtDecode(newAccessToken) as CurrentUser;
-
-    await Purchases.logIn(newUserData.id.toString());
-
-    setUser(newUserData);
-
-    if (newUserData.isVerified) {
-      router.replace("(tabs)");
-    } else {
-      const payload = { userId: newUserData.id, email: newUserData.email as string };
-      await TokenService.resendToken(payload);
-      router.replace({
-        pathname: "otp_verification",
-        params: { userId: newUserData.id, email: newUserData.email },
-      });
-    }
-  };
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <Stack screenOptions={{ contentStyle: styles.$stackContainerStyle }}>
@@ -182,7 +193,6 @@ const AppLayout = () => {
         name="onboarding"
       />
       <Stack.Screen
-        // options={{ headerShown: false, gestureEnabled: false, animation: "fade" }}
         options={{ headerShown: false, gestureEnabled: false }}
         name="home"
       />
@@ -326,27 +336,6 @@ const AppLayout = () => {
 };
 
 const Layout = () => {
-  let [fontsLoaded] = useFonts(fontsToLoad);
-
-  useEffect(() => {
-    if (Platform.OS === "ios") {
-      if (!process.env.EXPO_PUBLIC_RC_IOS) {
-        Alert.alert("Error configuring RC", "RevenueCat API key not provided");
-      } else {
-        Purchases.configure({ apiKey: process.env.EXPO_PUBLIC_RC_IOS });
-      }
-    } else if (Platform.OS === "android") {
-      // Purchases.configure({ apiKey: process.env.EXPO_PUBLIC_RC_ANDROID });
-      if (!process.env.EXPO_PUBLIC_RC_ANDROID) {
-        Alert.alert("Error configuring RC", "RevenueCat API key not provided");
-      } else {
-        Purchases.configure({ apiKey: process.env.EXPO_PUBLIC_RC_ANDROID });
-      }
-    }
-  }, []);
-
-  if (!fontsLoaded) return null;
-
   return (
     <GestureHandlerRootView>
       <QueryClientProvider client={queryClient}>
@@ -357,12 +346,14 @@ const Layout = () => {
                 publishableKey={clerkKey!}
                 tokenCache={tokenCache as any}
               >
-                <AppLayout />
-                <Toast
-                  visibilityTime={2000}
-                  config={toastConfig}
-                  position="bottom"
-                />
+                <UserProvider>
+                  <AppLayout />
+                  <Toast
+                    visibilityTime={2000}
+                    config={toastConfig}
+                    position="bottom"
+                  />
+                </UserProvider>
               </ClerkProvider>
             </BottomSheetModalProvider>
           </ActionSheetProvider>

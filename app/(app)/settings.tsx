@@ -9,21 +9,20 @@ import { colors } from "@/theme/colors";
 import RNShadowView from "@/components/shared/RNShadowView";
 import { spacing } from "@/theme/spacing";
 import { Switch } from "react-native-ui-lib";
-import { ACCESS_TOKEN, IS_LOGGED_IN, NOTIFICATIONS, storage } from "@/storage";
+import { ACCESS_TOKEN, NOTIFICATIONS, storage } from "@/storage";
 import { useNotification } from "@/context/NotificationContext";
 import NotificationService from "@/api/services/notifications.service";
 import Purchases from "react-native-purchases";
 import { useAuth } from "@clerk/clerk-expo";
-import useUserStore from "@/zustand/useUserStore";
 import RevenueCatUI from "react-native-purchases-ui";
 import * as Linking from "expo-linking";
-import AuthService from "@/api/services/auth.service";
+import { useCurrentUser } from "@/context/UserContext";
 
 interface NotificationItemProps {
   label: string;
   icon: string;
   rightElement?: React.ReactNode;
-  onPress: () => void;
+  onPress: () => Promise<void>;
 }
 
 const SettingsItem: React.FC<NotificationItemProps> = ({ label, icon, rightElement, onPress }) => {
@@ -63,8 +62,7 @@ const Settings = () => {
   const navigation = useNavigation();
   const router = useRouter();
   const { signOut } = useAuth();
-  const setLoggedStatus = useUserStore.use.setLoggedStatus();
-  const { id } = useUserStore.use.user();
+  const { setError } = useCurrentUser();
 
   const { expoPushToken } = useNotification();
 
@@ -101,27 +99,17 @@ const Settings = () => {
     await NotificationService.toggleDeviceNotifications(expoPushToken!);
   };
 
-  const goToSection = (section: string) => {
-    router.navigate(section);
-  };
-
   const unlockPremium = async () => {
     await RevenueCatUI.presentPaywallIfNeeded({ requiredEntitlementIdentifier: "Pro" });
   };
 
   const logOut = async () => {
     storage.delete(ACCESS_TOKEN);
-    storage.delete(IS_LOGGED_IN);
-    setLoggedStatus(false);
-    router.replace("home");
 
-    //* Delete refresh token from BE
-    await AuthService.logOut(id);
+    setError(null);
+    router.replace("/home");
 
-    //* Log out from clerk
     await signOut();
-
-    //* Log out associated customer from RevenueCat
     await Purchases.logOut();
   };
 
@@ -164,12 +152,12 @@ const Settings = () => {
     {
       label: "About the app",
       icon: "info_square",
-      onPress: () => goToSection("about"),
+      onpPress: () => router.push("/about"),
     },
     {
       label: "Contact",
       icon: "profile",
-      onPress: () => goToSection("contact"),
+      onpPress: () => router.push("/contact"),
     },
     //TODO: This will need to be added back when app is actually deployed
     // {
@@ -234,7 +222,7 @@ const Settings = () => {
           label={item.label}
           icon={item.icon}
           rightElement={item.rightElement}
-          onPress={item.onPress}
+          onPress={item.onPress!}
         />
       ))}
     </ScrollView>

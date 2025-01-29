@@ -41,7 +41,7 @@ const ForgotPassword = () => {
   };
 
   const goToResetPassword = (email: string) => {
-    router.navigate({ pathname: "reset_password", params: { email } });
+    router.navigate({ pathname: "/reset_password", params: { email } });
   };
 
   const handleSubmit = async (

@@ -33,7 +33,6 @@ import * as DropdownMenu from "zeego/dropdown-menu";
 import useRecipeStore from "@/zustand/useRecipeStore";
 import { Image } from "expo-image";
 import RNIcon from "@/components/shared/RNIcon";
-import useUserData from "@/hooks/useUserData";
 import LottieView from "lottie-react-native";
 import { useIsFavorite } from "@/hooks/favorites.hooks";
 import FavoritesService from "@/api/services/favorites.service";
@@ -42,6 +41,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 import { checkSubscription } from "@/utils/checkSubscription";
+import { useCurrentUser } from "@/context/UserContext";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -97,7 +97,7 @@ const RecipeDetails = () => {
 
   const [isFavorite, setIsFavotite] = useState(false);
 
-  const userData = useUserData();
+  const { user } = useCurrentUser();
 
   const { id, userId, firstName, lastName, recipePhotoUrl, userPhotoUrl } = useLocalSearchParams<{
     id: string;
@@ -108,7 +108,7 @@ const RecipeDetails = () => {
     userPhotoUrl: string;
   }>();
 
-  const belongsToCurrentUser = parseInt(userId!) === userData.id;
+  const belongsToCurrentUser = parseInt(userId!) === user.id;
 
   const { data: recipe, isLoading } = useRecipe(parseInt(id!));
 
@@ -116,7 +116,7 @@ const RecipeDetails = () => {
 
   //This api call will not execute unless the recipe id does not exist or  the recipe does not belong to the current logged i user
   const { data: isInFavorites, isFetching } = useIsFavorite(
-    { recipeId: parseInt(id!), userId: userData.id },
+    { recipeId: parseInt(id!), userId: user.id },
     !!recipeId && !belongsToCurrentUser,
   );
 
@@ -145,7 +145,7 @@ const RecipeDetails = () => {
     const favorites = await FavoritesService.getFavorties({
       limit: 5,
       page: 0,
-      userId: userData.id,
+      userId: user.id,
     });
 
     //If the recipe is not added to favorites and user has already 3 in list, display paywall
@@ -157,7 +157,7 @@ const RecipeDetails = () => {
       }
     }
 
-    const payload = { recipeId: parseInt(id!), userId: userData.id };
+    const payload = { recipeId: parseInt(id!), userId: user.id };
 
     await FavoritesService.toggleFavoriteRecipe(payload);
 
@@ -305,7 +305,7 @@ const RecipeDetails = () => {
     setIngredientsAction(parsedIngredients);
     setStepsAction(parsedSteps);
 
-    router.navigate("edit_recipe/recipe_edit_summary");
+    router.push("/edit_recipe/recipe_edit_summary");
   };
 
   const openDeleteAlert = () => {};
