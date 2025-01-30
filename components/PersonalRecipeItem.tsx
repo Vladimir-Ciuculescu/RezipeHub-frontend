@@ -67,6 +67,8 @@ const PersonalRecipeItem: React.FC<PersonalRecipeItemProps> = ({ item }) => {
                 source={{
                   uri: photoUrl,
                 }}
+                transition={300}
+                contentFit="fill"
                 onLoad={handleImageLoad}
                 style={styles.$imageStyle}
               />

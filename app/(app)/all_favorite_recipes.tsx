@@ -223,6 +223,8 @@ const AllFavoriteRecipes = () => {
                         <Image
                           source={{ uri: item.photoUrl }}
                           style={{ flex: 1 }}
+                          transition={300}
+                          contentFit="fill"
                         />
                         <View style={styles.$hearRowContainerstyle}>
                           <RNIcon name="heart" />
@@ -273,6 +275,8 @@ const AllFavoriteRecipes = () => {
                           <Image
                             source={{ uri: item.user.photoUrl }}
                             style={styles.userImageStyle}
+                            transition={300}
+                            contentFit="fill"
                           />
                         ) : (
                           <View style={styles.$userPlaceholderStyle}>
@@ -320,6 +324,8 @@ const AllFavoriteRecipes = () => {
                       <Image
                         source={{ uri: item.photoUrl }}
                         style={{ flex: 1 }}
+                        transition={300}
+                        contentFit="fill"
                       />
                       <View style={styles.$heartGridStyle}>
                         <RNIcon name="heart" />
@@ -365,6 +371,8 @@ const AllFavoriteRecipes = () => {
                         <Image
                           source={{ uri: item.user.photoUrl }}
                           style={styles.$userImageGridStyle}
+                          transition={300}
+                          contentFit="fill"
                         />
                       ) : (
                         <View style={styles.$userImagePlaceholderGridStyle}>

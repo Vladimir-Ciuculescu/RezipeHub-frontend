@@ -68,6 +68,7 @@ const FavoriteRecipeItem: React.FC<FavoriteRecipeItemProps> = ({ item }) => {
                   }}
                   onLoad={handleImageLoad}
                   style={{ flex: 1 }}
+                  transition={300}
                 />
                 <View style={styles.$favoriteIconContainerStyle}>
                   <RNIcon name="heart" />
@@ -97,6 +98,8 @@ const FavoriteRecipeItem: React.FC<FavoriteRecipeItemProps> = ({ item }) => {
                   <Image
                     source={{ uri: user.photoUrl }}
                     style={styles.$userImageStyle}
+                    transition={300}
+                    contentFit="fill"
                   />
                 ) : (
                   <View style={styles.$userPlaceholderStyle}>

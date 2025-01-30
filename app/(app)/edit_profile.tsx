@@ -189,6 +189,8 @@ const EditProfile = () => {
                       source={{ uri: values.photoUrl }}
                       style={styles.$imageStyle}
                       cachePolicy="none"
+                      transition={300}
+                      contentFit="fill"
                     />
                   ) : (
                     <RNIcon

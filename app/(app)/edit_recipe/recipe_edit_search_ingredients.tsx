@@ -9,7 +9,7 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import { $sizeStyles } from "@/theme/typography";
@@ -75,6 +75,8 @@ const RecipeEditSearchIngredients = () => {
       setResults([]);
     }
   }, [debouncedText]);
+
+  const memoizedResults = useMemo(() => results, [results]);
 
   const clearSearch = () => {
     setText("");
@@ -190,10 +192,10 @@ const RecipeEditSearchIngredients = () => {
             </View>
           ) : (
             <FlashList
-              estimatedItemSize={15}
+              estimatedItemSize={80}
               showsVerticalScrollIndicator={false}
-              data={results}
-              keyExtractor={(item, index) => "key" + index}
+              data={memoizedResults}
+              keyExtractor={(_, index) => "key" + index}
               contentContainerStyle={styles.$flatListContainerStyle}
               ItemSeparatorComponent={() => <View style={{ height: spacing.spacing16 }} />}
               renderItem={({ item, index }) => (

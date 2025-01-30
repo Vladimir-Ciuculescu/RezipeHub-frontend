@@ -175,6 +175,8 @@ const AllByCategoryRecipes = () => {
                       <Image
                         source={{ uri: item.photoUrl }}
                         style={styles.$flexStyle}
+                        transition={300}
+                        contentFit="fill"
                       />
                     </View>
                   ) : (
@@ -212,6 +214,8 @@ const AllByCategoryRecipes = () => {
                           <Image
                             source={{ uri: item.user.photoUrl }}
                             style={styles.$userAvatarStyle}
+                            transition={300}
+                            contentFit="fill"
                           />
                         ) : (
                           <View style={styles.$userAvatarPlaceholderStyle}>
@@ -258,8 +262,9 @@ const AllByCategoryRecipes = () => {
     >
       {getItems && getItems.length ? (
         <FlashList
+          keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
-          estimatedItemSize={15}
+          estimatedItemSize={80}
           data={getItems}
           renderItem={renderItem}
           contentContainerStyle={styles.$contentContainerStyle}

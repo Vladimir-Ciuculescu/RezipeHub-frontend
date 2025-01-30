@@ -42,6 +42,8 @@ const RecipeSearchResultItem: React.FC<RecipeSearchResultItemProps> = ({ recipe 
               <View style={styles.$contentRowStyle}>
                 {recipe.photoUrl ? (
                   <Image
+                    transition={300}
+                    contentFit="fill"
                     source={{ uri: recipe.photoUrl }}
                     style={styles.$rowImageStyle}
                   />

@@ -218,6 +218,8 @@ const LayoutGridAnimation = () => {
                   <View style={styles.$contentRowStyle}>
                     {item.photoUrl ? (
                       <Image
+                        transition={300}
+                        contentFit="fill"
                         source={{ uri: item.photoUrl }}
                         style={styles.$rowImageStyle}
                       />
@@ -326,6 +328,8 @@ const LayoutGridAnimation = () => {
                 <View style={styles.$innerGridInfoStyle}>
                   {item.photoUrl ? (
                     <Image
+                      transition={300}
+                      contentFit="fill"
                       source={{ uri: item.photoUrl }}
                       style={styles.$gridImageStyle}
                     />

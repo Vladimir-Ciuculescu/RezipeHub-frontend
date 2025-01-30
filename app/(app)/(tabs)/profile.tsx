@@ -126,6 +126,8 @@ const Profile = () => {
                     }}
                     style={{ flex: 1 }}
                     cachePolicy="none"
+                    transition={300}
+                    contentFit="fill"
                   />
                 </View>
               ) : (

@@ -26,34 +26,41 @@ interface NotificationItemProps {
 }
 
 const SettingsItem: React.FC<NotificationItemProps> = ({ label, icon, rightElement, onPress }) => {
+  const renderContent = (rightContent: React.ReactNode) => (
+    <RNShadowView>
+      <View style={styles.$settingsItemContainerStyle}>
+        <View style={styles.$settingsLabelContainerStyle}>
+          <View>
+            <RNIcon
+              name={icon}
+              color={colors.accent300}
+              height={verticalScale(24)}
+              width={verticalScale(24)}
+            />
+          </View>
+          <Text style={styles.$settingsLabelStyle}>{label}</Text>
+        </View>
+        {rightContent}
+      </View>
+    </RNShadowView>
+  );
+
+  if (rightElement) {
+    return <View>{renderContent(rightElement)}</View>;
+  }
+
   return (
     <TouchableOpacity onPress={onPress}>
-      <RNShadowView>
-        <View style={styles.$settingsItemContainerStyle}>
-          <View style={styles.$settingsLabelContainerStyle}>
-            <View>
-              <RNIcon
-                name={icon}
-                color={colors.accent300}
-                height={verticalScale(24)}
-                width={verticalScale(24)}
-              />
-            </View>
-            <Text style={styles.$settingsLabelStyle}>{label}</Text>
-          </View>
-
-          {rightElement || (
-            <View style={styles.$arrowBtnStyle}>
-              <RNIcon
-                name="arrow_right"
-                color={colors.greyscale50}
-                height={moderateScale(14)}
-                width={moderateScale(14)}
-              />
-            </View>
-          )}
-        </View>
-      </RNShadowView>
+      {renderContent(
+        <View style={styles.$arrowBtnStyle}>
+          <RNIcon
+            name="arrow_right"
+            color={colors.greyscale50}
+            height={moderateScale(14)}
+            width={moderateScale(14)}
+          />
+        </View>,
+      )}
     </TouchableOpacity>
   );
 };
@@ -134,7 +141,14 @@ const Settings = () => {
     }
   };
 
-  const ITEMS = [
+  interface SettingsItemProps {
+    label: string;
+    icon: string;
+    rightElement?: React.ReactNode;
+    onPress?: (() => void) | (() => Promise<void>) | undefined;
+  }
+
+  const ITEMS: SettingsItemProps[] = [
     {
       label: "Notifications",
       icon: "notification",
@@ -152,12 +166,12 @@ const Settings = () => {
     {
       label: "About the app",
       icon: "info_square",
-      onpPress: () => router.push("/about"),
+      onPress: () => router.push("/about"),
     },
     {
       label: "Contact",
       icon: "profile",
-      onpPress: () => router.push("/contact"),
+      onPress: () => router.navigate("/contact"),
     },
     //TODO: This will need to be added back when app is actually deployed
     // {
@@ -222,7 +236,8 @@ const Settings = () => {
           label={item.label}
           icon={item.icon}
           rightElement={item.rightElement}
-          onPress={item.onPress!}
+          //@ts-ignore
+          onPress={item?.onPress || undefined}
         />
       ))}
     </ScrollView>

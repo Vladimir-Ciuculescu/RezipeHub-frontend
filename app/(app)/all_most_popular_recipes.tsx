@@ -1,14 +1,6 @@
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  Dimensions,
-} from "react-native";
+import { View, Text, Pressable, StyleSheet, ActivityIndicator, Dimensions } from "react-native";
 import React, { useLayoutEffect, useMemo } from "react";
-import { Link, useNavigation, useRouter } from "expo-router";
+import { Link, useNavigation } from "expo-router";
 import RNIcon from "@/components/shared/RNIcon";
 import { $sizeStyles } from "@/theme/typography";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -23,7 +15,6 @@ import RNPressable from "@/components/shared/RNPressable";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 import { No_results } from "@/assets/illustrations";
 import { FlashList } from "@shopify/flash-list";
-import { useIsFocused } from "@react-navigation/native";
 import { useCurrentUser } from "@/context/UserContext";
 
 const { width, height } = Dimensions.get("screen");
@@ -113,6 +104,8 @@ const AllMostPopularRecipes = () => {
                   {item.photoUrl ? (
                     <View style={styles.$rowImageStyle}>
                       <Image
+                        transition={300}
+                        contentFit="fill"
                         source={{ uri: item.photoUrl }}
                         style={styles.$flexStyle}
                       />
@@ -150,6 +143,8 @@ const AllMostPopularRecipes = () => {
                       <View style={styles.$userInfoContainerStyle}>
                         {item.user.photoUrl ? (
                           <Image
+                            transition={300}
+                            contentFit="fill"
                             source={{ uri: item.user.photoUrl }}
                             style={styles.$userAvatarStyle}
                           />
@@ -198,7 +193,8 @@ const AllMostPopularRecipes = () => {
     >
       {getItems && getItems.length ? (
         <FlashList
-          estimatedItemSize={15}
+          keyExtractor={(item) => item.id}
+          estimatedItemSize={80}
           showsVerticalScrollIndicator={false}
           data={getItems}
           renderItem={renderItem}

@@ -7,7 +7,7 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
 import { $sizeStyles } from "@/theme/typography";
 import RNIcon from "@/components/shared/RNIcon";
@@ -74,6 +74,8 @@ const RecipeSearchIngredients = () => {
       setResults([]);
     }
   }, [debouncedText]);
+
+  const memoizedResults = useMemo(() => results, [results]);
 
   const gotBack = () => {
     router.back();
@@ -190,10 +192,10 @@ const RecipeSearchIngredients = () => {
           ) : (
             <FlashList
               showsVerticalScrollIndicator={false}
-              estimatedItemSize={20}
-              data={results}
+              estimatedItemSize={80}
+              data={memoizedResults}
               ItemSeparatorComponent={() => <View style={{ height: spacing.spacing16 }} />}
-              keyExtractor={(item, index) => "key" + index}
+              keyExtractor={(_, index) => "key" + index}
               contentContainerStyle={styles.$flatListContainerStyle}
               renderItem={({ item, index }) => (
                 <RNFadeInTransition

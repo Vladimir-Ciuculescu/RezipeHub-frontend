@@ -1,4 +1,4 @@
-import { Text, StyleSheet, View, Dimensions, ActivityIndicator, FlatList } from "react-native";
+import { Text, StyleSheet, View, Dimensions, ActivityIndicator } from "react-native";
 import React, { useMemo } from "react";
 import { $sizeStyles } from "@/theme/typography";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -13,6 +13,7 @@ import { Notification } from "@/types/notification.types";
 import dayjs from "dayjs";
 import { Skeleton } from "moti/skeleton";
 import { useCurrentUser } from "@/context/UserContext";
+import { FlashList } from "@shopify/flash-list";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -37,21 +38,19 @@ const Notifications = () => {
     },
   });
 
-  const getNotifications = useMemo(() => {
-    if (notifications && notifications.pages) {
-      const allNotifications = notifications.pages.flatMap((notification) => notification);
-
-      return allNotifications;
-    }
-
-    return [];
-  }, [notifications]);
-
   const loadNextPage = () => {
     if (hasNextPage) {
       fetchNextPage();
     }
   };
+
+  const getNotifications = useMemo(() => {
+    if (notifications && notifications.pages) {
+      const recipes = notifications.pages.flatMap((page) => page);
+
+      return recipes;
+    }
+  }, [notifications]);
 
   const getRelativeTime = (timestamp: Date) => {
     const now = dayjs();
@@ -78,7 +77,7 @@ const Notifications = () => {
     }
   };
 
-  const formattedNotificationsList = () => {
+  const formattedNotificationsList = useMemo(() => {
     const formattedList: any[] = [];
     let currentSection = "";
 
@@ -124,7 +123,7 @@ const Notifications = () => {
       });
 
     return formattedList;
-  };
+  }, [notifications]);
 
   return (
     <SafeAreaView style={styles.$safeAreaViewContainerStyle}>
@@ -150,43 +149,41 @@ const Notifications = () => {
             ))}
         </View>
       ) : getNotifications && getNotifications.length ? (
-        <View style={{ flex: 1, paddingTop: verticalScale(spacing.spacing24) }}>
-          <FlatList
-            keyExtractor={(item) => (typeof item === "string" ? item : item.id.toString())}
-            contentContainerStyle={{
-              paddingBottom: verticalScale(100),
-            }}
-            ItemSeparatorComponent={() => <View style={{ height: spacing.spacing16 }} />}
-            data={formattedNotificationsList()}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item, index }) => {
-              if (typeof item === "string") {
-                return <Text style={styles.$sectionTitleStyle}>{item}</Text>;
-              } else {
-                return <NotificationItem notification={item} />;
-              }
-            }}
-            onEndReached={loadNextPage}
-            onEndReachedThreshold={8}
-            ListFooterComponent={
-              isFetchingNextPage && !hasPreviousPage ? (
-                <ActivityIndicator
-                  color={colors.brandPrimary}
-                  size="large"
-                />
-              ) : null
+        <FlashList
+          keyExtractor={(item) => (typeof item === "string" ? item : item.id.toString())}
+          showsVerticalScrollIndicator={false}
+          ItemSeparatorComponent={() => <View style={{ height: spacing.spacing16 }} />}
+          contentContainerStyle={{
+            paddingBottom: verticalScale(100),
+            paddingTop: verticalScale(30),
+          }}
+          data={formattedNotificationsList}
+          renderItem={({ item }) => {
+            if (typeof item === "string") {
+              return <Text style={styles.$sectionTitleStyle}>{item}</Text>;
+            } else {
+              return <NotificationItem notification={item} />;
             }
-            ListFooterComponentStyle={{
-              paddingTop: spacing.spacing24,
-            }}
-          />
-        </View>
+          }}
+          estimatedItemSize={80}
+          onEndReached={loadNextPage}
+          ListFooterComponent={
+            !isLoading && isFetchingNextPage && !hasPreviousPage ? (
+              <ActivityIndicator
+                color={colors.brandPrimary}
+                size="large"
+              />
+            ) : null
+          }
+          ListFooterComponentStyle={{
+            paddingTop: spacing.spacing24,
+          }}
+        />
       ) : (
         <View
           style={{
             alignItems: "center",
             paddingTop: spacing.spacing64,
-            // gap: spacing.spacing48,
           }}
         >
           <No_notificatins
