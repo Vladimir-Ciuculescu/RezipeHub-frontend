@@ -212,9 +212,9 @@ function RecipeTitle() {
                   <Image
                     style={styles.$imageStyle}
                     source={{
-                      // uri: photo,
                       uri: values.photoUrl,
                     }}
+                    transition={300}
                   />
                 </View>
               )}
@@ -272,93 +272,6 @@ function RecipeTitle() {
           );
         }}
       </Formik>
-      {/* <RnInput
-        value={title}
-        onChangeText={setTitle}
-        label="Title"
-        placeholder="Title"
-        returnKeyType="done"
-        wrapperStyle={{ width: "100%" }}
-      />
-      <RnInput
-        value={servings}
-        onChangeText={setServings}
-        keyboardType="numeric"
-        returnKeyType="done"
-        label="Servings"
-        placeholder="Servings"
-        wrapperStyle={{ width: "100%" }}
-      />
-      {!photo ? (
-        <RNButton
-          onPress={openGallery}
-          label="Add photo"
-          style={styles.$addPhotoBtnStye}
-          labelStyle={[{ color: colors.greyscale50 }, $sizeStyles.l]}
-          iconSource={() => (
-            <FontAwesome
-              name="photo"
-              size={moderateScale(22)}
-              color={colors.greyscale50}
-            />
-          )}
-        />
-      ) : (
-        <View style={{ width: "100%", height: moderateScale(183) }}>
-          <Pressable
-            onPress={openSheet}
-            style={styles.$removePhotoBtnStyle}
-          >
-            <AntDesign
-              name="close"
-              size={moderateScale(24)}
-              color={colors.greyscale50}
-            />
-          </Pressable>
-
-          <Image
-            style={styles.$imageStyle}
-            source={{
-              uri: photo,
-              priority: FastImage.priority.normal,
-            }}
-          />
-        </View>
-      )}
-      <View style={{ width: "100%", gap: verticalScale(spacing.spacing12) }}>
-        <Text style={[$sizeStyles.n, styles.$labelStyle]}>Type</Text>
-
-        <RNPickerSelect
-          doneText="Done"
-          placeholder={{ value: "", label: "Select a Type" }}
-          value={type}
-          onValueChange={setType}
-          items={RECIPE_TYPES}
-          style={{
-            chevronUp: { display: "none" },
-            chevronDown: { display: "none" },
-            inputIOS: styles.$inputIOSStyle,
-            inputAndroid: styles.$inputAndroidStyle,
-
-            iconContainer: styles.$iconContainerStyle,
-          }}
-          useNativeAndroidPickerStyle={false}
-          Icon={() => {
-            return <RNIcon name="chef" />;
-          }}
-        />
-      </View>
-      <RnInput
-        value={preparationTime}
-        onChangeText={setPreparationTime}
-        keyboardType="numeric"
-        returnKeyType="done"
-        label="Preparation time (minutes)"
-        placeholder="10"
-        wrapperStyle={{ width: "100%" }}
-        leftIcon={<RNIcon name="clock" />}
-        rightIcon={<Text style={{ ...$sizeStyles.s }}>min</Text>}
-      /> */}
     </KeyboardAwareScrollView>
   );
 }

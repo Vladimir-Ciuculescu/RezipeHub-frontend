@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, Alert, Linking } from "react-native";
+import { View, Text, StyleSheet, Pressable, Alert, Linking, TouchableOpacity } from "react-native";
 import React from "react";
 import { spacing } from "@/theme/spacing";
 import { colors } from "@/theme/colors";
@@ -43,14 +43,16 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification }) => 
   };
 
   return (
-    <Pressable onPress={goToRecipeScreen}>
+    <TouchableOpacity onPress={goToRecipeScreen}>
       <RNShadowView style={read ? {} : { backgroundColor: colors.accent100 }}>
         <View style={styles.$containerStyle}>
           <View
             style={{ flexDirection: "row", alignItems: "center", gap: spacing.spacing8, flex: 1 }}
           >
-            {data.recipePhotoUrl ? (
+            {data && data.recipePhotoUrl ? (
               <Image
+                transition={300}
+                contentFit="fill"
                 source={{ uri: data.recipePhotoUrl }}
                 style={styles.$iconContainerStyle}
               />
@@ -99,7 +101,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification }) => 
           </View>
         </View>
       </RNShadowView>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

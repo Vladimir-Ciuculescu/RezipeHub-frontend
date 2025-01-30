@@ -7,6 +7,7 @@ import {
   Dimensions,
   ScrollView,
   TouchableWithoutFeedback,
+  ActivityIndicator,
 } from "react-native";
 import { spacing } from "@/theme/spacing";
 import RecipeSearchResultItem from "@/components/RecipeSearchResultItem";
@@ -37,7 +38,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import RNPressable from "@/components/shared/RNPressable";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 import { FlashList } from "@shopify/flash-list";
-import { useIsFocused } from "@react-navigation/native";
 import { useCurrentUser } from "@/context/UserContext";
 
 const { width, height } = Dimensions.get("screen");
@@ -77,8 +77,6 @@ const SearchScreen = () => {
     maxPreparationTime: preparationTimeRange[1],
   });
 
-  const isFocused = useIsFocused();
-
   const filterCopyRef = useRef(filters);
   const initialFilters = useRef(filters);
 
@@ -96,6 +94,8 @@ const SearchScreen = () => {
     data: recipess,
     hasNextPage,
     fetchNextPage,
+    isFetchingNextPage,
+    hasPreviousPage,
     isLoading,
   } = useInfiniteQuery({
     queryKey: ["recipes", filterObject],
@@ -362,11 +362,11 @@ const SearchScreen = () => {
           </View>
         ) : getRecipes && getRecipes.length ? (
           <FlashList
+            keyExtractor={(item) => item.id}
+            keyboardDismissMode="on-drag"
             data={getRecipes}
             renderItem={({ item, index }) => <RecipeSearchResultItem recipe={item} />}
-            estimatedItemSize={15}
-            onScroll={() => Keyboard.dismiss()}
-            onEndReached={loadNextPage}
+            estimatedItemSize={80}
             ItemSeparatorComponent={() => <View style={{ height: spacing.spacing16 }} />}
             contentContainerStyle={{
               paddingHorizontal: spacing.spacing24,
@@ -374,6 +374,18 @@ const SearchScreen = () => {
               paddingBottom: verticalScale(110),
             }}
             showsVerticalScrollIndicator={false}
+            onEndReached={loadNextPage}
+            ListFooterComponent={
+              !isLoading && isFetchingNextPage && !hasPreviousPage ? (
+                <ActivityIndicator
+                  color={colors.brandPrimary}
+                  size="large"
+                />
+              ) : null
+            }
+            ListFooterComponentStyle={{
+              paddingTop: spacing.spacing24,
+            }}
           />
         ) : (
           <View

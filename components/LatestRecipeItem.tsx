@@ -43,6 +43,8 @@ const LatestRecipeItem: React.FC<LatestRecipeItemProps> = ({ item }) => {
                   uri: photoUrl,
                 }}
                 style={{ flex: 1 }}
+                transition={300}
+                contentFit="fill"
               />
             </View>
           ) : (
@@ -74,6 +76,8 @@ const LatestRecipeItem: React.FC<LatestRecipeItemProps> = ({ item }) => {
               >
                 {user.photoUrl ? (
                   <Image
+                    transition={300}
+                    contentFit="fill"
                     source={{ uri: user.photoUrl }}
                     style={styles.$userImageStyle}
                   />

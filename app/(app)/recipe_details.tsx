@@ -65,13 +65,14 @@ const RecipeDetails = () => {
       onSelect: () => openEditModal(),
     },
 
-    {
-      label: "Delete",
-      key: "trash",
-      iosIcon: "trash",
-      androidIcon: "ic_menu_delete",
-      onSelect: () => openDeleteAlert(),
-    },
+    //TODO: Uncomment it when add delete functionality
+    // {
+    //   label: "Delete",
+    //   key: "trash",
+    //   iosIcon: "trash",
+    //   androidIcon: "ic_menu_delete",
+    //   onSelect: () => openDeleteAlert(),
+    // },
   ];
 
   const { bottom } = useSafeAreaInsets();
@@ -586,6 +587,8 @@ const RecipeDetails = () => {
                               borderWidth: 4,
                               borderColor: colors.accent200,
                             }}
+                            transition={300}
+                            contentFit="fill"
                           />
                         ) : (
                           <View

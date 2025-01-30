@@ -265,6 +265,7 @@ const RecipeSubmit = () => {
               source={{
                 uri: photo,
               }}
+              transition={300}
             />
           ) : (
             <Entypo

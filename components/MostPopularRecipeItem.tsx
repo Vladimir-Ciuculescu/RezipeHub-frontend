@@ -39,6 +39,8 @@ const MostPopularRecipeItem: React.FC<MostPopulaerRecipeItemProps> = ({ item }) 
           {photoUrl ? (
             <View style={styles.$imageStyle}>
               <Image
+                transition={300}
+                contentFit="fill"
                 source={{
                   uri: photoUrl,
                 }}
@@ -72,6 +74,8 @@ const MostPopularRecipeItem: React.FC<MostPopulaerRecipeItemProps> = ({ item }) 
               >
                 {user.photoUrl ? (
                   <Image
+                    transition={300}
+                    contentFit="fill"
                     source={{ uri: user.photoUrl }}
                     style={styles.$userImageStyle}
                   />

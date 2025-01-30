@@ -1,11 +1,11 @@
-import { Text, StyleSheet, Pressable, FlatList, ActivityIndicator, Dimensions } from "react-native";
+import { Text, StyleSheet, Pressable, ActivityIndicator, Dimensions } from "react-native";
 import React, { useLayoutEffect, useMemo } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import RecipeService from "@/api/services/recipe.service";
 import RNIcon from "@/components/shared/RNIcon";
 import { $sizeStyles } from "@/theme/typography";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { colors } from "@/theme/colors";
 import { No_results } from "@/assets/illustrations";
 import { spacing } from "@/theme/spacing";
@@ -13,12 +13,10 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import RNShadowView from "@/components/shared/RNShadowView";
 import { Image } from "expo-image";
 import { View } from "react-native-ui-lib";
-import { LatestRecipeResponse } from "@/types/recipe.types";
-import { Link, router } from "expo-router";
-import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
+import { Link } from "expo-router";
+import { horizontalScale, moderateScale } from "@/utils/scale";
 import RNPressable from "@/components/shared/RNPressable";
 import { FlashList } from "@shopify/flash-list";
-import RNFadeInTransition from "@/components/shared/RNFadeinTransition";
 import { useCurrentUser } from "@/context/UserContext";
 
 const { width, height } = Dimensions.get("screen");
@@ -109,6 +107,8 @@ const AllLatestRecipes = () => {
                   {item.photoUrl ? (
                     <View style={styles.$rowImageStyle}>
                       <Image
+                        transition={300}
+                        contentFit="fill"
                         source={{ uri: item.photoUrl }}
                         style={styles.$flexStyle}
                       />
@@ -146,6 +146,8 @@ const AllLatestRecipes = () => {
                       <View style={styles.$userInfoContainerStyle}>
                         {item.user.photoUrl ? (
                           <Image
+                            transition={300}
+                            contentFit="fill"
                             source={{ uri: item.user.photoUrl }}
                             style={styles.$userAvatarStyle}
                           />
@@ -194,7 +196,8 @@ const AllLatestRecipes = () => {
     >
       {getItems && getItems.length ? (
         <FlashList
-          estimatedItemSize={15}
+          keyExtractor={(item) => item.id}
+          estimatedItemSize={80}
           showsVerticalScrollIndicator={false}
           data={getItems}
           renderItem={renderItem}
