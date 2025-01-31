@@ -10,7 +10,10 @@ export const checkSubscription = async () => {
     return true;
   }
 
-  await RevenueCatUI.presentPaywallIfNeeded({ requiredEntitlementIdentifier: "Pro" });
+  await RevenueCatUI.presentPaywallIfNeeded({
+    requiredEntitlementIdentifier: "Pro",
+    displayCloseButton: false,
+  });
 
   return false;
 };

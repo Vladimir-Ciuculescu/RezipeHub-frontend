@@ -107,7 +107,10 @@ const Settings = () => {
   };
 
   const unlockPremium = async () => {
-    await RevenueCatUI.presentPaywallIfNeeded({ requiredEntitlementIdentifier: "Pro" });
+    await RevenueCatUI.presentPaywallIfNeeded({
+      requiredEntitlementIdentifier: "Pro",
+      displayCloseButton: false,
+    });
   };
 
   const logOut = async () => {
