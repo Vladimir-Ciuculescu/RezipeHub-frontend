@@ -25,14 +25,17 @@ const Register = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={goBack}>
+        <Pressable
+          onPress={goBack}
+          disabled={isLoading}
+        >
           <RNIcon name="arrow_left" />
         </Pressable>
       ),
 
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Create account</Text>,
     });
-  }, [navigation]);
+  }, [navigation, isLoading]);
 
   const goBack = () => {
     navigation.goBack();
@@ -187,6 +190,7 @@ const Register = () => {
             />
             <RNButton
               loading={isLoading}
+              disabled={isLoading}
               onPress={() => handleSubmit()}
               label="Register"
               style={{ width: "100%" }}

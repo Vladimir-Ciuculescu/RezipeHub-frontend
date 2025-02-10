@@ -16,6 +16,7 @@ export const useLatestRecipes = (params: GetLatestRecipesRequest) => {
     queryKey: ["latest-recipes"],
     queryFn: async () => await RecipeService.getLatestRecipes(params),
     // enabled: !!params.userId,
+    // refetchInterval: 5000,
   });
 };
 

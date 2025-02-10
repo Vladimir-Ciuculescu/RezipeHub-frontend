@@ -120,8 +120,8 @@ export default MostPopularRecipeItem;
 
 const styles = StyleSheet.create({
   $containerStyle: {
-    height: 240,
-    width: 200,
+    height: moderateScale(240),
+    width: horizontalScale(200),
     justifyContent: "space-between",
     padding: spacing.spacing16,
   },

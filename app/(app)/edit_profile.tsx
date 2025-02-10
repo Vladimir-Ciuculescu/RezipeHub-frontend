@@ -117,18 +117,25 @@ const EditProfile = () => {
     setFieldValue: (label: string, value: string) => void,
   ) => {
     let cancelButtonIndex;
-    let destructiveButtonIndex = 2;
+    let destructiveButtonIndex = 1;
 
     let options;
 
     if (photoUrl) {
-      options = ["Choose from gallery", "Open camera", "Remove photo", "Cancel"];
-      cancelButtonIndex = 3;
-      destructiveButtonIndex = 2;
-    } else {
-      options = ["Choose from gallery", "Open camera", "Cancel"];
+      // options = ["Choose from gallery", "Open camera", "Remove photo", "Cancel"];
+      options = ["Choose from gallery", "Remove photo", "Cancel"];
+
       cancelButtonIndex = 2;
       destructiveButtonIndex = 2;
+    } else {
+      options = ["Choose from gallery", "Cancel"];
+      // destructiveButtonIndex = 0;
+      // cancelButtonIndex = 2;
+      // options = ["Choose from gallery", "Open camera", "Cancel"];
+      //options = ["Choose from gallery", "Cancel"];
+
+      cancelButtonIndex = 1;
+      destructiveButtonIndex = 1;
     }
 
     showActionSheetWithOptions(
@@ -143,11 +150,16 @@ const EditProfile = () => {
           case 0:
             openGallery(setFieldValue);
             break;
+          // case 1:
+          //   openCamera();
+          //   break;
+          // case 2:
+          //   setFieldValue("photoUrl", "");
+          //   break;
           case 1:
-            openCamera();
-            break;
-          case 2:
-            setFieldValue("photoUrl", "");
+            if (photoUrl) {
+              setFieldValue("photoUrl", "");
+            }
             break;
         }
       },

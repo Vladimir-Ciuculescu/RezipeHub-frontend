@@ -45,23 +45,27 @@ const styles = StyleSheet.create({
     gap: spacing.spacing16,
 
     width: "100%",
+
     height: "100%",
 
-    paddingLeft: spacing.spacing16,
-    paddingRight: spacing.spacing48,
+    // paddingLeft: spacing.spacing16,
+    // paddingRight: spacing.spacing48,
+    paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: spacing.spacing24,
+    justifyContent: "center",
+    alignSelf: "center",
   },
 
   modal: {
-    backgroundColor: "red",
     alignSelf: "center",
     position: "absolute",
     bottom: -10,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width: "100%",
+    //TODO: Keep this for news
+    //width: "80%",
   },
 });
 
