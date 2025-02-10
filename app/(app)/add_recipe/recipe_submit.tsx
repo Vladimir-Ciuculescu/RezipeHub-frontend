@@ -170,32 +170,8 @@ const RecipeSubmit = () => {
 
         await editRecipePhotoMutation({ id: recipe.id, photoUrl: url });
 
-        const newRecipe = {
-          id: recipe.id,
-
-          title: recipe.title,
-          servings: recipe.servings,
-          photoUrl: url,
-          preparationTime: recipe.preparationTime,
-          totalCalories,
-        };
-
-        // queryClient.setQueryData(["recipes-per-user"], (oldData: any) => {
-        //   return oldData ? [newRecipe, ...oldData] : [newRecipe];
-        // });
         queryClient.invalidateQueries({ queryKey: ["recipes-per-user"] });
       } else {
-        const newRecipe = {
-          id: recipe.id,
-          title: recipe.title,
-          servings: recipe.servings,
-          preparationTime: recipe.preparationTime,
-          totalCalories,
-        };
-
-        // queryClient.setQueryData(["recipes-per-user"], (oldData: any) => {
-        //   return oldData ? [newRecipe, ...oldData] : [newRecipe];
-        // });
         queryClient.invalidateQueries({ queryKey: ["recipes-per-user"] });
       }
 

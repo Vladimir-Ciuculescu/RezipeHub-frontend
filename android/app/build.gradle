@@ -109,9 +109,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.yumhub.test'
+    namespace 'com.rezipehub.app.dev'
     defaultConfig {
-        applicationId 'com.yumhub.test'
+        applicationId 'com.rezipehub.app.dev'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

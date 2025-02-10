@@ -42,6 +42,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/scale";
 import { checkSubscription } from "@/utils/checkSubscription";
 import { useCurrentUser } from "@/context/UserContext";
+import { toastConfig } from "@/components/Toast/ToastConfing";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -175,8 +176,13 @@ const RecipeDetails = () => {
     Toast.show({
       type: "success",
       bottomOffset: -bottom,
+      position: "bottom",
+      visibilityTime: 1500,
+      swipeable: false,
       props: {
         title: isFavorite ? "Recipe removed from favorites !" : "Recipe added to favorites !",
+        position: "bottom",
+
         icon: (
           <AntDesign
             name="check"
@@ -647,6 +653,7 @@ const RecipeDetails = () => {
           </BottomSheetScrollView>
         </BottomSheet>
       </View>
+      <Toast config={toastConfig} />
     </>
   );
 };

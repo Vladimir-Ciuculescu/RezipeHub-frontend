@@ -24,7 +24,7 @@ const Home = () => {
 
       <Home_food />
       <View style={styles.$textContainerStyle}>
-        <Text style={[styles.$headerStyle]}>Help your path to health goals with happiness</Text>
+        <Text style={[styles.$headerStyle]}>Your daily dose of culinary inspirations</Text>
         <View style={styles.$buttonsContainer}>
           <RNButton
             onPress={goToLogin}

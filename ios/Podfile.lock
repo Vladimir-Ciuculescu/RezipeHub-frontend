@@ -1323,6 +1323,27 @@ PODS:
   - React-Mapbuffer (0.74.6):
     - glog
     - React-debug
+  - react-native-keyboard-controller (1.16.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-menu (1.1.7):
     - React
   - react-native-mmkv (2.12.2):
@@ -1753,6 +1774,7 @@ DEPENDENCIES:
   - React-jsitracing (from `../node_modules/react-native/ReactCommon/hermes/executor/`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
+  - react-native-keyboard-controller (from `../node_modules/react-native-keyboard-controller`)
   - "react-native-menu (from `../node_modules/@react-native-menu/menu`)"
   - react-native-mmkv (from `../node_modules/react-native-mmkv`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
@@ -1944,6 +1966,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   React-Mapbuffer:
     :path: "../node_modules/react-native/ReactCommon"
+  react-native-keyboard-controller:
+    :path: "../node_modules/react-native-keyboard-controller"
   react-native-menu:
     :path: "../node_modules/@react-native-menu/menu"
   react-native-mmkv:
@@ -2099,6 +2123,7 @@ SPEC CHECKSUMS:
   React-jsitracing: df84cc252a1f4bb0970f7fe13c470451b18c2cbb
   React-logger: de9b65c8c7b71a663e6e99d347b1c445f5190c39
   React-Mapbuffer: 766bb4d8f655d816913325b353d800debbde7209
+  react-native-keyboard-controller: 84f3c4c1837ea1a54579f3e8945d6611744e88dc
   react-native-menu: c8dfe61ce656aa531ab18e8ee3bb4ee55ce972ea
   react-native-mmkv: 8c9a677e64a1ac89b0c6cf240feea528318b3074
   react-native-netinfo: bdb108d340cdb41875c9ced535977cac6d2ff321
@@ -2147,6 +2172,6 @@ SPEC CHECKSUMS:
   sqlite3: 02d1f07eaaa01f80a1c16b4b31dfcbb3345ee01a
   Yoga: 4f4f07a17818e76d1b04edc01b68b6d49a682100
 
-PODFILE CHECKSUM: 01edda19a2ef0f619a4bd48b8ce843d47b98290d
+PODFILE CHECKSUM: 3ed36ee114ea29e0a9f810c05ec1893718c3a92a
 
 COCOAPODS: 1.15.2

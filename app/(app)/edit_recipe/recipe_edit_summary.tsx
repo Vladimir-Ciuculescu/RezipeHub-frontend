@@ -245,6 +245,7 @@ const RecipeEditSummary = () => {
     if (!ingredients.length || !steps.length) {
       Toast.show({
         type: "error",
+
         props: {
           title: "Missing Information",
           msg: "Each recipe must have at least one ingredient and one step",
@@ -349,31 +350,7 @@ const RecipeEditSummary = () => {
         return { ...oldData, ...updatedRecipe };
       });
 
-      //Update the my recipes request
-
       queryClient.invalidateQueries({ queryKey: ["recipes-per-user"] });
-
-      // queryClient.setQueryData(["recipes-per-user"], (oldData: RecipeBriefResponse[]) => {
-      //   const totalCalories = payload.recipe.ingredients!.reduce(
-      //     (sum, ingredient) => sum + ((ingredient["calories"] as number) || 0),
-      //     0,
-      //   );
-
-      //   return oldData.map((recipe) =>
-      //     recipe.id === recipedId
-      //       ? {
-      //           ...recipe,
-      //           title: payload.recipe.title,
-      //           servings: payload.recipe.servings,
-      //           preparationTime: payload.recipe.preparationTime,
-      //           totalCalories,
-      //           photoUrl: payload.recipe.photoUrl
-      //             ? getImageUrlWithCacheBuster(payload.recipe.photoUrl)
-      //             : "",
-      //         }
-      //       : recipe,
-      //   );
-      // });
 
       queryClient.setQueryData(
         ["all-personal-recipes"],
@@ -565,7 +542,6 @@ const RecipeEditSummary = () => {
       </KeyboardAwareScrollView>
       <Toast
         config={toastConfig}
-        visibilityTime={3000}
         position="bottom"
         bottomOffset={-bottom}
       />

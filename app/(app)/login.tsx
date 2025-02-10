@@ -58,14 +58,17 @@ const Login = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <Pressable onPress={goToHome}>
+        <Pressable
+          onPress={goToHome}
+          disabled={isLoading}
+        >
           <RNIcon name="arrow_left" />
         </Pressable>
       ),
 
       headerTitle: () => <Text style={[$sizeStyles.h3]}>Login</Text>,
     });
-  }, [navigation]);
+  }, [navigation, isLoading]);
 
   useEffect(() => {
     if (isSignedIn && loggedIn) {
@@ -256,6 +259,7 @@ const Login = () => {
               <RNButton
                 onPress={() => handleSubmit()}
                 loading={isLoading}
+                disabled={isLoading}
                 label="Login"
                 style={{ width: "100%" }}
               />
@@ -265,6 +269,7 @@ const Login = () => {
                 link
                 label="Forgot password ?"
                 style={{ width: "100%" }}
+                disabled={isLoading}
               />
             </>
           )}
@@ -273,6 +278,7 @@ const Login = () => {
       <View style={styles.$socialProvidersContainerStyle}>
         <Text style={styles.$labelStyle}>or continue with</Text>
         <RNButton
+          disabled={isLoading}
           onPress={() => onSelectAuth(Strategy.Google)}
           iconSource={() => (
             <AntDesign
@@ -285,6 +291,7 @@ const Login = () => {
           style={{ width: "100%", backgroundColor: colors.redGoogle }}
         />
         <RNButton
+          disabled={isLoading}
           onPress={() => onSelectAuth(Strategy.Facebook)}
           iconSource={() => (
             <FontAwesome5

@@ -12,6 +12,7 @@ import NotificationService from "@/api/services/notifications.service";
 import { checkSubscription } from "@/utils/checkSubscription";
 import RecipeService from "@/api/services/recipe.service";
 import { useCurrentUser } from "@/context/UserContext";
+import RNPressable from "@/components/shared/RNPressable";
 
 const TabLayout = () => {
   const router = useRouter();
@@ -89,7 +90,7 @@ const TabLayout = () => {
           options={{
             headerShown: false,
             tabBarIcon: () => (
-              <Pressable
+              <RNPressable
                 onPress={openAddRecipeModal}
                 style={styles.$addRecipeBtnStyle}
               >
@@ -97,7 +98,7 @@ const TabLayout = () => {
                   name="chef"
                   color={colors.greyscale50}
                 />
-              </Pressable>
+              </RNPressable>
             ),
           }}
         />

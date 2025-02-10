@@ -37,6 +37,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const notificationListener = useRef<any>();
   const responseListener = useRef<any>();
 
+  const expoPushTokenRef = useRef<string | null>(null);
+
   const incrementAppBadge = async () => {
     const currentBadgeCount = await Notifications.getBadgeCountAsync();
 
@@ -57,11 +59,11 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
 
       await resetAppNotificationBadges();
 
-      if (expoPushToken) {
-        await NotificationService.resetBadgeCountNotification(expoPushToken);
-      }
+      const token = expoPushTokenRef.current;
 
-      queryClient.invalidateQueries({ queryKey: ["all-notifications"] });
+      if (token) {
+        await NotificationService.resetBadgeCountNotification(token);
+      }
     };
 
     let isMounted = true;
@@ -105,6 +107,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       }
     };
   }, []);
+
+  useEffect(() => {
+    expoPushTokenRef.current = expoPushToken;
+  }, [expoPushToken]);
 
   return (
     <NotificationContext.Provider value={{ expoPushToken, notification, error }}>

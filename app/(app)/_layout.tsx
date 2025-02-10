@@ -21,14 +21,16 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
 import { ACCESS_TOKEN, ONBOARDED, storage } from "@/storage";
 import TokenService from "@/api/services/token.service";
-import Toast from "react-native-toast-message";
-import toastConfig from "@/components/Toast/ToastConfing";
+
 import { NotificationProvider } from "@/context/NotificationContext";
 import * as Notifications from "expo-notifications";
 import Purchases from "react-native-purchases";
 import { useCurrentUser, UserProvider } from "@/context/UserContext";
+import * as SplashScreen from "expo-splash-screen";
 
 Purchases.setLogLevel(Purchases.LOG_LEVEL.VERBOSE);
+
+SplashScreen.preventAutoHideAsync();
 
 Appearance.setColorScheme("light");
 
@@ -76,25 +78,30 @@ const AppLayout = () => {
     const checkOnboarding = async () => {
       if (!onboarded) {
         router.replace("/onboarding");
-        return;
+        // await SplashScreen.hideAsync();
       }
 
       if (!accessToken) {
         router.replace("/home");
-        return;
+        // await SplashScreen.hideAsync();
       }
       if (user) {
         if (user.isVerified) {
           router.replace("/(tabs)");
+          // await SplashScreen.hideAsync();
         } else {
           const payload = { userId: user.id, email: user.email as string };
           await TokenService.resendToken(payload);
+          // await SplashScreen.hideAsync();
+
           router.replace({
             pathname: "/otp_verification",
             params: { userId: user.id, email: user.email },
           });
         }
       }
+
+      await SplashScreen.hideAsync();
     };
 
     if (mounted && fontsLoaded) {
@@ -348,11 +355,6 @@ const Layout = () => {
               >
                 <UserProvider>
                   <AppLayout />
-                  <Toast
-                    visibilityTime={2000}
-                    config={toastConfig}
-                    position="bottom"
-                  />
                 </UserProvider>
               </ClerkProvider>
             </BottomSheetModalProvider>

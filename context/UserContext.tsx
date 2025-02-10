@@ -1,6 +1,8 @@
 import UserService from "@/api/services/user.service";
 import { ACCESS_TOKEN, REFRESH_TOKEN, storage } from "@/storage";
 import { CurrentUser } from "@/types/user.types";
+import { useAuth } from "@clerk/clerk-expo";
+import { useRouter } from "expo-router";
 import { jwtDecode } from "jwt-decode";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import Purchases from "react-native-purchases";
@@ -12,6 +14,7 @@ type UserContextType = {
   error: string | null;
   setError: React.Dispatch<any>;
   login: (accessToken: string, refreshToken: string) => Promise<void>;
+  // logout: () => Promise<void>;
   mounted: boolean;
 };
 
@@ -28,6 +31,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
+  const { signOut } = useAuth();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -65,26 +70,67 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
 
+  const logout = async () => {
+    storage.delete(ACCESS_TOKEN);
+    router.replace("/login");
+    await signOut();
+    await Purchases.logOut();
+  };
+
   const getProfile = async () => {
     setLoading(true);
 
+    // try {
+
+    //   const { id } = jwtDecode(storage.getString(ACCESS_TOKEN)!) as CurrentUser;
+
+    //   const newAccessToken = await UserService.getProfile(id);
+
+    //   //! This line is for test
+    //   storage.set(ACCESS_TOKEN, newAccessToken);
+
+    //   const userData = jwtDecode(newAccessToken) as CurrentUser;
+
+    //   //! This line is for test
+    //   await Purchases.logIn(userData.id.toString());
+
+    //   setUser(userData);
+
+    //   setError(null);
+    // } catch (error) {
+    //   console.log(6666, error);
+
+    //   setError(error instanceof Error ? error.message : "Failed to fetch user");
+    //   setUser(null);
+    // } finally {
+    //   setLoading(false);
+    // }
+
     try {
-      const { id } = jwtDecode(storage.getString(ACCESS_TOKEN)!) as CurrentUser;
+      const accessToken = storage.getString(ACCESS_TOKEN);
 
-      const newAccessToken = await UserService.getProfile(id);
+      if (accessToken) {
+        const { id } = jwtDecode(accessToken) as CurrentUser;
 
-      //! This line is for test
-      storage.set(ACCESS_TOKEN, newAccessToken);
+        const newAccessToken = await UserService.getProfile(id);
 
-      const userData = jwtDecode(newAccessToken) as CurrentUser;
+        //! This line is for test
+        storage.set(ACCESS_TOKEN, newAccessToken);
 
-      //! This line is for test
-      await Purchases.logIn(userData.id.toString());
+        const userData = jwtDecode(newAccessToken) as CurrentUser;
 
-      setUser(userData);
+        //! This line is for test
+        await Purchases.logIn(userData.id.toString());
 
-      setError(null);
-    } catch (error) {
+        setUser(userData);
+        setError(null);
+      }
+    } catch (error: any) {
+      if ((error.status = 401)) {
+        logout();
+        return;
+      }
+
       setError(error instanceof Error ? error.message : "Failed to fetch user");
       setUser(null);
     } finally {

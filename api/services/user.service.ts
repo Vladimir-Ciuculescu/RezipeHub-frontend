@@ -18,9 +18,13 @@ const UserService = {
   getProfile: async (userId: number) => {
     try {
       const { data } = await axiosInstance.get(`${USERS}/profile`, { params: { id: userId } });
+
       return data;
-    } catch (error) {
-      throw handleError(error);
+    } catch (error: any) {
+      if (error.status === 403) {
+        // throw handleError(error);
+        throw { message: "Not found", stauts: 401 };
+      }
     }
   },
 };

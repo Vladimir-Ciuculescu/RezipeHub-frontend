@@ -7,6 +7,7 @@ import No_notificatins from "./No_notifications.svg";
 import No_personal_recipes_placeholder from "./No_personal_recipes_placeholder.svg";
 import No_favorite_recipes_placeholder from "./No_favorite_recipes_placeholder.svg";
 import Search_placeholder from "./Search_placeholder.svg";
+import No_news_feed_placeholder from "./No_news_feed_placeholder.svg";
 
 export {
   Onboarding_1,
@@ -18,4 +19,5 @@ export {
   No_personal_recipes_placeholder,
   Search_placeholder,
   No_notificatins,
+  No_news_feed_placeholder,
 };

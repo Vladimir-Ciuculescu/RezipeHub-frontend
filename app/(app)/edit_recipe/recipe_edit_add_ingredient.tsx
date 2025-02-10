@@ -316,7 +316,6 @@ const RecipeEditAddIngredient = () => {
       </ScrollView>
       <Toast
         config={toastConfig}
-        visibilityTime={3000}
         position="bottom"
         bottomOffset={-bottom}
       />

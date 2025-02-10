@@ -219,7 +219,7 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-RezipeHub.xcscheme</key>
+		<key>Pods-RezipeHubDev.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -680,6 +680,11 @@
 			<false/>
 		</dict>
 		<key>lottie-react-native.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>react-native-keyboard-controller.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
