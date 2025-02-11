@@ -38,7 +38,7 @@ const About = () => {
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.stepContainer}>
-        <Text style={styles.$headerStyle}>Welcome to YumHub! 👋 </Text>
+        <Text style={styles.$headerStyle}>Welcome to RezipeHub! 👋 </Text>
         <Text style={styles.$descriptionStyle}>
           Whether you're searching for tonight's dinner inspiration or ready to share your grandpa's
           famous lasagna, this app aims to help you or others when they're out of ideas.

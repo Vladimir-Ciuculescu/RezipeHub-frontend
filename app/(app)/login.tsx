@@ -158,8 +158,6 @@ const Login = () => {
 
       await login(data.access_token, data.refresh_token);
 
-      queryClient.invalidateQueries({ queryKey: ["recipes-per-user", "favorites"] });
-
       await goToApp(data.user);
     } catch (error: any) {
       Alert.alert(
@@ -184,8 +182,6 @@ const Login = () => {
       });
 
       await login(data.access_token, data.refresh_token);
-
-      queryClient.invalidateQueries({ queryKey: ["recipes-per-user", "favorites"] });
 
       await goToApp(data.user);
     } catch (error: any) {

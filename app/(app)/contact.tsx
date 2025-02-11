@@ -185,7 +185,7 @@ const Contact = () => {
               }}
             >
               Hi there, I am Vladimir, the creator of this app. Hope you enjoy it and please don't
-              hesitate to leave your feedback. Here's how you can reach me
+              hesitate to leave your feedback. Below is how you can reach me
             </Text>
           </View>
         </RNShadowView>

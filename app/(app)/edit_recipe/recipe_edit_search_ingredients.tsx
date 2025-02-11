@@ -35,10 +35,8 @@ const RecipeEditSearchIngredients = () => {
   const router = useRouter();
   const isFocused = useIsFocused();
   const [text, setText] = useState("");
-  const [debouncedText, setDebouncedText] = useState(text);
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -56,26 +54,6 @@ const RecipeEditSearchIngredients = () => {
     });
   }, [navigation]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedText(text);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [text]);
-
-  useEffect(() => {
-    if (debouncedText !== "") {
-      setHasSearched(true);
-      fetchResults();
-    } else if (hasSearched) {
-      // Only clear results if user has performed at least one search
-      setResults([]);
-    }
-  }, [debouncedText]);
-
   const memoizedResults = useMemo(() => results, [results]);
 
   const clearSearch = () => {
@@ -90,7 +68,7 @@ const RecipeEditSearchIngredients = () => {
     setIsLoading(true);
 
     setResults([]);
-    const data = await FoodService.searchFood(debouncedText);
+    const data = await FoodService.searchFood(text);
 
     setResults(data.hints);
     setIsLoading(false);
@@ -103,8 +81,11 @@ const RecipeEditSearchIngredients = () => {
           <RNShadowView style={{ marginHorizontal: spacing.spacing16 }}>
             <RnInput
               wrapperStyle={styles.$seachInputStyle}
-              returnKeyType="done"
-              onSubmitEditing={() => Keyboard.dismiss()}
+              returnKeyType="search"
+              onSubmitEditing={() => {
+                Keyboard.dismiss();
+                fetchResults();
+              }}
               containerStyle={{ borderColor: "transparent" }}
               placeholder="Search"
               blurOnSubmit={false}
@@ -158,7 +139,7 @@ const RecipeEditSearchIngredients = () => {
                   ))}
               </Skeleton.Group>
             </View>
-          ) : !hasSearched || text.trim() === "" ? (
+          ) : !memoizedResults.length ? (
             <View
               style={{
                 alignItems: "center",

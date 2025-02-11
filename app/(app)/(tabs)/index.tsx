@@ -145,12 +145,10 @@ const Home = () => {
   const { data: latestRecipes, isLoading: areLatestRecipesLoading } = useLatestRecipes({
     page: 0,
     limit: 10,
-    // userId: userData.id,
     userId: user ? user.id : null,
   });
 
   const [latestItems, setLatestItems] = useState([]);
-
   const [newItemsAvailable, setNewItemsAvailable] = useState(false);
   const [newData, setnewData] = useState(null);
 
@@ -158,8 +156,7 @@ const Home = () => {
     useMostPopularRecipes({
       page: 0,
       limit: 10,
-      //userId: userData.id
-      // userId: user.id,
+
       userId: user ? user.id : null,
     });
 
@@ -218,50 +215,41 @@ const Home = () => {
   const paddingBottom = Platform.OS === "ios" ? 210 : 190;
 
   const goToAllLatestRecipes = () => {
-    Toast.show({
-      type: "success",
-      topOffset: top * 3,
-      position: "top",
-      swipeable: false,
-      autoHide: false,
+    //TODO: Add in future
+    // Toast.show({
+    //   type: "success",
+    //   topOffset: top * 3,
+    //   position: "top",
+    //   swipeable: false,
+    //   autoHide: false,
 
-      props: {
-        position: "top",
-        title: "New recipes available",
-        icon: (
-          <Ionicons
-            name="refresh"
-            size={24}
-            color={colors.greyscale50}
-          />
-        ),
-        onPress: () => {
-          Alert.alert("Alert Title", "My Alert Msg", [
-            {
-              text: "Cancel",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel",
-            },
-            { text: "OK", onPress: () => console.log("OK Pressed") },
-          ]);
-        },
-      },
-    });
-    // router.push("/all_latest_recipes");
+    //   props: {
+    //     position: "top",
+    //     title: "New recipes available",
+    //     icon: (
+    //       <Ionicons
+    //         name="refresh"
+    //         size={24}
+    //         color={colors.greyscale50}
+    //       />
+    //     ),
+    //     onPress: () => {
+    //       Alert.alert("Alert Title", "My Alert Msg", [
+    //         {
+    //           text: "Cancel",
+    //           onPress: () => console.log("Cancel Pressed"),
+    //           style: "cancel",
+    //         },
+    //         { text: "OK", onPress: () => console.log("OK Pressed") },
+    //       ]);
+    //     },
+    //   },
+    // });
+    router.push("/all_latest_recipes");
   };
 
   const goToAllMostPopularRecipes = () => {
     router.push("/all_most_popular_recipes");
-  };
-
-  const ITEM_WIDTH = 200 + 24; // Item width + gap
-
-  const handleScrollEnd = (event: any) => {
-    const offsetX = event.nativeEvent.contentOffset.x;
-    const index = Math.round(offsetX / ITEM_WIDTH); // Calculate nearest item index
-    const scrollToX = index * ITEM_WIDTH;
-
-    scrollViewRef.current?.scrollTo({ x: scrollToX, animated: true });
   };
 
   const isNewsFeed =
@@ -292,136 +280,6 @@ const Home = () => {
           </View>
         </RNFadeInTransition>
 
-        {/* <RNFadeInTransition
-          index={1}
-          animate={firstFocus}
-          direction="left"
-        >
-          <View style={{ gap: spacing.spacing16 }}>
-            <View
-              row
-              style={{
-                width: "100%",
-                justifyContent: "space-between",
-                paddingHorizontal: spacing.spacing24,
-              }}
-            >
-              <Text style={styles.$sectionTitleStyle}>Latest</Text>
-
-              <Pressable onPress={goToAllLatestRecipes}>
-                <Text style={styles.$seeAllBtnStyle}>See All</Text>
-              </Pressable>
-            </View>
-            <ScrollView
-              //The width of each item from list + the padding
-              // snapToInterval={horizontalScale(200 + 24)}
-              // snapToInterval={horizontalScale(200) + horizontalScale(24)}
-              // snapToInterval={224}
-              snapToInterval={horizontalScale(200) + 24}
-              decelerationRate="fast"
-              disableIntervalMomentum={true}
-              showsHorizontalScrollIndicator={false}
-              horizontal
-              contentContainerStyle={{
-                gap: spacing.spacing24,
-                paddingHorizontal: horizontalScale(spacing.spacing24),
-              }}
-            >
-              {areLatestRecipesLoading
-                ? Array(4)
-                    .fill(null)
-                    .map((_: number, key: number) => (
-                      <Skeleton
-                        key={key}
-                        colorMode="light"
-                        width={200}
-                        height={198}
-                      />
-                    ))
-                : latestRecipes.map((item: any, key: number) => (
-                    <LatestRecipeItem
-                      key={key}
-                      item={item}
-                    />
-                  ))}
-            </ScrollView>
-          </View>
-        </RNFadeInTransition>
-        <RNFadeInTransition
-          index={2}
-          animate={firstFocus}
-          direction="top"
-        >
-          <ScrollView
-            contentContainerStyle={{
-              gap: spacing.spacing24,
-              paddingHorizontal: spacing.spacing24,
-            }}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-          >
-            {categories.map((category, key) => {
-              return (
-                <CategoryItem
-                  key={key}
-                  category={category}
-                />
-              );
-            })}
-          </ScrollView>
-        </RNFadeInTransition>
-        <RNFadeInTransition
-          index={3}
-          animate={firstFocus}
-          direction="left"
-        >
-          <View style={{ gap: spacing.spacing16 }}>
-            <View
-              row
-              style={{
-                width: "100%",
-                justifyContent: "space-between",
-                paddingHorizontal: spacing.spacing24,
-              }}
-            >
-              <Text style={styles.$sectionTitleStyle}>Most Popular</Text>
-              <Pressable onPress={goToAllMostPopularRecipes}>
-                <Text style={styles.$seeAllBtnStyle}>See All</Text>
-              </Pressable>
-            </View>
-            <ScrollView
-              // snapToInterval={horizontalScale(200 + 24)}
-              snapToInterval={horizontalScale(200) + 24}
-              decelerationRate="fast"
-              disableIntervalMomentum={true}
-              showsHorizontalScrollIndicator={false}
-              horizontal
-              contentContainerStyle={{
-                gap: spacing.spacing24,
-                // paddingHorizontal: spacing.spacing24,
-                paddingHorizontal: horizontalScale(spacing.spacing24),
-              }}
-            >
-              {areMostPopularRecipesLoading
-                ? Array(4)
-                    .fill(null)
-                    .map((_: number, key: number) => (
-                      <Skeleton
-                        key={key}
-                        colorMode="light"
-                        width={200}
-                        height={198}
-                      />
-                    ))
-                : mostPopularRecipes.map((item: any, key: number) => (
-                    <MostPopularRecipeItem
-                      item={item}
-                      key={key}
-                    />
-                  ))}
-            </ScrollView>
-          </View>
-        </RNFadeInTransition> */}
         {isNewsFeed ? (
           <React.Fragment>
             <RNFadeInTransition
@@ -445,10 +303,6 @@ const Home = () => {
                   </Pressable>
                 </View>
                 <ScrollView
-                  //The width of each item from list + the padding
-                  // snapToInterval={horizontalScale(200 + 24)}
-                  // snapToInterval={horizontalScale(200) + horizontalScale(24)}
-                  // snapToInterval={224}
                   snapToInterval={horizontalScale(200) + 24}
                   decelerationRate="fast"
                   disableIntervalMomentum={true}
@@ -522,7 +376,6 @@ const Home = () => {
                   </Pressable>
                 </View>
                 <ScrollView
-                  // snapToInterval={horizontalScale(200 + 24)}
                   snapToInterval={horizontalScale(200) + 24}
                   decelerationRate="fast"
                   disableIntervalMomentum={true}
@@ -530,7 +383,6 @@ const Home = () => {
                   horizontal
                   contentContainerStyle={{
                     gap: spacing.spacing24,
-                    // paddingHorizontal: spacing.spacing24,
                     paddingHorizontal: horizontalScale(spacing.spacing24),
                   }}
                 >

@@ -17,6 +17,7 @@ import { useAuth } from "@clerk/clerk-expo";
 import RevenueCatUI from "react-native-purchases-ui";
 import * as Linking from "expo-linking";
 import { useCurrentUser } from "@/context/UserContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface NotificationItemProps {
   label: string;
@@ -70,6 +71,7 @@ const Settings = () => {
   const router = useRouter();
   const { signOut } = useAuth();
   const { setError } = useCurrentUser();
+  const queryClient = useQueryClient();
 
   const { expoPushToken } = useNotification();
 
@@ -114,6 +116,9 @@ const Settings = () => {
   };
 
   const logOut = async () => {
+    queryClient.invalidateQueries({
+      queryKey: ["latest-recipes", "most-popular-recipes", "recipes-per-user", "favorites"],
+    });
     storage.delete(ACCESS_TOKEN);
 
     setError(null);

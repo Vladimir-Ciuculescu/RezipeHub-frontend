@@ -71,7 +71,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification }) => 
               style={styles.$notificationTextStyle}
             >
               <Text style={[styles.$notificationTextStyle, { fontFamily: "sofia800" }]}>
-                {title}
+                {title}{" "}
               </Text>
               {body}
             </Text>

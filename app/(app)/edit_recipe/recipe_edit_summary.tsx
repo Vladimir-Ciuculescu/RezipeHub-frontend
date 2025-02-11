@@ -96,7 +96,10 @@ const RecipeEditSummary = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <RNPressable onPress={cancel}>
+        <RNPressable
+          onPress={cancel}
+          disabled={isLoading}
+        >
           <AntDesign
             name="close"
             size={24}

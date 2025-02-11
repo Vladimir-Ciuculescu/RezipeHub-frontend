@@ -13,7 +13,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useLatestRecipes = (params: GetLatestRecipesRequest) => {
   return useQuery({
-    queryKey: ["latest-recipes"],
+    queryKey: ["latest-recipes", params.userId],
     queryFn: async () => await RecipeService.getLatestRecipes(params),
     // enabled: !!params.userId,
     // refetchInterval: 5000,
@@ -22,7 +22,7 @@ export const useLatestRecipes = (params: GetLatestRecipesRequest) => {
 
 export const useMostPopularRecipes = (params: GetMostPopularRecipesRequest) => {
   return useQuery({
-    queryKey: ["most-popular-recipes"],
+    queryKey: ["most-popular-recipes", params.userId],
     queryFn: async () => await RecipeService.getMostPopularRecipes(params),
   });
 };

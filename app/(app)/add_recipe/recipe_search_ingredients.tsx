@@ -55,26 +55,6 @@ const RecipeSearchIngredients = () => {
     });
   }, [navigation]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedText(text);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [text]);
-
-  useEffect(() => {
-    if (debouncedText !== "") {
-      setHasSearched(true);
-      fetchResults();
-    } else if (hasSearched) {
-      // Only clear results if user has performed at least one search
-      setResults([]);
-    }
-  }, [debouncedText]);
-
   const memoizedResults = useMemo(() => results, [results]);
 
   const gotBack = () => {
@@ -89,7 +69,7 @@ const RecipeSearchIngredients = () => {
     setIsLoading(true);
     setResults([]);
 
-    const data = await FoodService.searchFood(debouncedText);
+    const data = await FoodService.searchFood(text);
 
     setResults(data.hints);
     setIsLoading(false);
@@ -102,9 +82,12 @@ const RecipeSearchIngredients = () => {
           <RNShadowView style={{ marginHorizontal: spacing.spacing16 }}>
             <RnInput
               wrapperStyle={styles.$seachInputStyle}
-              returnKeyType="done"
+              returnKeyType="search"
               containerStyle={{ borderColor: "transparent" }}
-              onSubmitEditing={() => Keyboard.dismiss()}
+              onSubmitEditing={() => {
+                Keyboard.dismiss();
+                fetchResults();
+              }}
               placeholder="Search"
               blurOnSubmit={false}
               value={text}
@@ -157,7 +140,7 @@ const RecipeSearchIngredients = () => {
                   ))}
               </Skeleton.Group>
             </View>
-          ) : !hasSearched || text.trim() === "" ? (
+          ) : !memoizedResults.length ? (
             <View
               style={{
                 alignItems: "center",
