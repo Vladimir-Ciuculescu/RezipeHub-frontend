@@ -16,11 +16,11 @@ export interface ToastConfigPros {
 export const toastConfig = {
   error: ({ props }: { props: ToastConfigPros }) => {
     const { title, msg, icon } = props;
+
     return (
       <Animated.View style={[styles.errorModal]}>
         <View style={[styles.errorSubContainer, { backgroundColor: colors.red500 }]}>
           {icon}
-
           <View>
             <Text style={{ ...$sizeStyles.l, color: colors.greyscale50 }}>{title}</Text>
             {msg && <Text style={{ ...$sizeStyles.n, color: colors.greyscale150 }}>{msg}</Text>}

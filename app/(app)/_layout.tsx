@@ -13,7 +13,6 @@ import { useFonts } from "expo-font";
 import { fontsToLoad } from "@/theme/typography";
 import { Stack } from "expo-router/stack";
 import { ClerkProvider } from "@clerk/clerk-expo";
-import * as SecureStore from "expo-secure-store";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -21,7 +20,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
 import { ACCESS_TOKEN, ONBOARDED, storage } from "@/storage";
 import TokenService from "@/api/services/token.service";
-
 import { NotificationProvider } from "@/context/NotificationContext";
 import * as Notifications from "expo-notifications";
 import Purchases from "react-native-purchases";
@@ -42,22 +40,22 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const tokenCache = {
-  getToken(key: string) {
-    try {
-      return SecureStore.getItemAsync(key);
-    } catch (err) {
-      return null;
-    }
-  },
-  saveToken(key: string, value: string) {
-    try {
-      return SecureStore.setItemAsync(key, value);
-    } catch (err) {
-      return null;
-    }
-  },
-};
+// const tokenCache = {
+//   getToken(key: string) {
+//     try {
+//       return SecureStore.getItemAsync(key);
+//     } catch (err) {
+//       return null;
+//     }
+//   },
+//   saveToken(key: string, value: string) {
+//     try {
+//       return SecureStore.setItemAsync(key, value);
+//     } catch (err) {
+//       return null;
+//     }
+//   },
+// };
 
 const clerkKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -65,7 +63,7 @@ const queryClient = new QueryClient();
 
 const AppLayout = () => {
   const [fontsLoaded, error] = useFonts(fontsToLoad);
-  const { user, mounted } = useCurrentUser();
+  const { user, mounted, serverHealth } = useCurrentUser();
 
   const router = useRouter();
   const invalidateQueryClient = useQueryClient();
@@ -74,34 +72,41 @@ const AppLayout = () => {
   const accessToken = storage.getString(ACCESS_TOKEN);
 
   useEffect(() => {
-    //TODO : Configure revenuecat subscriber id
+    //TODO : Configure revenuecat subscriber idr
     const checkOnboarding = async () => {
-      if (!onboarded) {
-        router.replace("/onboarding");
-        // await SplashScreen.hideAsync();
-      }
-
-      if (!accessToken) {
-        router.replace("/home");
-        // await SplashScreen.hideAsync();
-      }
-      if (user) {
-        if (user.isVerified) {
-          router.replace("/(tabs)");
-          // await SplashScreen.hideAsync();
-        } else {
-          const payload = { userId: user.id, email: user.email as string };
-          await TokenService.resendToken(payload);
-          // await SplashScreen.hideAsync();
-
-          router.replace({
-            pathname: "/otp_verification",
-            params: { userId: user.id, email: user.email },
-          });
+      if (serverHealth) {
+        if (!onboarded) {
+          router.replace("/onboarding");
+          await SplashScreen.hideAsync();
+          return;
         }
-      }
 
-      await SplashScreen.hideAsync();
+        if (!accessToken) {
+          router.replace("/home");
+          await SplashScreen.hideAsync();
+          return;
+        }
+        if (user) {
+          if (user.isVerified) {
+            router.replace("/(tabs)");
+            await SplashScreen.hideAsync();
+            return;
+          } else {
+            const payload = { userId: user.id, email: user.email as string };
+            await TokenService.resendToken(payload);
+
+            router.replace({
+              pathname: "/otp_verification",
+              params: { userId: user.id, email: user.email },
+            });
+            await SplashScreen.hideAsync();
+            return;
+          }
+        }
+      } else {
+        await SplashScreen.hideAsync();
+        return;
+      }
     };
 
     if (mounted && fontsLoaded) {
@@ -196,7 +201,11 @@ const AppLayout = () => {
       />
 
       <Stack.Screen
-        options={{ headerShown: false, gestureEnabled: false, animation: "fade" }}
+        options={{
+          headerShown: false,
+          gestureEnabled: false,
+          animation: "fade",
+        }}
         name="onboarding"
       />
       <Stack.Screen
@@ -264,7 +273,6 @@ const AppLayout = () => {
         options={{
           headerShown: false,
           gestureEnabled: false,
-          animation: "fade",
         }}
       />
       <Stack.Screen
@@ -346,20 +354,20 @@ const Layout = () => {
   return (
     <GestureHandlerRootView>
       <QueryClientProvider client={queryClient}>
-        <NotificationProvider>
-          <ActionSheetProvider>
-            <BottomSheetModalProvider>
-              <ClerkProvider
-                publishableKey={clerkKey!}
-                tokenCache={tokenCache as any}
-              >
-                <UserProvider>
+        <ActionSheetProvider>
+          <BottomSheetModalProvider>
+            <ClerkProvider
+              publishableKey={clerkKey!}
+              // tokenCache={tokenCache as any}
+            >
+              <UserProvider>
+                <NotificationProvider>
                   <AppLayout />
-                </UserProvider>
-              </ClerkProvider>
-            </BottomSheetModalProvider>
-          </ActionSheetProvider>
-        </NotificationProvider>
+                </NotificationProvider>
+              </UserProvider>
+            </ClerkProvider>
+          </BottomSheetModalProvider>
+        </ActionSheetProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
   );

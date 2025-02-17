@@ -1,5 +1,6 @@
 import {
   LoginUserRequest,
+  LogOutRequest,
   RegisterUserRequest,
   ResetPasswordRequest,
   SocialLoginUserRequest,
@@ -45,9 +46,9 @@ const AuthService = {
     }
   },
 
-  logOut: async (userId: number) => {
+  logOut: async (data: LogOutRequest) => {
     try {
-      await axiosInstance.delete(`${AUTH}/logout`, { data: { id: userId } });
+      await axiosInstance.delete(`${AUTH}/logout`, { data });
     } catch (error) {
       throw handleError(error);
     }

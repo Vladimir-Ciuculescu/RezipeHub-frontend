@@ -1,7 +1,7 @@
 import { ACCESS_TOKEN, REFRESH_TOKEN, storage } from "@/storage";
 import axios from "axios";
 
-const baseURL = "http://192.168.1.128:3000";
+export const baseURL = "http://192.168.1.144:3000";
 const iosBaseUrL = "http://localhost:3000";
 const andrdoidBaseUrl = "http://192.168.0.1:3000";
 
@@ -56,8 +56,6 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-
-    console.log("interceptor error: ", error);
 
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;

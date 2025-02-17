@@ -22,9 +22,8 @@ interface NotificationItemProps {
 }
 
 const NotificationItem: React.FC<NotificationItemProps> = ({ notification }) => {
-  const { id, body, title, timestamp, data, read } = notification;
+  const { id, body, timestamp, data, read } = notification;
   const router = useRouter();
-  const { user } = useCurrentUser();
   const queryClient = useQueryClient();
 
   const goToRecipeScreen = async () => {
@@ -33,7 +32,9 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification }) => 
       params: {
         recipePhotoUrl: data.recipePhotoUrl,
         id: data.recipeId,
-        userId: user.id,
+        userId: data.creatorId,
+        // userId: user.id,
+        // userId: id,
       },
     });
 
@@ -70,9 +71,6 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification }) => 
               ellipsizeMode="tail"
               style={styles.$notificationTextStyle}
             >
-              <Text style={[styles.$notificationTextStyle, { fontFamily: "sofia800" }]}>
-                {title}{" "}
-              </Text>
               {body}
             </Text>
           </View>

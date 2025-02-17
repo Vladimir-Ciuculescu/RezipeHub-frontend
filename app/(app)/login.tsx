@@ -1,3 +1,4 @@
+import React from "react";
 import RNButton from "@/components/shared/RNButton";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Alert, Platform, Pressable, StyleSheet, View } from "react-native";
@@ -79,7 +80,9 @@ const Login = () => {
         email: primaryEmailAddress!.emailAddress,
         firstName: firstName!,
         lastName: lastName!,
-        deviceToken: Device.isDevice ? expoPushToken! : "",
+        deviceToken: Device.isDevice
+          ? expoPushToken!
+          : `ExpoSimulatorToken_${Math.random().toString(36).substr(2, 9)}`,
         platform: Platform.OS,
       };
 
@@ -177,7 +180,9 @@ const Login = () => {
     try {
       const data = await AuthService.loginUser({
         ...payload,
-        deviceToken: Device.isDevice ? expoPushToken! : "",
+        deviceToken: Device.isDevice
+          ? expoPushToken!
+          : `ExpoSimulatorToken_${Math.random().toString(36).substr(2, 9)}`,
         platform: Platform.OS,
       });
 

@@ -4,6 +4,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import * as Notifications from "expo-notifications";
 import { router } from "expo-router";
 import { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
+import { useCurrentUser } from "./UserContext";
+import { AppState } from "react-native";
 
 interface NotificationContextType {
   expoPushToken: string | null;
@@ -31,6 +33,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
   const [notification, setNotification] = useState<Notifications.Notification | null>(null);
   const [error, setError] = useState<Error | null>(null);
+  const { mounted, user } = useCurrentUser();
 
   const queryClient = useQueryClient();
 
@@ -52,21 +55,43 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   useEffect(() => {
     const redirect = async (notification: Notifications.Notification) => {
       const url = notification.request.content.data.url;
+      const appState = AppState.currentState;
 
       if (url) {
-        router.push("/(tabs)/notifications");
-      }
+        if (appState === "background") {
+          if (router.canDismiss()) {
+            router.dismissAll();
+          }
+          router.replace("/(tabs)/notifications");
+          await resetAppNotificationBadges();
 
-      await resetAppNotificationBadges();
+          const token = expoPushTokenRef.current;
 
-      const token = expoPushTokenRef.current;
+          if (token) {
+            await NotificationService.resetBadgeCountNotification(token);
+          }
+        } else {
+          const timer = setInterval(async () => {
+            if (user && mounted) {
+              if (router.canDismiss()) {
+                router.dismissAll();
+              }
+              router.replace("/(tabs)/notifications");
 
-      if (token) {
-        await NotificationService.resetBadgeCountNotification(token);
+              await resetAppNotificationBadges();
+
+              const token = expoPushTokenRef.current;
+
+              if (token) {
+                await NotificationService.resetBadgeCountNotification(token);
+              }
+
+              clearInterval(timer);
+            }
+          }, 500); // Check every second
+        }
       }
     };
-
-    let isMounted = true;
 
     registerForPushNotificationsAsync().then(
       (token) => {
@@ -75,12 +100,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       (error) => setError(error),
     );
 
-    Notifications.getLastNotificationResponseAsync().then((response) => {
-      if (!isMounted || !response?.notification) {
-        return;
-      }
-      redirect(response?.notification);
-    });
+    // Notifications.getLastNotificationResponseAsync().then((response) => {
+
+    //   if (!isMounted || !response?.notification) {
+    //     return;
+    //   }
+    //   redirect(response?.notification);
+    // });
 
     notificationListener.current = Notifications.addNotificationReceivedListener(
       async (notification) => {
@@ -96,8 +122,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     });
 
     return () => {
-      isMounted = false;
-
       if (notificationListener.current) {
         Notifications.removeNotificationSubscription(notificationListener.current);
       }
@@ -106,10 +130,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         Notifications.removeNotificationSubscription(responseListener.current);
       }
     };
-  }, []);
+  }, [mounted, user]);
 
   useEffect(() => {
-    expoPushTokenRef.current = expoPushToken;
+    if (expoPushToken) {
+      expoPushTokenRef.current = expoPushToken;
+    }
   }, [expoPushToken]);
 
   return (

@@ -155,23 +155,26 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3.84,
     elevation: 5, // Shadow for Android
-    // shadowColor: "rgba(6, 51, 54, 1)", // Use solid color here for shadowColor
-    // shadowOffset: { width: 0, height: 2 }, // Corresponds to "0px 2px"
-    // shadowOpacity: 0.1, // Corresponds to the alpha of rgba (0.10)
-    // shadowRadius: 16, // Corresponds to the blur radius "16px"
-    // elevation: 5, // Android shadow approximation (elevation creates shadow)
   },
 
   $addRecipeBtnStyle: {
     width: 66,
     height: 66,
     backgroundColor: colors.brandPrimary,
-    borderRadius: 50,
+    borderRadius: 100,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 50,
     borderWidth: 5,
     borderStyle: "solid",
     borderColor: "transparent",
+    shadowColor: colors.greyscale500,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5, // For Android shadow
   },
 });

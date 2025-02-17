@@ -72,3 +72,8 @@ export interface UpdateProfileRequest {
   bio: string;
   photoUrl: string;
 }
+
+export interface LogOutRequest {
+  id: number;
+  expoPushToken: string;
+}

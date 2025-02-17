@@ -35,7 +35,7 @@ import { useCurrentUser } from "@/context/UserContext";
 import { ACCESS_TOKEN, storage } from "@/storage";
 import Toast from "react-native-toast-message";
 import toastConfig from "@/components/Toast/ToastConfing";
-import { horizontalScale } from "@/utils/scale";
+import { horizontalScale, moderateScale } from "@/utils/scale";
 import { No_news_feed_placeholder } from "@/assets/illustrations";
 
 const { width, height } = Dimensions.get("screen");
@@ -253,7 +253,10 @@ const Home = () => {
   };
 
   const isNewsFeed =
-    latestRecipes && latestRecipes.length && mostPopularRecipes && mostPopularRecipes.length;
+    latestRecipes &&
+    latestRecipes.length > 0 &&
+    mostPopularRecipes &&
+    mostPopularRecipes.length > 0;
 
   return (
     <RNFadeInView>
@@ -280,7 +283,8 @@ const Home = () => {
           </View>
         </RNFadeInTransition>
 
-        {isNewsFeed ? (
+        {areLatestRecipesLoading || areMostPopularRecipesLoading ? (
+          // Show skeletons while loading
           <React.Fragment>
             <RNFadeInTransition
               index={1}
@@ -297,7 +301,6 @@ const Home = () => {
                   }}
                 >
                   <Text style={styles.$sectionTitleStyle}>Latest</Text>
-
                   <Pressable onPress={goToAllLatestRecipes}>
                     <Text style={styles.$seeAllBtnStyle}>See All</Text>
                   </Pressable>
@@ -313,23 +316,83 @@ const Home = () => {
                     paddingHorizontal: horizontalScale(spacing.spacing24),
                   }}
                 >
-                  {areLatestRecipesLoading
-                    ? Array(4)
-                        .fill(null)
-                        .map((_: number, key: number) => (
-                          <Skeleton
-                            key={key}
-                            colorMode="light"
-                            width={200}
-                            height={198}
-                          />
-                        ))
-                    : latestRecipes.map((item: any, key: number) => (
-                        <LatestRecipeItem
-                          key={key}
-                          item={item}
-                        />
-                      ))}
+                  {Array(4)
+                    .fill(null)
+                    .map((_: number, key: number) => (
+                      <Skeleton
+                        key={key}
+                        colorMode="light"
+                        width={200}
+                        height={198}
+                      />
+                    ))}
+                </ScrollView>
+              </View>
+            </RNFadeInTransition>
+            <RNFadeInTransition
+              index={2}
+              animate={firstFocus}
+              direction="top"
+            >
+              <ScrollView
+                contentContainerStyle={{
+                  gap: spacing.spacing24,
+                  paddingHorizontal: spacing.spacing24,
+                }}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+              >
+                {Array(4)
+                  .fill(null)
+                  .map((_: number, key: number) => (
+                    <Skeleton
+                      key={key}
+                      colorMode="light"
+                      width={horizontalScale(200)}
+                      height={moderateScale(240)}
+                    />
+                  ))}
+              </ScrollView>
+            </RNFadeInTransition>
+          </React.Fragment>
+        ) : isNewsFeed ? (
+          <React.Fragment>
+            <RNFadeInTransition
+              index={1}
+              animate={firstFocus}
+              direction="left"
+            >
+              <View style={{ gap: spacing.spacing16 }}>
+                <View
+                  row
+                  style={{
+                    width: "100%",
+                    justifyContent: "space-between",
+                    paddingHorizontal: spacing.spacing24,
+                  }}
+                >
+                  <Text style={styles.$sectionTitleStyle}>Latest</Text>
+                  <Pressable onPress={goToAllLatestRecipes}>
+                    <Text style={styles.$seeAllBtnStyle}>See All</Text>
+                  </Pressable>
+                </View>
+                <ScrollView
+                  snapToInterval={horizontalScale(200) + 24}
+                  decelerationRate="fast"
+                  disableIntervalMomentum={true}
+                  showsHorizontalScrollIndicator={false}
+                  horizontal
+                  contentContainerStyle={{
+                    gap: spacing.spacing24,
+                    paddingHorizontal: horizontalScale(spacing.spacing24),
+                  }}
+                >
+                  {latestRecipes.map((item: any, key: number) => (
+                    <LatestRecipeItem
+                      key={key}
+                      item={item}
+                    />
+                  ))}
                 </ScrollView>
               </View>
             </RNFadeInTransition>
@@ -386,23 +449,12 @@ const Home = () => {
                     paddingHorizontal: horizontalScale(spacing.spacing24),
                   }}
                 >
-                  {areMostPopularRecipesLoading
-                    ? Array(4)
-                        .fill(null)
-                        .map((_: number, key: number) => (
-                          <Skeleton
-                            key={key}
-                            colorMode="light"
-                            width={200}
-                            height={198}
-                          />
-                        ))
-                    : mostPopularRecipes.map((item: any, key: number) => (
-                        <MostPopularRecipeItem
-                          item={item}
-                          key={key}
-                        />
-                      ))}
+                  {mostPopularRecipes.map((item: any, key: number) => (
+                    <MostPopularRecipeItem
+                      item={item}
+                      key={key}
+                    />
+                  ))}
                 </ScrollView>
               </View>
             </RNFadeInTransition>
@@ -424,7 +476,6 @@ const Home = () => {
                 height={height / 3}
                 width={width - horizontalScale(40)}
               />
-
               <Text style={{ color: colors.slate900, ...$sizeStyles.h3 }}>
                 No recipes found at the moment. Check back soon!
               </Text>

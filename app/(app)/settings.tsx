@@ -9,7 +9,7 @@ import { colors } from "@/theme/colors";
 import RNShadowView from "@/components/shared/RNShadowView";
 import { spacing } from "@/theme/spacing";
 import { Switch } from "react-native-ui-lib";
-import { ACCESS_TOKEN, NOTIFICATIONS, storage } from "@/storage";
+import { ACCESS_TOKEN, NOTIFICATIONS, ONBOARDED, storage } from "@/storage";
 import { useNotification } from "@/context/NotificationContext";
 import NotificationService from "@/api/services/notifications.service";
 import Purchases from "react-native-purchases";
@@ -18,6 +18,9 @@ import RevenueCatUI from "react-native-purchases-ui";
 import * as Linking from "expo-linking";
 import { useCurrentUser } from "@/context/UserContext";
 import { useQueryClient } from "@tanstack/react-query";
+import AuthService from "@/api/services/auth.service";
+import { LogOutRequest } from "@/types/user.types";
+import * as Device from "expo-device";
 
 interface NotificationItemProps {
   label: string;
@@ -70,14 +73,16 @@ const Settings = () => {
   const navigation = useNavigation();
   const router = useRouter();
   const { signOut } = useAuth();
-  const { setError } = useCurrentUser();
+  const { user, setError } = useCurrentUser();
   const queryClient = useQueryClient();
-
   const { expoPushToken } = useNotification();
 
-  const notificationsPermissions = storage.getBoolean(NOTIFICATIONS);
+  // const notificationsPermissions = storage.getBoolean(NOTIFICATIONS);
 
-  const [notifications, toggleNotifications] = useState(notificationsPermissions ? true : false);
+  // const [notifications, toggleNotifications] = useState(notificationsPermissions ? true : false);
+  //TODO: FOr the future
+  const [notifications, toggleNotifications] = useState<boolean>(user.notificationsEnabled);
+
   const [hasSubscription, setHasSubscription] = useState(false);
 
   useEffect(() => {
@@ -113,19 +118,39 @@ const Settings = () => {
       requiredEntitlementIdentifier: "Pro",
       displayCloseButton: false,
     });
-  };
+  }; // @Cron("*/3 * * * * *")
 
   const logOut = async () => {
+    // Step 1: Invalidate queries
     queryClient.invalidateQueries({
       queryKey: ["latest-recipes", "most-popular-recipes", "recipes-per-user", "favorites"],
     });
+
+    // Step 2: Prepare payload for Auth Service logout
+    const payload: LogOutRequest = {
+      id: user.id,
+      expoPushToken: Device.isDevice ? expoPushToken! : "",
+    };
+
+    // Step 3: Execute all logout operations concurrently
+    const signOutPromise = signOut(); // Clerk sign out
+    const purchasesLogOutPromise = Purchases.logOut(); // RevenueCat log out
+    const authServiceLogOutPromise = AuthService.logOut(payload); // Auth service log out
+
+    // Step 4: Wait for all logout operations to complete
+    await Promise.all([signOutPromise, purchasesLogOutPromise, authServiceLogOutPromise]);
+
+    // Step 5: Delete access token
     storage.delete(ACCESS_TOKEN);
 
+    // Step 6: Navigate to home
     setError(null);
     router.replace("/home");
+  };
 
-    await signOut();
-    await Purchases.logOut();
+  const removeOnBoard = async () => {
+    logOut();
+    storage.delete(ONBOARDED);
   };
 
   const handleManageSubscription = async () => {
@@ -157,20 +182,24 @@ const Settings = () => {
   }
 
   const ITEMS: SettingsItemProps[] = [
-    {
-      label: "Notifications",
-      icon: "notification",
-      rightElement: (
-        <View style={styles.$settingsRightElementStyle}>
-          <Text>On</Text>
-          <Switch
-            onColor={colors.accent300}
-            value={notifications}
-            onValueChange={toggleSystemNotifications}
-          />
-        </View>
-      ),
-    },
+    ...(Device.isDevice
+      ? [
+          {
+            label: "Notifications",
+            icon: "notification",
+            rightElement: (
+              <View style={styles.$settingsRightElementStyle}>
+                <Text>{notifications ? "On" : "Off"}</Text>
+                <Switch
+                  onColor={colors.accent300}
+                  value={notifications}
+                  onValueChange={toggleSystemNotifications}
+                />
+              </View>
+            ),
+          },
+        ]
+      : []),
     {
       label: "About the app",
       icon: "info_square",
@@ -210,6 +239,11 @@ const Settings = () => {
       label: "Log out",
       icon: "logout",
       onPress: logOut,
+    },
+    {
+      label: "remove onboard",
+      icon: "logout",
+      onPress: removeOnBoard,
     },
   ];
 

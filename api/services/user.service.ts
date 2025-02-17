@@ -15,9 +15,14 @@ const UserService = {
     }
   },
 
-  getProfile: async (userId: number) => {
+  getProfile: async (userId: number, expoPushToken: string) => {
     try {
-      const { data } = await axiosInstance.get(`${USERS}/profile`, { params: { id: userId } });
+      const { data } = await axiosInstance.get(`${USERS}/profile`, {
+        params: {
+          id: userId,
+          expoPushToken,
+        },
+      });
 
       return data;
     } catch (error: any) {
