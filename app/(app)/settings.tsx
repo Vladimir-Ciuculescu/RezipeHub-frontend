@@ -240,11 +240,6 @@ const Settings = () => {
       icon: "logout",
       onPress: logOut,
     },
-    {
-      label: "remove onboard",
-      icon: "logout",
-      onPress: removeOnBoard,
-    },
   ];
 
   const goBack = () => {
