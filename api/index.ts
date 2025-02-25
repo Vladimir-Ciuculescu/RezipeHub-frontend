@@ -1,15 +1,11 @@
 import { ACCESS_TOKEN, REFRESH_TOKEN, storage } from "@/storage";
 import axios from "axios";
 
-export const baseURL = "http://192.168.1.144:3000";
-const iosBaseUrL = "http://localhost:3000";
-const andrdoidBaseUrl = "http://192.168.0.1:3000";
+export const baseURL = __DEV__
+  ? "http://192.168.1.144:3000"
+  : process.env.EXPO_PUBLIC_REZIPEHUB_API;
 
 const axiosPublicInstance = axios.create({
-  //
-
-  //baseURL: "http://localhost:3000", // Replace with your API base URL
-  //baseURL: Platform.OS === "ios" ? iosBaseUrL : andrdoidBaseUrl,
   baseURL,
 
   timeout: 10000,
@@ -25,9 +21,7 @@ axiosPublicInstance.interceptors.request.use((config) => {
 });
 
 const axiosInstance = axios.create({
-  //baseURL: "http://localhost:3000", // Replace with your API base URL
   baseURL,
-  // baseURL: Platform.OS === "ios" ? iosBaseUrL : andrdoidBaseUrl,
 
   timeout: 10000,
   headers: {

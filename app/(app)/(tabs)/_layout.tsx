@@ -18,7 +18,7 @@ const TabLayout = () => {
   const router = useRouter();
 
   const reset = useRecipeStore.use.reset();
-  const { user } = useCurrentUser();
+  const { user, recipesCount } = useCurrentUser();
 
   const [badgeCount, setBadgeCount] = useState(0);
 
@@ -27,9 +27,9 @@ const TabLayout = () => {
   const openAddRecipeModal = async () => {
     //TODO: Comment it just for testing
 
-    const recipes = await RecipeService.getRecipesByUser({ limit: 5, page: 0, userId: user.id });
+    // const recipes = await RecipeService.getRecipesByUser({ limit: 5, page: 0, userId: user.id });
 
-    if (recipes && recipes.length === 3) {
+    if (recipesCount === 3) {
       const hasSubscription = await checkSubscription();
 
       if (!hasSubscription) {

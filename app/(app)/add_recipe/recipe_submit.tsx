@@ -53,7 +53,7 @@ const RecipeSubmit = () => {
   const [segmentIndex, setSegmentIndex] = useState(0);
   const inputsFlatlListRef = useRef<FlatList>(null);
 
-  const { user } = useCurrentUser();
+  const { user, setRecipesCount, recipesCount } = useCurrentUser();
 
   const title = useRecipeStore.use.title();
   const servings = useRecipeStore.use.servings();
@@ -174,6 +174,8 @@ const RecipeSubmit = () => {
       } else {
         queryClient.invalidateQueries({ queryKey: ["recipes-per-user"] });
       }
+
+      setRecipesCount(recipesCount + 1);
 
       Alert.alert("Success", "Recipe added !", [
         {

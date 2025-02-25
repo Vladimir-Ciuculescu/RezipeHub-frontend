@@ -1,12 +1,4 @@
-import {
-  Text,
-  Dimensions,
-  StyleSheet,
-  FlatList,
-  ListRenderItem,
-  Alert,
-  Pressable,
-} from "react-native";
+import { Text, Dimensions, StyleSheet, FlatList, ListRenderItem, Pressable } from "react-native";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
@@ -99,7 +91,7 @@ const RecipeDetails = () => {
 
   const [isFavorite, setIsFavotite] = useState(false);
 
-  const { user } = useCurrentUser();
+  const { user, favoritesCount, setFavoritesCount } = useCurrentUser();
 
   const { id, userId, firstName, lastName, recipePhotoUrl, userPhotoUrl } = useLocalSearchParams<{
     id: string;
@@ -144,14 +136,14 @@ const RecipeDetails = () => {
   );
 
   const toggleFavorite = async () => {
-    const favorites = await FavoritesService.getFavorties({
-      limit: 5,
-      page: 0,
-      userId: user.id,
-    });
+    // const favorites = await FavoritesService.getFavorties({
+    //   limit: 5,
+    //   page: 0,
+    //   userId: user.id,
+    // });
 
     //If the recipe is not added to favorites and user has already 3 in list, display paywall
-    if (!isFavorite && favorites && favorites.length === 3) {
+    if (!isFavorite && favoritesCount === 3) {
       const hasSubscription = await checkSubscription();
 
       if (!hasSubscription) {
@@ -167,8 +159,10 @@ const RecipeDetails = () => {
 
     if (isFavorite) {
       heartRef.current?.reset();
+      setFavoritesCount(favoritesCount - 1);
     } else {
       heartRef.current?.play(30, 144);
+      setFavoritesCount(favoritesCount + 1);
     }
 
     setIsFavotite((oldValue) => !oldValue);

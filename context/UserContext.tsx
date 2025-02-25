@@ -10,6 +10,9 @@ import Purchases from "react-native-purchases";
 import * as Device from "expo-device";
 import axios from "axios";
 import { baseURL } from "@/api";
+import { useFavorites } from "../hooks/favorites.hooks";
+import FavoritesService from "../api/services/favorites.service";
+import RecipeService from "../api/services/recipe.service";
 
 type UserContextType = {
   user: any | null;
@@ -21,6 +24,10 @@ type UserContextType = {
   // logout: () => Promise<void>;
   mounted: boolean;
   serverHealth: boolean;
+  favoritesCount: number;
+  setFavoritesCount: (favoritesCount: number) => void;
+  recipesCount: number;
+  setRecipesCount: (recipesCount: number) => void;
 };
 
 //TODO: Add User type here
@@ -36,6 +43,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [favoritesCount, setFavoritesCount] = useState(0);
+  const [recipesCount, setRecipesCount] = useState(0);
   const [serverHealth, setServerHealth] = useState(false);
   const router = useRouter();
   const { signOut } = useAuth();
@@ -128,8 +137,24 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
         const userData = jwtDecode(newAccessToken) as CurrentUser;
 
+        const [favorites, recipes] = await Promise.all([
+          FavoritesService.getFavorties({
+            limit: 5,
+            page: 0,
+            userId: userData.id,
+          }),
+          RecipeService.getRecipesByUser({
+            limit: 5,
+            page: 0,
+            userId: userData.id,
+          }),
+        ]);
+
         //! This line is for test
         await Purchases.logIn(userData.id.toString());
+
+        setFavoritesCount(favorites.length);
+        setRecipesCount(recipes.length);
 
         setUser(userData);
         setError(null);
@@ -149,7 +174,20 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   return (
     <UserContext.Provider
-      value={{ user, setUser, loading, error, setError, login, mounted, serverHealth }}
+      value={{
+        user,
+        setUser,
+        loading,
+        error,
+        setError,
+        login,
+        mounted,
+        serverHealth,
+        favoritesCount,
+        setFavoritesCount,
+        recipesCount,
+        setRecipesCount,
+      }}
     >
       {children}
     </UserContext.Provider>
