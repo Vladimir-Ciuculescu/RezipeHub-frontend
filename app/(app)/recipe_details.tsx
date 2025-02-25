@@ -151,6 +151,12 @@ const RecipeDetails = () => {
       }
     }
 
+    if (!isFavorite) {
+      heartRef.current?.play(30, 40);
+    } else {
+      heartRef.current?.play(50, 40);
+    }
+
     const payload = { recipeId: parseInt(id!), userId: user.id };
 
     await FavoritesService.toggleFavoriteRecipe(payload);
@@ -161,7 +167,7 @@ const RecipeDetails = () => {
       heartRef.current?.reset();
       setFavoritesCount(favoritesCount - 1);
     } else {
-      heartRef.current?.play(30, 144);
+      heartRef.current?.play(40, 144);
       setFavoritesCount(favoritesCount + 1);
     }
 

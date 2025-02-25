@@ -322,8 +322,8 @@ const Home = () => {
                       <Skeleton
                         key={key}
                         colorMode="light"
-                        width={200}
-                        height={198}
+                        width={horizontalScale(200)}
+                        height={moderateScale(240)}
                       />
                     ))}
                 </ScrollView>
